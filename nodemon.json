@@ -1,0 +1,14 @@
+{
+    "watch": [
+        "src"
+    ],
+    "ext": "ts",
+    "ignore": [
+        "src/**/*.test.ts"
+    ],
+    "exec": "ts-node --project tsconfig.json src/index.ts",
+    "env": {
+        "NODE_ENV": "development"
+    },
+    "delay": 500
+}
