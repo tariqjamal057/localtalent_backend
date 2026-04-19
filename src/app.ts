@@ -26,12 +26,11 @@ app.get('/health', (_req: Request, res: Response) => {
     res.json({
         status: 'OK',
         timestamp: new Date().toISOString(),
-        uptime: Math.floor(process.uptime()),
-        env: process.env.NODE_ENV || 'development',
+        uptime: Math.floor(process.uptime())
     });
 });
 
-app.use('/api', routes);
+app.use('/api/v1', routes);
 
 app.use((_req: Request, res: Response) => {
     res.status(StatusCodes.NOT_FOUND).json({

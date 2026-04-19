@@ -1,10 +1,9 @@
 CREATE TABLE users (
     id BIGSERIAL PRIMARY KEY,
-    full_name VARCHAR(120) NOT NULL,
     mobile_number VARCHAR(20) NOT NULL UNIQUE,
     country_code VARCHAR(10) NOT NULL,
     user_type SMALLINT NOT NULL,
-    app_language_id SMALLINT DEFAULT 1,
+    app_language_code VARCHAR(10) NOT NULL DEFAULT 'en',
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()
@@ -13,6 +12,7 @@ CREATE TABLE users (
 CREATE TABLE user_profiles (
     id BIGSERIAL PRIMARY KEY,
     user_id BIGINT NOT NULL UNIQUE REFERENCES users (id) ON DELETE CASCADE,
+    full_name VARCHAR(120),
     gender SMALLINT,
     age SMALLINT,
     experience_level SMALLINT,

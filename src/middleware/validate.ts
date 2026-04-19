@@ -1,23 +1,22 @@
 import { Request, Response, NextFunction } from 'express';
-import { Schema, ValidationError } from 'joi';
+import { ZodError } from 'zod';
 import { StatusCodes } from 'http-status-codes';
 
-export interface ValidatedRequest extends Request {
-    validated?: Record<string, unknown>;
+export enum VALIDATION_SOURCE {
+    BODY = 'body',
+    QUERY = 'query',
+    PARAMS = 'params',
 }
 
 const validate =
-    (schema: Schema, source: 'body' | 'query' | 'params' = 'body') =>
-        (req: ValidatedRequest, res: Response, next: NextFunction): void => {
-            const { error, value } = schema.validate(req[source], {
-                abortEarly: false,
-                stripUnknown: true,
-            });
+    (schema: any, source: VALIDATION_SOURCE) =>
+        (req: Request, res: Response, next: NextFunction): void => {
+            const result = schema.safeParse(req[source]);
 
-            if (error) {
-                const messages = error.details.map((detail: ValidationError['details'][0]) => ({
-                    field: detail.path.join('.'),
-                    message: detail.message,
+            if (!result.success) {
+                const messages = result.error.issues.map((e: ZodError['issues'][number]) => ({
+                    field: e.path.join('.'),
+                    message: e.message,
                 }));
 
                 res.status(StatusCodes.BAD_REQUEST).json({
@@ -29,7 +28,7 @@ const validate =
                 return;
             }
 
-            req.validated = value;
+            req[source] = result.data;
             next();
         };
 

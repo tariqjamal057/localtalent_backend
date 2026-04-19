@@ -24,7 +24,7 @@ export class DatabaseService {
 
     public async connect(): Promise<void> {
         if (this.pool) return;
-        
+
         const parsed = new URL(config.db.url);
         const sslMode = parsed.searchParams.get('sslmode');
         const requireSSL = sslMode === 'require' || sslMode === 'verify-full' || sslMode === 'prefer';
@@ -39,34 +39,11 @@ export class DatabaseService {
             idleTimeoutMillis: config.db.idleTimeoutMs,
             connectionTimeoutMillis: config.db.connectionTimeoutMs,
             statement_timeout: config.db.statementTimeoutMs,
-            // Explicitly set SSL — rejectUnauthorized:true enforces cert validation (verify-full semantics)
             ssl: requireSSL ? { rejectUnauthorized: true } : false,
             application_name: 'hyperlocal-backend',
         };
 
         this.pool = new Pool(poolConfig);
-
-        this.pool.on('connect', (client: PoolClient) => {
-            logger.debug('PostgreSQL: new client acquired from pool');
-            client
-                .query(`SET statement_timeout = ${config.db.statementTimeoutMs}`)
-                .catch((err) => logger.error('Failed to set statement_timeout:', err));
-        });
-
-        this.pool.on('acquire', () => {
-            logger.debug(
-                `PostgreSQL pool: ${this.pool!.totalCount} total, ` +
-                `${this.pool!.idleCount} idle, ${this.pool!.waitingCount} waiting`
-            );
-        });
-
-        this.pool.on('error', (err: Error) => {
-            logger.error('PostgreSQL pool idle client error:', err);
-        });
-
-        this.pool.on('remove', () => {
-            logger.debug('PostgreSQL: client removed from pool');
-        });
 
         const client = await this.pool.connect();
         try {

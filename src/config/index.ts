@@ -39,6 +39,17 @@ const config = {
             | 'polling'
         )[],
     },
+
+    smsService: {
+        serviceAvailable: process.env.SMS_SERVICE_AVAILIABLE === 'true',
+    },
+
+    jwt: {
+        accessSecret: requireEnv('JWT_ACCESS_SECRET'),
+        refreshSecret: requireEnv('JWT_REFRESH_SECRET'),
+        accessExpiresIn: process.env.JWT_ACCESS_EXPIRES_IN || '1h',
+        refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d',
+    },
 };
 
 export default config;
