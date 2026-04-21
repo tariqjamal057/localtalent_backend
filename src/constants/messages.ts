@@ -4,6 +4,10 @@ export const MESSAGES = {
         INVALID_REFRESH_TOKEN: 'Invalid or expired refresh token',
         REFRESH_TOKEN_REQUIRED: 'Refresh token is required',
         ACCESS_TOKEN_REQUIRED: 'Access token is required',
+        OTP_SENT: 'OTP sent successfully',
+        OTP_ALREADY_SENT: 'An OTP has already been sent to this phone number. Please try again later.',
+        INVALID_OTP: 'Invalid OTP',
+        OTP_VERIFIED: 'OTP verified successfully',
     },
     CATEGORY: {
         FETCHED_SUCCESSFULLY: 'Categories fetched successfully',

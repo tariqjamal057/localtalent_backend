@@ -1,3 +1,4 @@
+import { constants } from 'buffer';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -50,6 +51,11 @@ const config = {
         accessExpiresIn: process.env.JWT_ACCESS_EXPIRES_IN || '1h',
         refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d',
     },
+
+    otp: {
+        DEFAULT_TEST_OTP: '7777',
+        OTP_EXPIRATION_MINUTES: parseInt(process.env.OTP_EXPIRATION_MINUTES || '5', 10),
+    }
 };
 
 export default config;

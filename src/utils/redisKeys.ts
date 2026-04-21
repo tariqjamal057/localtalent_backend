@@ -1,5 +1,5 @@
 const RedisKeys = {
-    userOtp: (userId: string) => `user:otp:${userId}`,
+    phoneNumberOtp: (countryCode: string, phoneNumber: string) => `user:${countryCode + phoneNumber}:otp`
 };
 
 export default RedisKeys;
