@@ -252,3 +252,11 @@ CREATE TRIGGER trg_user_ads_updated_at
 CREATE TRIGGER trg_matches_updated_at
     BEFORE UPDATE ON matches
     FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+
+ALTER TABLE payment_orders ADD COLUMN order_id VARCHAR(100) NOT NULL;
+
+ALTER TABLE user_ads ADD COLUMN last_shown_at TIMESTAMP;
+
+ALTER TABLE user_ads ADD COLUMN expires_on TIMESTAMP;
+
+ALTER TABLE ad_packs ALTER COLUMN is_active SET DEFAULT FALSE;

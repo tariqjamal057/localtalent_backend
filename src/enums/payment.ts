@@ -1,0 +1,17 @@
+export enum PAYMENT_PROVIDERS {
+    RAZORPAY = 1,
+    GOOGLE_BILLING = 2,
+    APPLE_BILLING = 3,
+    REVENUECAT = 4,
+}
+
+export enum PAYMENT_ORDER_STATUS {
+    ORDER_CREATED = 1,
+    PAYMENT_SUCCESSFUL = 2,
+    PAYMENT_FAILED = 3
+}
+
+export enum PAYMENT_PURPOSE {
+    MATCH_COUNT_PACK = 1,
+    AD_PACK = 2,
+}

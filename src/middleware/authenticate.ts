@@ -8,7 +8,7 @@ declare global {
     namespace Express {
         interface Request {
             user?: {
-                id: string;
+                id: bigint;
             };
         }
     }
@@ -24,7 +24,7 @@ const authenticate = (req: Request, _res: Response, next: NextFunction): void =>
     const token = authHeader.slice(7);
 
     const decoded = verifyAccessToken(token);
-    req.user = { id: decoded.userId };
+    req.user = { id: BigInt(decoded.userId) };
     next();
 };
 

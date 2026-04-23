@@ -21,7 +21,7 @@ export class AuthController {
                 userRepository.getById(BigInt(decoded.userId)),
                 userProfileRepository.getByUserId(BigInt(decoded.userId))
             ]);
-            if (!user || !userProfile) throw new ApiError(MESSAGES.AUTH.INVALID_REFRESH_TOKEN, StatusCodes.UNAUTHORIZED);
+            if (!user || !userProfile || !user?.isActive) throw new ApiError(MESSAGES.AUTH.INVALID_REFRESH_TOKEN, StatusCodes.UNAUTHORIZED);
             sendResponse(res, StatusCodes.OK, MESSAGES.AUTH.TOKEN_REFRESHED, { accessToken, userProfile, appLanguageCode: user.appLanguageCode });
         } catch {
             throw new ApiError(MESSAGES.AUTH.INVALID_REFRESH_TOKEN, StatusCodes.UNAUTHORIZED);

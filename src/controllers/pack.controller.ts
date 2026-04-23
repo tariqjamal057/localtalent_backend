@@ -3,6 +3,7 @@ import { StatusCodes } from 'http-status-codes';
 import { packService, PackService } from '../services/pack.service';
 import { sendResponse } from '../utils/response';
 import { MESSAGES } from '../constants/messages';
+import { PACK_TYPE } from '../enums/packs';
 
 export class PackController {
     constructor(private readonly packService: PackService) { }
@@ -18,6 +19,18 @@ export class PackController {
         const packs = await this.packService.getAdPacks(onlyActive);
         sendResponse(res, StatusCodes.OK, MESSAGES.PACK.AD_FETCHED_SUCCESSFULLY, packs);
     };
+
+    createOrderForPack = async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
+        const userId = req.user!.id;
+        const { packId, userPlatform, promoCode, type } = req.body;
+        if (type === PACK_TYPE.MATCH_COUNT) {
+            const order = await this.packService.createMatchPointsPackPaymentOrder({ userId, packId, userPlatform, promoCode: promoCode });
+            sendResponse(res, StatusCodes.OK, MESSAGES.PACK.ORDER_CREATED_SUCCESSFULLY, order);
+        } else {
+            const order = await this.packService.createAdPackPaymentOrder({ userId, adId: packId, userPlatform, promoCode: promoCode });
+            sendResponse(res, StatusCodes.OK, MESSAGES.PACK.ORDER_CREATED_SUCCESSFULLY, order);
+        }
+    }
 }
 
 export const packController = new PackController(packService);

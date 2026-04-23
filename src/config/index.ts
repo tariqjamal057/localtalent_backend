@@ -55,6 +55,12 @@ const config = {
     otp: {
         DEFAULT_TEST_OTP: '7777',
         OTP_EXPIRATION_MINUTES: parseInt(process.env.OTP_EXPIRATION_MINUTES || '5', 10),
+    },
+
+    payment: {
+        TAX_RATE: parseFloat(requireEnv('TAX_PERCENTAGE')) / 100,
+        RAZORPAY_KEY_ID: requireEnv('RAZORPAY_KEY_ID'),
+        RAZORPAY_KEY_SECRET: requireEnv('RAZORPAY_KEY_SECRET'),
     }
 };
 
