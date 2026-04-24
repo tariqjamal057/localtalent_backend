@@ -61,7 +61,20 @@ const config = {
         TAX_RATE: parseFloat(requireEnv('TAX_PERCENTAGE')) / 100,
         RAZORPAY_KEY_ID: requireEnv('RAZORPAY_KEY_ID'),
         RAZORPAY_KEY_SECRET: requireEnv('RAZORPAY_KEY_SECRET'),
-    }
+    },
+
+    streamCall: {
+        apiKey: requireEnv('STREAM_CALL_API_KEY'),
+        apiSecret: requireEnv('STREAM_CALL_API_SECRET'),
+        userTokenExpirationSeconds: parseInt(process.env.STREAM_CALL_USER_TOKEN_EXPIRATION_SECONDS || '900', 10),
+        maximumCallDurationSeconds: parseInt(process.env.STREAM_CALL_MAXIMUM_CALL_DURATION_SECONDS || '600', 10),
+        maximumRingingDurationSeconds: parseInt(process.env.STREAM_CALL_MAXIMUM_RINGING_DURATION_SECONDS || '60', 10),
+    },
+
+    streamChat: {
+        apiKey: requireEnv('STREAM_CHAT_API_KEY'),
+        apiSecret: requireEnv('STREAM_CHAT_API_SECRET'),
+    },
 };
 
 export default config;

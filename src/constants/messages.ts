@@ -54,4 +54,8 @@ export const MESSAGES = {
         NOT_FOUND: 'Ad not found',
         IMPRESSION_INCREMENTED: 'Ad impression count incremented successfully',
     },
+    STREAM: {
+        CHAT_CHANNEL_CREATION_FAILED: 'Failed to create chat channel, please try again later',
+        CALL_CREATION_FAILED: 'Failed to create call, please try again later',
+    }
 };
