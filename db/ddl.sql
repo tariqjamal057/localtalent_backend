@@ -260,3 +260,9 @@ ALTER TABLE user_ads ADD COLUMN last_shown_at TIMESTAMP;
 ALTER TABLE user_ads ADD COLUMN expires_on TIMESTAMP;
 
 ALTER TABLE ad_packs ALTER COLUMN is_active SET DEFAULT FALSE;
+
+ALTER TABLE matches
+DROP COLUMN call_initiated_by,
+ADD COLUMN provider_call_id VARCHAR(255),
+ADD COLUMN total_users INT NOT NULL,
+ADD COLUMN proposal_accepted_count INT NOT NULL DEFAULT 0;
