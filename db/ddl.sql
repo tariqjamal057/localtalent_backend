@@ -266,3 +266,21 @@ DROP COLUMN call_initiated_by,
 ADD COLUMN provider_call_id VARCHAR(255),
 ADD COLUMN total_users INT NOT NULL,
 ADD COLUMN proposal_accepted_count INT NOT NULL DEFAULT 0;
+
+ALTER TABLE user_wallets
+ADD COLUMN free_match_count_available INT NOT NULL DEFAULT 0,
+ADD COLUMN video_request_count_available INT NOT NULL DEFAULT 0;
+
+CREATE TABLE video_requests (
+    id BIGSERIAL PRIMARY KEY,
+    requested_by BIGINT NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    requested_to BIGINT NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    request_expires_on TIMESTAMP NULL DEFAULT NULL,
+    state SMALLINT NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE TRIGGER trg_video_requests_updated_at
+    BEFORE UPDATE ON video_requests
+    FOR EACH ROW EXECUTE FUNCTION set_updated_at();

@@ -1,33 +1,30 @@
-import { Queue, Worker, Job, ConnectionOptions, WorkerOptions, JobsOptions } from 'bullmq';
+import { Queue, Worker, Job, ConnectionOptions } from 'bullmq';
 import config from '../../config';
 import logger from '../../utils/logger';
+import { JOB_NAME } from '../../enums/jobs';
+import CallQueue from './call.queue';
 
-export type JobHandler<T = unknown, R = unknown> = (job: Job<T>) => Promise<R>;
+const QUEUE_NAME = 'main';
 
-interface RegisteredQueue<T = unknown, R = unknown> {
-    queue: Queue<T, R>;
-    worker: Worker<T, R>;
+
+
+export interface JobPayload<T = unknown> {
+    jobName: JOB_NAME;
+    data: T;
 }
 
-/**
- * QueueService — singleton that manages BullMQ queues and workers.
- *
- * Usage:
- *   const qs = QueueService.getInstance();
- *   qs.register('email', async (job) => { ... });
- *   await qs.add('email', { to: 'user@example.com' });
- *   await qs.add('email', { to: 'user@example.com' }, { delay: 5000 }); // delayed 5 s
- */
+export type JobHandler = (job: Job<JobPayload>) => Promise<void>;
+
 export class QueueService {
     private static instance: QueueService;
     private readonly connection: ConnectionOptions;
-    private readonly queues = new Map<string, RegisteredQueue<unknown, unknown>>();
+    private queue: Queue;
+    private worker: Worker | null = null;
 
     private constructor() {
-        const url = new URL(config.redis.url);
+        const url = new URL(config.queueRedis.url);
         const isTLS = url.protocol === 'rediss:';
 
-        // BullMQ requires maxRetriesPerRequest: null on its ioredis connections
         this.connection = {
             host: url.hostname,
             port: parseInt(url.port || '6379', 10),
@@ -37,6 +34,8 @@ export class QueueService {
             maxRetriesPerRequest: null,
             enableOfflineQueue: true,
         };
+
+        this.queue = new Queue(QUEUE_NAME, { connection: this.connection });
     }
 
     public static getInstance(): QueueService {
@@ -46,96 +45,74 @@ export class QueueService {
         return QueueService.instance;
     }
 
-    /**
-     * Register a queue and attach a worker that processes its jobs.
-     * Must be called once per queue name before `add()`.
-     */
-    public register<T = unknown, R = unknown>(
-        name: string,
-        handler: JobHandler<T, R>,
-        workerOptions?: Partial<WorkerOptions>,
-    ): void {
-        if (this.queues.has(name)) {
-            logger.warn(`QueueService: queue "${name}" already registered — skipping`);
+    public init(handler: JobHandler): void {
+        if (this.worker) {
+            logger.warn('QueueService: worker already initialised — skipping');
             return;
         }
 
-        const queue = new Queue<T, R>(name, { connection: this.connection });
-
-        const worker = new Worker<T, R>(
-            name,
-            async (job: Job<T>) => handler(job),
-            {
-                connection: this.connection,
-                concurrency: 5,
-                ...workerOptions,
-            },
+        this.worker = new Worker(
+            QUEUE_NAME,
+            async (job: Job<JobPayload>) => handler(job),
+            { connection: this.connection, concurrency: 5 },
         );
 
-        worker.on('completed', (job: Job<T>, result: R) => {
-            logger.info(`Queue "${name}" job ${job.id} completed`, { result });
-        });
-
-        worker.on('failed', (job: Job<T> | undefined, err: Error) => {
-            logger.error(`Queue "${name}" job ${job?.id ?? 'unknown'} failed`, { error: err.message });
-        });
-
-        worker.on('error', (err: Error) => {
-            logger.error(`Queue "${name}" worker error`, { error: err.message });
-        });
-
-        this.queues.set(name, { queue, worker } as RegisteredQueue<unknown, unknown>);
-        logger.info(`QueueService: queue "${name}" registered`);
-    }
-
-    /**
-     * Add a job to the named queue.
-     * Pass `jobOptions.delay` (ms) to schedule a future job.
-     */
-    public async add<T = unknown>(
-        name: string,
-        data: T,
-        jobOptions?: JobsOptions,
-    ): Promise<string | undefined> {
-        const entry = this.queues.get(name);
-        if (!entry) {
-            throw new Error(`QueueService: queue "${name}" is not registered`);
-        }
-
-        const job = await (entry.queue as Queue).add(name, data as never, jobOptions);
-        logger.info(`QueueService: job ${job.id} added to queue "${name}"`, { delay: jobOptions?.delay });
-        return job.id;
-    }
-
-    /**
-     * Schedule a job to run after `delayMs` milliseconds.
-     */
-    public async schedule<T = unknown>(
-        name: string,
-        data: T,
-        delayMs: number,
-        jobOptions?: Omit<JobsOptions, 'delay'>,
-    ): Promise<string | undefined> {
-        return this.add(name, data, { ...jobOptions, delay: delayMs });
-    }
-
-    /**
-     * Gracefully close all workers and queue connections.
-     * Call this during application shutdown.
-     */
-    public async close(): Promise<void> {
-        const closures = [...this.queues.entries()].map(async ([name, { queue, worker }]) => {
-            try {
-                await worker.close();
-                await queue.close();
-                logger.info(`QueueService: queue "${name}" closed`);
-            } catch (err) {
-                logger.error(`QueueService: error closing queue "${name}"`, err);
+        this.worker.on('completed', (job: Job<JobPayload>) => {
+            logger.info(`QueueService: job "${job.id}" (${job.data.jobName}) completed`);
+            switch (job.data.jobName) {
+                case JOB_NAME.END_CALL:
+                    CallQueue.handleCallEndJob(job.data as JobPayload<{ callId: string }>);
+                    break;
+                default:
+                    logger.warn(`QueueService: no handler for completed job "${job.id}" with name "${job.data.jobName}"`);
             }
         });
 
-        await Promise.all(closures);
-        this.queues.clear();
+        this.worker.on('failed', (job: Job<JobPayload> | undefined, err: Error) => {
+            logger.error(`QueueService: job "${job?.id ?? 'unknown'}" (${job?.data?.jobName}) failed`, { error: err.message });
+        });
+
+        this.worker.on('error', (err: Error) => {
+            logger.error('QueueService: worker error', { error: err.message });
+        });
+
+        logger.info('QueueService: worker initialised');
+    }
+
+    public async addDelayedJob<T = unknown>(key: string, jobName: JOB_NAME, data: T, delayMs: number): Promise<void> {
+        try {
+            const payload: JobPayload<T> = { jobName, data };
+            await this.queue.add(QUEUE_NAME, payload, { delay: delayMs, jobId: key });
+            logger.info(`QueueService: job "${key}" (${jobName}) scheduled in ${delayMs}ms`);
+        } catch (err) {
+            logger.error(`QueueService: failed to schedule job "${key}" (${jobName})`, { error: (err as Error).message });
+            throw err;
+        }
+    }
+
+    public async removeJob(key: string): Promise<void> {
+        try {
+            const job = await Job.fromId(this.queue, key);
+            if (!job) {
+                logger.warn(`QueueService: job "${key}" not found — nothing to remove`);
+                return;
+            }
+            await job.remove();
+            logger.info(`QueueService: job "${key}" removed`);
+        } catch (err) {
+            logger.error(`QueueService: failed to remove job "${key}"`, { error: (err as Error).message });
+            throw err;
+        }
+    }
+
+    public async close(): Promise<void> {
+        try {
+            if (this.worker) await this.worker.close();
+            await this.queue.close();
+            logger.info('QueueService: closed');
+        } catch (err) {
+            logger.error('QueueService: error during close', err);
+        }
     }
 }
 

@@ -3,15 +3,15 @@ import app from './app';
 import config from './config';
 import logger from './utils/logger';
 import db from './config/database';
-import redis from './config/redis';
 import socketService from './config/socket';
 import queueService from './services/queue/queue.service';
+import { redisClient } from './config/redis';
 
 const server = http.createServer(app);
 
 async function bootstrap(): Promise<void> {
     await db.connect();
-    await redis.connect();
+    await redisClient.connect();
 
     socketService.init(server);
 
@@ -26,7 +26,7 @@ async function gracefulShutdown(signal: string): Promise<void> {
     server.close(async () => {
         logger.info('HTTP server closed');
         try {
-            await Promise.all([db.disconnect(), redis.disconnect(), socketService.disconnect(), queueService.close()]);
+            await Promise.all([db.disconnect(), redisClient.disconnect(), socketService.disconnect(), queueService.close()]);
         } catch (err) {
             logger.error('Error during shutdown cleanup:', err);
         }

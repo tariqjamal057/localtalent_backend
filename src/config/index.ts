@@ -1,4 +1,3 @@
-import { constants } from 'buffer';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -29,6 +28,10 @@ const config = {
         connectTimeoutMs: parseInt(process.env.REDIS_CONNECT_TIMEOUT_MS || '5000', 10),
         commandTimeoutMs: parseInt(process.env.REDIS_COMMAND_TIMEOUT_MS || '3000', 10),
         maxRetriesPerRequest: parseInt(process.env.REDIS_MAX_RETRIES || '3', 10),
+    },
+
+    queueRedis: {
+        url: requireEnv('QUEUE_REDIS_URL'),
     },
 
     socket: {

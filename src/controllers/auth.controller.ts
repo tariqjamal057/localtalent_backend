@@ -5,7 +5,7 @@ import { sendResponse, ApiError, sendError } from '../utils/response';
 import { MESSAGES } from '../constants/messages';
 import { userProfileRepository } from '../repositories/user-profile.repository';
 import { userRepository } from '../repositories/user.repository';
-import { redisOtpService } from '../services/redis/redis.service';
+import { redisOtpService } from '../services/redis/redis-otp.service';
 import config from '../config';
 import { Otp } from '../utils/otp';
 import { USER_TYPE } from '../enums/user';

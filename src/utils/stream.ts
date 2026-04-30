@@ -1,6 +1,7 @@
 import config from "../config";
 import { StreamCallClient, StreamChatClient } from "../config/stream";
 import { MESSAGES } from "../constants/messages";
+import { CALL_TYPE } from "../enums/call";
 import { SESSION_TYPE } from "../enums/sessions";
 
 export class StreamUtil {
@@ -62,9 +63,9 @@ export class StreamUtil {
         return this.streamCallClient.generateUserToken({ user_id: streamUserId, validity_in_seconds: config.streamCall.userTokenExpirationSeconds });
     }
 
-    private static async createCall(userIds: bigint[]): Promise<string> {
+    private static async createCall(userIds: bigint[], callType: CALL_TYPE = CALL_TYPE.AUDIO_CALL): Promise<string> {
         const callId = this.getCallId(userIds);
-        const call = this.streamCallClient.video.call('audio_room', callId);
+        const call = this.streamCallClient.video.call(callType, callId);
         await call.create(
             {
                 ring: true,

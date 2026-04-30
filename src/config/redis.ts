@@ -84,4 +84,4 @@ export class RedisService {
     }
 }
 
-export default RedisService.getInstance();
+export const redisClient = RedisService.getInstance();
