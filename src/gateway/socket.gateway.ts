@@ -1,0 +1,68 @@
+import { SocketService } from "../config/socket";
+import { SOCKET_OUTGOING_EVENT } from "../enums/socket";
+import { USER_STATUS } from "../enums/user";
+import logger from "../utils/logger";
+import { redisUserService } from "../services/redis/redis-user.service";
+import { MatchRequest, MatchResponse } from "../types/socket-data.type";
+
+class SocketGateway {
+
+    private socketService;
+
+    constructor(socketService: SocketService) {
+        this.socketService = socketService;
+    }
+
+    //incoming events from Socket.IO connections
+    public async markUserOnline(userId: bigint) {
+        try {
+            logger.info(`Marking user online: userId=${userId}`);
+            await redisUserService.setUserStatus(userId, USER_STATUS.ONLINE);
+            logger.debug(`User ${userId} marked ONLINE in Redis`);
+        } catch (error) {
+            logger.error(`Failed to mark user ${userId} online: ${error instanceof Error ? error.message : String(error)}`);
+        }
+    }
+
+    public async markUserOffline(userId: bigint) {
+        try {
+            logger.info(`Marking user offline: userId=${userId}`);
+            await redisUserService.setUserStatus(userId, USER_STATUS.OFFLINE);
+            await redisUserService.clearAllUserData(userId);
+            logger.debug(`User ${userId} marked OFFLINE in Redis`);
+        } catch (error) {
+            logger.error(`Failed to mark user ${userId} offline: ${error instanceof Error ? error.message : String(error)}`);
+        }
+    }
+
+    public async handleMatchRequest(userId: bigint, formData: MatchRequest): Promise<void> {
+        try {
+            logger.debug(`Received get_match event from user ${userId} with data: ${JSON.stringify(formData)}`);
+        } catch (error) {
+            logger.error(`Error processing get_match event from user ${userId}: ${error instanceof Error ? error.message : String(error)}`);
+        }
+    }
+
+
+    //outgoing events to Socket.IO connections
+
+    public async sendErrorToUser(userId: bigint, errorMessage: string): Promise<void> {
+        try {
+            logger.info(`Sending error to user ${userId}: ${errorMessage}`);
+            this.socketService.emitToUser(userId, SOCKET_OUTGOING_EVENT.ERROR, { message: errorMessage });
+        } catch (error) {
+            logger.error(`Failed to send error to user ${userId}: ${error instanceof Error ? error.message : String(error)}`);
+        }
+    }
+
+    public async sendMatchToUser(userId: bigint, matchData: MatchResponse): Promise<void> {
+        try {
+            logger.info(`Sending match data to user ${userId}: ${JSON.stringify(matchData)}`);
+            this.socketService.emitToUser(userId, SOCKET_OUTGOING_EVENT.MATCH_FOUND, matchData);
+        } catch (error) {
+            logger.error(`Failed to send match data to user ${userId}: ${error instanceof Error ? error.message : String(error)}`);
+        }
+    }
+}
+
+export const socketGateway = new SocketGateway(SocketService.getInstance());

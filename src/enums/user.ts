@@ -8,5 +8,5 @@ export enum USER_STATUS {
     OFFLINE = 'offline',
     IN_CALL = 'in_call',
     SEARCHING = 'searching',
-    BUSY = 'busy',
+    MATCHED = 'matched',
 }

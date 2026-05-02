@@ -1,3 +1,5 @@
+import { MatchRequest } from "./socket-data.type";
+
 export interface Match {
     id: bigint;
     recruiterUserId: bigint;
@@ -14,8 +16,8 @@ export interface CreateMatchDto {
     recruiterUserId: bigint;
     candidateUserId: bigint;
     callInitiatedBy?: bigint | null;
-    recruiterFormData?: Record<string, unknown> | null;
-    candidateFormData?: Record<string, unknown> | null;
+    recruiterFormData?: MatchRequest | null;
+    candidateFormData?: MatchRequest | null;
     finalState: number;
 }
 

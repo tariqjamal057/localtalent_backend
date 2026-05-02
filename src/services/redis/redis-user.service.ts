@@ -2,6 +2,7 @@ import Redis from 'ioredis';
 import { redisClient } from '../../config/redis';
 import RedisKeys from '../../utils/redisKeys';
 import { USER_STATUS } from '../../enums/user';
+import { MatchRequest } from '../../types/socket-data.type';
 
 const sleep = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -14,8 +15,10 @@ export class RedisUserService {
 
     //priority-queue operations for user matches
 
-    public async pushToPriorityQueue(userId: bigint, element: string, priority: number): Promise<void> {
-        await this.client.zadd(RedisKeys.getUserPriorityQueueKey(userId), priority, element);
+    public async pushMultipleItemsToPriorityQueue(userId: bigint, items: { element: string, priority: number }[]): Promise<void> {
+        const key = RedisKeys.getUserPriorityQueueKey(userId);
+        const flattenedItems = items.flatMap(item => [item.priority, item.element]);
+        await this.client.zadd(key, ...flattenedItems);
     }
 
     public async pushToPriorityQueueAndGetSize(userId: bigint, element: string, priority: number): Promise<number> {
@@ -28,9 +31,9 @@ export class RedisUserService {
     }
 
     //lower number higher priority
-    public async popFromPriorityQueue(userId: bigint): Promise<string | null> {
-        const result = await this.client.zpopmin(RedisKeys.getUserPriorityQueueKey(userId), 1);
-        return result.length > 0 ? result[0] : null;
+    public async popFromPriorityQueue(userId: bigint, count: number = 1): Promise<bigint[]> {
+        const result = await this.client.zpopmin(RedisKeys.getUserPriorityQueueKey(userId), count);
+        return result.map(item => BigInt(item[0]));
     }
 
     public async sizeOfPriorityQueue(userId: bigint): Promise<number> {
@@ -68,15 +71,45 @@ export class RedisUserService {
 
     //user-search-data operations
 
-    public async setUserSearchData(userId: bigint, data: Record<string, string>): Promise<void> {
+    public async setUserSearchData(userId: bigint, data: Record<string, string | number>): Promise<void> {
         const key = RedisKeys.getUserSearchKey(userId);
         await this.client.hset(key, data);
     }
 
-    public async getUserSearchData(userId: bigint): Promise<Record<string, string> | null> {
-        const value = await this.client.hgetall(RedisKeys.getUserSearchKey(userId));
+    public async getUserSearchData(
+        userId: bigint
+    ): Promise<MatchRequest | null> {
+        const value = await this.client.hgetall(
+            RedisKeys.getUserSearchKey(userId)
+        );
+
         if (!value || Object.keys(value).length === 0) return null;
-        return value;
+
+        return {
+            name: value.name,
+            age: Number(value.age),
+            experience: Number(value.experience),
+            spokenLanguageIds: value.spokenLanguageIds
+                .split(",")
+                .map(Number),
+
+            latitude: Number(value.latitude),
+            longitude: Number(value.longitude),
+            searchRadiusKm: Number(value.searchRadiusKm),
+
+            gender: Number(value.gender),
+            rate: Number(value.rate),
+            rateType: Number(value.rateType),
+
+            availableTiming: Number(value.availableTiming),
+            availabilityType: Number(value.availabilityType),
+
+            categoryLevelOneId: Number(value.categoryLevelOneId),
+            categoryLevelTwoId: Number(value.categoryLevelTwoId),
+            categoryLevelThreeId: Number(value.categoryLevelThreeId),
+
+            searchType: Number(value.searchType),
+        };
     }
 
     public async getUserSearchDataFields(userId: bigint, fields: string[]): Promise<Record<string, string | null>> {
@@ -154,6 +187,16 @@ export class RedisUserService {
             'ASC',
         ) as string[];
         return result;
+    }
+
+    public async clearAllUserData(userId: bigint): Promise<void> {
+        await Promise.all([
+            this.clearPriorityQueue(userId),
+            this.clearSeenSet(userId),
+            this.clearUserSearchData(userId),
+            this.deleteUserStatus(userId),
+            this.clearUserGeo(userId),
+        ]);
     }
 }
 

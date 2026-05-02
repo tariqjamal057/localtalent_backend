@@ -4,6 +4,10 @@ import { categoryRepository, CategoryRepository, Category } from '../repositorie
 export class CategoryService {
     constructor(private readonly categoryRepository: CategoryRepository) { }
 
+    async getById(categoryId: bigint, language: LANGUAGE): Promise<Category | null> {
+        return this.categoryRepository.getById(categoryId, language);
+    }
+
     async getByParentCategoryId(parentCategoryId: bigint, onlyActive = true, language: LANGUAGE): Promise<Category[]> {
         return this.categoryRepository.getByParentCategoryId(parentCategoryId, onlyActive, language);
     }

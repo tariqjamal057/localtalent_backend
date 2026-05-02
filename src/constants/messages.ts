@@ -57,5 +57,8 @@ export const MESSAGES = {
     STREAM: {
         CHAT_CHANNEL_CREATION_FAILED: 'Failed to create chat channel, please try again later',
         CALL_CREATION_FAILED: 'Failed to create call, please try again later',
+    },
+    SEARCH: {
+        INSUFFICIENT_BALANCE: 'You do not have enough matches available. Please purchase more matches to continue searching.',
     }
 };

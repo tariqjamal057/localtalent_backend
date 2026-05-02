@@ -1,3 +1,4 @@
+import { match } from 'assert';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -77,6 +78,10 @@ const config = {
     streamChat: {
         apiKey: requireEnv('STREAM_CHAT_API_KEY'),
         apiSecret: requireEnv('STREAM_CHAT_API_SECRET'),
+    },
+
+    matching: {
+        PRIORITY_QUEUE_BATCH_SIZE: parseInt(process.env.MATCHING_BATCH_SIZE || '1', 10),
     },
 };
 

@@ -9,6 +9,23 @@ export type { Category, CreateCategoryDto, UpdateCategoryDto };
 export class CategoryRepository {
     constructor(private readonly db: DatabaseService) { }
 
+    async getById(categoryId: bigint, language: LANGUAGE): Promise<Category | null> {
+        const query = `
+            SELECT *
+            FROM categories
+            WHERE id = $1
+            LIMIT 1
+        `;
+        const values = [categoryId];
+        const result: QueryResult<CategoryRow> = await this.db.query(query, values);
+
+        if (result.rows.length === 0) {
+            return null;
+        }
+
+        return categoryRowToDto(result.rows[0], language);
+    }
+
     async getByParentCategoryId(parentCategoryId: bigint, onlyActive = true, language: LANGUAGE): Promise<Category[]> {
         const query = `
             SELECT *

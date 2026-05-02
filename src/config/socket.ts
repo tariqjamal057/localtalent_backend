@@ -2,6 +2,11 @@ import { Server as HttpServer } from 'http';
 import { Server as SocketIOServer, Socket, ServerOptions } from 'socket.io';
 import config from './index';
 import logger from '../utils/logger';
+import { verifyAccessToken } from '../utils/jwt';
+import { socketGateway } from '../gateway/socket.gateway';
+import { getUserRoomId } from '../utils/socket';
+import { SOCKET_INCOMING_EVENT, SOCKET_OUTGOING_EVENT } from '../enums/socket';
+import { MatchRequest } from '../types/socket-data.type';
 
 export class SocketService {
     private static instance: SocketService;
@@ -52,6 +57,16 @@ export class SocketService {
         return this.io;
     }
 
+    public emitToUser(userId: bigint, event: SOCKET_OUTGOING_EVENT, data: { [key: string]: any }): void {
+        if (!this.io) {
+            logger.warn(`emitToUser called before Socket.IO initialised`);
+            return;
+        }
+        const roomId = getUserRoomId(userId);
+        this.io.to(roomId).emit(event, data);
+        logger.debug(`Emitted event=${event} to userId=${userId}`);
+    }
+
     public async disconnect(): Promise<void> {
         if (this.io) {
             await new Promise<void>((resolve) => this.io!.close(() => resolve()));
@@ -63,45 +78,50 @@ export class SocketService {
     private registerMiddleware(): void {
         this.io!.use((socket: Socket, next) => {
             const token = socket.handshake.auth?.token as string | undefined;
-
-            // if (!token) {
-            //     return next(new Error('Authentication token required'));
-            // }
-
-            socket.data.token = token;
+            if (!token) {
+                return next(new Error('Authentication token required'));
+            }
+            try {
+                const decoded = verifyAccessToken(token);
+                const user = { id: BigInt(decoded.userId) };
+                socket.data.user = user;
+            } catch (error) {
+                logger.info(`Socket authentication failed: ${error instanceof Error ? error.message : String(error)}`);
+                return next(new Error('Invalid authentication token'));
+            }
             return next();
         });
     }
 
     private registerHandlers(): void {
-        this.io!.on('connection', (socket: Socket) => {
+        this.io!.on(SOCKET_INCOMING_EVENT.CONNECTION, (socket: Socket) => {
             logger.debug(
                 `Socket connected: id=${socket.id} ip=${socket.handshake.address} ` +
                 `transport=${socket.conn.transport.name}`
             );
 
-            socket.conn.on('upgrade', (transport) => {
-                logger.debug(`Socket ${socket.id}: upgraded to ${transport.name}`);
+            const user = socket.data.user;
+            logger.info(`User connected via socket: userId=${user.id} socketId=${socket.id}`);
+            const roomId = getUserRoomId(user.id);
+            socket.join(roomId);
+            logger.debug(`Socket ${socket.id} joined room ${roomId}`);
+            socketGateway.markUserOnline(user.id);
+
+            socket.on(SOCKET_INCOMING_EVENT.ERROR, (err: Error) => {
+                logger.error(`Socket error: id=${socket.id} error=${err.message}`);
             });
 
-            socket.on('error', (err: Error) => {
-                logger.error(`Socket ${socket.id} error:`, err);
-            });
-
-            socket.on('disconnect', (reason: string) => {
+            socket.on(SOCKET_INCOMING_EVENT.DISCONNECT, (reason: string) => {
                 logger.debug(`Socket disconnected: id=${socket.id} reason=${reason}`);
+                socketGateway.markUserOffline(user.id);
+                socket.leave(roomId);
+                logger.debug(`Socket ${socket.id} left room ${roomId}`);
             });
 
-            socket.on('disconnecting', (reason: string) => {
-                logger.debug(
-                    `Socket ${socket.id} disconnecting from ` +
-                    `rooms=[${[...socket.rooms].join(', ')}] reason=${reason}`
-                );
+            socket.on(SOCKET_INCOMING_EVENT.GET_MATCH, (formData: MatchRequest) => {
+                socketGateway.handleMatchRequest(user.id, formData);
             });
-        });
 
-        this.io!.engine.on('connection', () => {
-            logger.debug(`Socket.io: active connections=${this.io!.engine.clientsCount}`);
         });
     }
 }

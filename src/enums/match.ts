@@ -14,3 +14,14 @@ export enum MATCH_STATE {
     PROPOSAL_ACCEPTED_BY_BOTH = 13,
     CALL_ENDED = 14
 }
+
+export enum SEARCH_TYPE {
+    RECRUITER = 1,
+    CANDIDATE = 2
+}
+
+export enum SEARCH_CHANGE_TYPE {
+    NO_CHANGE = 0,
+    NON_CRITICAL_CHANGE = 1,
+    CRITICAL_CHANGE = 2
+}
