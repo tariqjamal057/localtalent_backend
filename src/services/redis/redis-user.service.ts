@@ -3,6 +3,7 @@ import { redisClient } from '../../config/redis';
 import RedisKeys from '../../utils/redisKeys';
 import { USER_STATUS } from '../../enums/user';
 import { MatchRequest } from '../../types/socket-data.type';
+import config from '../../config';
 
 const sleep = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
 

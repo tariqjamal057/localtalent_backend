@@ -47,6 +47,10 @@ export const MESSAGES = {
     },
     MATCH: {
         FETCHED_SUCCESSFULLY: 'Matches fetched successfully',
+        NOT_FOUND: 'No matches found',
+        INVALID_STATE_TO_INITIATE_CALL: 'Cannot initiate call in the current match state',
+        NOT_A_MEMBER_OF_MATCH: 'User is not a member of this match',
+        INVALID_STATE_TO_START_CALL: 'Cannot start call in the current match state',
     },
     AD: {
         FETCHED_SUCCESSFULLY: 'Ads fetched successfully',
@@ -60,5 +64,11 @@ export const MESSAGES = {
     },
     SEARCH: {
         INSUFFICIENT_BALANCE: 'You do not have enough matches available. Please purchase more matches to continue searching.',
+    },
+    CALL: {
+        USER_LOCKED: 'One of the users is currently busy. Please try again later.',
+        USER_BUSY: 'One of the users is currently busy. Please try again later.',
+        REQUESTED_SUCCESSFULLY: 'Call requested successfully',
+        ACCEPTED_SUCCESSFULLY: 'Call accepted successfully',
     }
 };

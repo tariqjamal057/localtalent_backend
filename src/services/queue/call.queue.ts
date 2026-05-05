@@ -13,23 +13,28 @@ class CallQueue {
         return CallQueue.queueService;
     }
 
-    public static scheduleCallEnd(callId: string, delayMs: number): void {
-        const jobKey = buildJobKey(JOB_NAME.END_CALL, callId);
-        this.getInstance().addDelayedJob(jobKey, JOB_NAME.END_CALL, { callId }, delayMs);
+    public static scheduleCallEnd(matchId: bigint, delayMs: number): void {
+        const jobKey = buildJobKey(JOB_NAME.END_CALL, matchId);
+        this.getInstance().addDelayedJob(jobKey, JOB_NAME.END_CALL, { matchId }, delayMs);
     }
 
-    public static cancelScheduledCallEnd(callId: string): void {
-        const jobKey = buildJobKey(JOB_NAME.END_CALL, callId);
+    public static cancelScheduledCallEnd(matchId: string): void {
+        const jobKey = buildJobKey(JOB_NAME.END_CALL, matchId);
         this.getInstance().removeJob(jobKey);
     }
 
-    public static handleCallEndJob = async (job: JobPayload<{ callId: string }>): Promise<void> => {
-        const callId = job.data?.callId;
-        if (!callId) {
-            logger.error('CallQueue: missing callId in job data for endCall job');
+    public static handleCallEndJob = async (job: JobPayload<{ matchId: string }>): Promise<void> => {
+        const matchId = job.data?.matchId;
+        if (!matchId) {
+            logger.error('CallQueue: handleCallEndJob called with missing matchId in job data');
             return;
         }
-        logger.info(`Handling scheduled end call job for callId: ${callId}`);
+        try {
+            logger.info(`CallQueue: handling call end for matchId=${matchId}`);
+            logger.info(`CallQueue: successfully ended call for matchId=${matchId}`);
+        } catch (error) {
+            logger.error(`CallQueue: error handling call end for matchId=${matchId}`, { error: error instanceof Error ? error.message : String(error) });
+        }
     }
 }
 

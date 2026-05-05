@@ -83,6 +83,10 @@ const config = {
     matching: {
         PRIORITY_QUEUE_BATCH_SIZE: parseInt(process.env.MATCHING_BATCH_SIZE || '1', 10),
     },
+
+    call: {
+        USER_LOCK_TTL_SECONDS: parseInt(process.env.CALL_USER_LOCK_TTL_SECONDS || '30', 10),
+    }
 };
 
 export default config;

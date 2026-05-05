@@ -1,20 +1,22 @@
 import { QueryResult } from 'pg';
 import { DatabaseService } from '../config/database';
-import { Match, MatchRow, CreateMatchDto } from '../types/match.types';
+import { Match, MatchRow, CreateMatchDto, UpdateMatchDto } from '../types/match.types';
 
-export type { Match, CreateMatchDto };
+export type { Match, CreateMatchDto, UpdateMatchDto };
 
 function matchRowToDto(row: MatchRow): Match {
     return {
         id: row.id,
         recruiterUserId: row.recruiter_user_id,
         candidateUserId: row.candidate_user_id,
-        callInitiatedBy: row.call_initiated_by,
         recruiterFormData: row.recruiter_form_data,
         candidateFormData: row.candidate_form_data,
         finalState: row.final_state,
         createdAt: row.created_at,
         updatedAt: row.updated_at,
+        totalUsers: row.total_users,
+        proposalAcceptedCount: row.proposal_accepted_count,
+        providerCallId: row.provider_call_id
     };
 }
 
@@ -23,17 +25,17 @@ export class MatchRepository {
 
     async create(dto: CreateMatchDto): Promise<Match> {
         const query = `
-            INSERT INTO matches (recruiter_user_id, candidate_user_id, call_initiated_by, recruiter_form_data, candidate_form_data, final_state)
+            INSERT INTO matches (recruiter_user_id, candidate_user_id, recruiter_form_data, candidate_form_data, final_state, total_users)
             VALUES ($1, $2, $3, $4, $5, $6)
             RETURNING *
         `;
         const values = [
             dto.recruiterUserId,
             dto.candidateUserId,
-            dto.callInitiatedBy ?? null,
             dto.recruiterFormData ? JSON.stringify(dto.recruiterFormData) : null,
             dto.candidateFormData ? JSON.stringify(dto.candidateFormData) : null,
             dto.finalState,
+            dto.totalUsers
         ];
         const result: QueryResult<MatchRow> = await this.db.query(query, values);
         return matchRowToDto(result.rows[0]);
@@ -83,6 +85,42 @@ export class MatchRepository {
             RETURNING *
         `;
         const result: QueryResult<MatchRow> = await this.db.query(query, [finalState, matchId]);
+        if (result.rows.length === 0) return null;
+        return matchRowToDto(result.rows[0]);
+    }
+
+    async update(matchId: bigint, dto: UpdateMatchDto): Promise<Match | null> {
+        const fields: string[] = [];
+        const values: unknown[] = [];
+        let idx = 1;
+
+        if (dto.provider_call_id !== undefined) {
+            fields.push(`provider_call_id = $${idx++}`);
+            values.push(dto.provider_call_id);
+        }
+        if (dto.total_users !== undefined) {
+            fields.push(`total_users = $${idx++}`);
+            values.push(dto.total_users);
+        }
+        if (dto.proposal_accepted_count !== undefined) {
+            fields.push(`proposal_accepted_count = $${idx++}`);
+            values.push(dto.proposal_accepted_count);
+        }
+
+        if (dto.finalState !== undefined) {
+            fields.push(`final_state = $${idx++}`);
+            values.push(dto.finalState);
+        }
+
+        if (fields.length === 0) return this.getById(matchId);
+
+        values.push(matchId);
+        const query = `
+            UPDATE matches
+            SET ${fields.join(', ')}
+            WHERE id = $${idx}
+        `;
+        const result: QueryResult<MatchRow> = await this.db.query(query, values);
         if (result.rows.length === 0) return null;
         return matchRowToDto(result.rows[0]);
     }

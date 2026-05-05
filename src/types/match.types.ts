@@ -4,31 +4,42 @@ export interface Match {
     id: bigint;
     recruiterUserId: bigint;
     candidateUserId: bigint;
-    callInitiatedBy: bigint | null;
-    recruiterFormData: Record<string, unknown> | null;
-    candidateFormData: Record<string, unknown> | null;
+    recruiterFormData: MatchRequest | null;
+    candidateFormData: MatchRequest | null;
     finalState: number;
     createdAt: Date;
     updatedAt: Date;
+    totalUsers: number;
+    proposalAcceptedCount: number;
+    providerCallId?: string;
 }
 
 export interface CreateMatchDto {
     recruiterUserId: bigint;
     candidateUserId: bigint;
-    callInitiatedBy?: bigint | null;
     recruiterFormData?: MatchRequest | null;
     candidateFormData?: MatchRequest | null;
     finalState: number;
+    totalUsers: number;
+}
+
+export interface UpdateMatchDto {
+    provider_call_id?: string;
+    total_users?: number;
+    proposal_accepted_count?: number;
+    finalState?: number;
 }
 
 export interface MatchRow {
     id: bigint;
     recruiter_user_id: bigint;
     candidate_user_id: bigint;
-    call_initiated_by: bigint | null;
-    recruiter_form_data: Record<string, unknown> | null;
-    candidate_form_data: Record<string, unknown> | null;
+    recruiter_form_data: MatchRequest | null;
+    candidate_form_data: MatchRequest | null;
     final_state: number;
     created_at: Date;
     updated_at: Date;
+    total_users: number;
+    proposal_accepted_count: number;
+    provider_call_id?: string;
 }

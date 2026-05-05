@@ -1,4 +1,4 @@
-import { matchRepository, MatchRepository, Match } from '../repositories/match.repository';
+import { matchRepository, MatchRepository, Match, UpdateMatchDto } from '../repositories/match.repository';
 import { MATCH_STATE, SEARCH_CHANGE_TYPE, SEARCH_TYPE } from '../enums/match';
 import { MatchRequest, MatchResponse } from '../types/socket-data.type';
 import { redisUserService, RedisUserService } from './redis/redis-user.service';
@@ -7,7 +7,7 @@ import { userBlockRepository, UserBlockRepository } from '../repositories/user-b
 import { calculateDistanceKm } from '../utils/match';
 import { USER_STATUS } from '../enums/user';
 import { categoryRepository, CategoryRepository } from '../repositories/category.repository';
-import { LANGUAGE } from '../enums/language';
+import { DEFAULT_LANGUAGE, LANGUAGE } from '../enums/language';
 import { matchTrackingRepository, MatchTrackingRepository } from '../repositories/match-tracking.repository';
 import { socketGateway } from '../gateway/socket.gateway';
 import config from '../config';
@@ -95,8 +95,8 @@ export class MatchService {
                 }
 
                 const [categoryLevelTwo, categoryLevelThree] = await Promise.all([
-                    this.categoryRepository.getById(BigInt(matchedUserSearchData.categoryLevelTwoId), LANGUAGE.EN),
-                    this.categoryRepository.getById(BigInt(matchedUserSearchData.categoryLevelThreeId), LANGUAGE.EN)
+                    this.categoryRepository.getById(BigInt(matchedUserSearchData.categoryLevelTwoId), DEFAULT_LANGUAGE),
+                    this.categoryRepository.getById(BigInt(matchedUserSearchData.categoryLevelThreeId), DEFAULT_LANGUAGE)
                 ]);
 
                 const recruiterData = userSearchData.searchType === SEARCH_TYPE.RECRUITER ? userSearchData : matchedUserSearchData;
@@ -109,6 +109,7 @@ export class MatchService {
                     candidateUserId,
                     recruiterFormData: recruiterData,
                     candidateFormData: candidateData,
+                    totalUsers: 2,
                     finalState: MATCH_STATE.MATCHED
                 });
                 this.matchTrackingRepository.create({
@@ -303,6 +304,18 @@ export class MatchService {
             logger.error(`[MatchService] Error handling match request for user ${userId}: ${error instanceof Error ? error.message : String(error)}`);
             socketGateway.sendErrorToUser(userId, error instanceof Error ? error.message : 'An unexpected error occurred while processing your match request. Please try again.');
         }
+    }
+
+    async updateState(matchId: bigint, newState: MATCH_STATE, additionalFields?: UpdateMatchDto): Promise<void> {
+        if (additionalFields) {
+            await this.matchRepository.update(matchId, { ...additionalFields, finalState: newState });
+        } else {
+            await this.matchRepository.updateFinalState(matchId, newState);
+        }
+        this.matchTrackingRepository.create({
+            matchId: matchId,
+            state: newState
+        });
     }
 }
 

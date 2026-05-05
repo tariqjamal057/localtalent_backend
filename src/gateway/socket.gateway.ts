@@ -4,6 +4,7 @@ import { USER_STATUS } from "../enums/user";
 import logger from "../utils/logger";
 import { redisUserService } from "../services/redis/redis-user.service";
 import { MatchRequest, MatchResponse } from "../types/socket-data.type";
+import { UserDataToJoinCall } from "../types/call.type";
 
 class SocketGateway {
 
@@ -61,6 +62,24 @@ class SocketGateway {
             this.socketService.emitToUser(userId, SOCKET_OUTGOING_EVENT.MATCH_FOUND, matchData);
         } catch (error) {
             logger.error(`Failed to send match data to user ${userId}: ${error instanceof Error ? error.message : String(error)}`);
+        }
+    }
+
+    public async sendJoinCallEventToUser(userId: bigint, callData: UserDataToJoinCall): Promise<void> {
+        try {
+            logger.info(`Sending join call event to user ${userId} for call ${callData.callId}`);
+            this.socketService.emitToUser(userId, SOCKET_OUTGOING_EVENT.JOIN_CALL, callData);
+        } catch (error) {
+            logger.error(`Failed to send join call event to user ${userId}: ${error instanceof Error ? error.message : String(error)}`);
+        }
+    }
+
+    public async sendIncomingCallEventToUser(userId: bigint, formData: MatchResponse): Promise<void> {
+        try {
+            logger.info(`Sending incoming call event to user ${userId} with caller data: ${JSON.stringify(formData)}`);
+            this.socketService.emitToUser(userId, SOCKET_OUTGOING_EVENT.INCOMING_CALL, formData);
+        } catch (error) {
+            logger.error(`Failed to send incoming call event to user ${userId}: ${error instanceof Error ? error.message : String(error)}`);
         }
     }
 }

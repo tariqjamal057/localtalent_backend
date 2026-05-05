@@ -10,4 +10,6 @@ export enum SOCKET_INCOMING_EVENT {
 export enum SOCKET_OUTGOING_EVENT {
     ERROR = 'error',
     MATCH_FOUND = 'match_found',
+    JOIN_CALL = 'join_call',
+    INCOMING_CALL = 'incoming_call',
 }

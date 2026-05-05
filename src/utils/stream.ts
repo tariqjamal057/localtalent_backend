@@ -3,6 +3,7 @@ import { StreamCallClient, StreamChatClient } from "../config/stream";
 import { MESSAGES } from "../constants/messages";
 import { CALL_TYPE } from "../enums/call";
 import { SESSION_TYPE } from "../enums/sessions";
+import { UserDataToJoinCall } from "../types/call.type";
 
 export class StreamUtil {
     private static streamChatClient = StreamChatClient.getInstance();
@@ -63,7 +64,7 @@ export class StreamUtil {
         return this.streamCallClient.generateUserToken({ user_id: streamUserId, validity_in_seconds: config.streamCall.userTokenExpirationSeconds });
     }
 
-    private static async createCall(userIds: bigint[], callType: CALL_TYPE = CALL_TYPE.AUDIO_CALL): Promise<string> {
+    private static async createCall(userIds: bigint[], callType: CALL_TYPE): Promise<string> {
         const callId = this.getCallId(userIds);
         const call = this.streamCallClient.video.call(callType, callId);
         await call.create(
@@ -116,18 +117,12 @@ export class StreamUtil {
         }));
     }
 
-    public static async setupCallForUsers(users: { id: bigint; name: string }[]): Promise<{
-        userId: bigint;
-        streamUserId: string;
-        token: string;
-        callId: string;
-        sessionType: SESSION_TYPE;
-    }[]> {
+    public static async setupCallForUsers(users: { id: bigint; name: string }[], callType: CALL_TYPE = CALL_TYPE.AUDIO_CALL): Promise<UserDataToJoinCall[]> {
         await this.upsertUsersForCall(users);
         const userIds = users.map(user => user.id);
         const streamUserIds = users.map(user => this.getStreamUserId(user.id));
         const tokens = await Promise.all(users.map(user => this.createCallToken(user.id)));
-        const callId = await this.createCall(userIds);
+        const callId = await this.createCall(userIds, callType);
         return users.map((_, index) => ({
             userId: userIds[index],
             streamUserId: streamUserIds[index],

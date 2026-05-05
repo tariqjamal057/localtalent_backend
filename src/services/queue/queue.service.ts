@@ -61,7 +61,7 @@ export class QueueService {
             logger.info(`QueueService: job "${job.id}" (${job.data.jobName}) completed`);
             switch (job.data.jobName) {
                 case JOB_NAME.END_CALL:
-                    CallQueue.handleCallEndJob(job.data as JobPayload<{ callId: string }>);
+                    CallQueue.handleCallEndJob(job.data as JobPayload<{ matchId: string }>);
                     break;
                 default:
                     logger.warn(`QueueService: no handler for completed job "${job.id}" with name "${job.data.jobName}"`);
