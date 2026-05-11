@@ -12,6 +12,7 @@ export interface Match {
     totalUsers: number;
     proposalAcceptedCount: number;
     providerCallId?: string;
+    callEndedBy?: number;
 }
 
 export interface CreateMatchDto {
@@ -28,6 +29,7 @@ export interface UpdateMatchDto {
     total_users?: number;
     proposal_accepted_count?: number;
     finalState?: number;
+    callEndedBy?: number;
 }
 
 export interface MatchRow {
@@ -42,4 +44,5 @@ export interface MatchRow {
     total_users: number;
     proposal_accepted_count: number;
     provider_call_id?: string;
+    call_ended_by?: number;
 }

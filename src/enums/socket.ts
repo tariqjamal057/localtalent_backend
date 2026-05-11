@@ -12,4 +12,6 @@ export enum SOCKET_OUTGOING_EVENT {
     MATCH_FOUND = 'match_found',
     JOIN_CALL = 'join_call',
     INCOMING_CALL = 'incoming_call',
+    CALL_ENDED = 'call_ended',
+    CALL_END_RESULT = 'call_end_result',
 }

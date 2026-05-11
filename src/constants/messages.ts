@@ -70,5 +70,7 @@ export const MESSAGES = {
         USER_BUSY: 'One of the users is currently busy. Please try again later.',
         REQUESTED_SUCCESSFULLY: 'Call requested successfully',
         ACCEPTED_SUCCESSFULLY: 'Call accepted successfully',
+        ALREADY_ENDED: 'Call has already been ended',
+        ALREADY_ACCEPTED_PROPOSAL: 'You have already accepted the proposal',
     }
 };

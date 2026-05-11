@@ -16,7 +16,8 @@ function matchRowToDto(row: MatchRow): Match {
         updatedAt: row.updated_at,
         totalUsers: row.total_users,
         proposalAcceptedCount: row.proposal_accepted_count,
-        providerCallId: row.provider_call_id
+        providerCallId: row.provider_call_id,
+        callEndedBy: row.call_ended_by
     };
 }
 
@@ -110,6 +111,10 @@ export class MatchRepository {
         if (dto.finalState !== undefined) {
             fields.push(`final_state = $${idx++}`);
             values.push(dto.finalState);
+        }
+        if (dto.callEndedBy !== undefined) {
+            fields.push(`call_ended_by = $${idx++}`);
+            values.push(dto.callEndedBy);
         }
 
         if (fields.length === 0) return this.getById(matchId);

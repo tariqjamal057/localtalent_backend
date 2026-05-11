@@ -6,6 +6,7 @@ const RedisKeys = {
     getUserSeenSetKey: (userId: bigint) => `user:${userId}:seen`,
     getUserPriorityQueueKey: (userId: bigint) => `user:${userId}:pq`,
     getGeoIndexKey: () => `users:geo`,
+    getProposalAcceptedSetKey: (matchId: bigint) => `match:${matchId}:proposal:accepted`,
 };
 
 export default RedisKeys;

@@ -84,7 +84,7 @@ export class StreamUtil {
                             auto_cancel_timeout_ms: config.streamCall.maximumRingingDurationSeconds * 1000,
                         },
                         limits: {
-                            max_duration_seconds: config.streamCall.maximumCallDurationSeconds,
+                            max_duration_seconds: config.streamCall.maximumCallDurationSeconds + config.streamCall.callEndBufferSeconds,
                         }
                     }
                 }
@@ -129,6 +129,8 @@ export class StreamUtil {
             token: tokens[index],
             callId,
             sessionType: SESSION_TYPE.CALL,
+            isVideoCallAllowed: callType === CALL_TYPE.DEFAULT,
+            maxCallDurationSeconds: config.streamCall.maximumCallDurationSeconds + config.streamCall.callEndBufferSeconds,
         }));
     }
 }

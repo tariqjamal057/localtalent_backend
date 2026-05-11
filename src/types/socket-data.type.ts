@@ -1,3 +1,5 @@
+import { PROPOSAL_STATE } from "../enums/call";
+
 export interface MatchRequest {
     name: string;
     age: number;
@@ -41,4 +43,14 @@ export interface MatchResponse {
 
     categoryLevelTwo: string;
     categoryLevelThree: string;
+}
+
+export interface CallEndResult {
+    proposalState: PROPOSAL_STATE;
+    user?: {
+        mobileNumber: string;
+        latitude: number,
+        longitude: number
+    }
+    message: string;
 }

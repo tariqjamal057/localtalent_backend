@@ -7,7 +7,7 @@ import { userBlockRepository, UserBlockRepository } from '../repositories/user-b
 import { calculateDistanceKm } from '../utils/match';
 import { USER_STATUS } from '../enums/user';
 import { categoryRepository, CategoryRepository } from '../repositories/category.repository';
-import { DEFAULT_LANGUAGE, LANGUAGE } from '../enums/language';
+import { DEFAULT_LANGUAGE } from '../enums/language';
 import { matchTrackingRepository, MatchTrackingRepository } from '../repositories/match-tracking.repository';
 import { socketGateway } from '../gateway/socket.gateway';
 import config from '../config';

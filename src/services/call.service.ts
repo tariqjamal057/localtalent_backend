@@ -1,6 +1,6 @@
 import config from "../config";
 import { MESSAGES } from "../constants/messages";
-import { CALL_TYPE } from "../enums/call";
+import { CALL_ENDED_BY, CALL_TYPE, PROPOSAL_STATE } from "../enums/call";
 import { DEFAULT_LANGUAGE } from "../enums/language";
 import { MATCH_STATE } from "../enums/match";
 import { USER_STATUS } from "../enums/user";
@@ -8,9 +8,13 @@ import { socketGateway } from "../gateway/socket.gateway";
 import { categoryRepository, CategoryRepository } from "../repositories/category.repository";
 import { matchTrackingRepository, MatchTrackingRepository } from "../repositories/match-tracking.repository";
 import { matchRepository, MatchRepository } from "../repositories/match.repository";
+import { userRepository, UserRepository } from "../repositories/user.repository";
 import { UserDataToJoinCall } from "../types/call.type";
+import { Match } from "../types/match.types";
+import { getProposalAcceptedMessage } from "../utils/call";
 import { StreamUtil } from "../utils/stream";
 import CallQueue from "./queue/call.queue";
+import { redisCallService, RedisCallService } from "./redis/redis-call.service";
 import { redisUserService, RedisUserService } from "./redis/redis-user.service";
 import { userWalletService, UserWalletService } from "./user-wallet.service";
 
@@ -21,7 +25,9 @@ export class CallService {
         private readonly redisUserService: RedisUserService,
         private readonly userWalletService: UserWalletService,
         private readonly matchTrackingRepository: MatchTrackingRepository,
-        private readonly categoryRepository: CategoryRepository
+        private readonly categoryRepository: CategoryRepository,
+        private readonly redisCallService: RedisCallService,
+        private readonly userRepository: UserRepository
     ) { }
 
     async createCall(userId1: bigint, userId2: bigint, user1Name: string, user2Name: string, matchId: bigint): Promise<UserDataToJoinCall[]> {
@@ -140,6 +146,86 @@ export class CallService {
             categoryLevelThree: categoryLevelThree?.title || '',
         });
     };
+
+    async processAfterCallEnd(match: Match): Promise<void> {
+        const proposalAcceptedByUsers = await this.redisCallService.getAcceptedUsers(match.id);
+        let proposalState = PROPOSAL_STATE.NO_ONE_ACCEPTED;
+        if (proposalAcceptedByUsers.includes(match.recruiterUserId) && proposalAcceptedByUsers.includes(match.candidateUserId)) {
+            proposalState = PROPOSAL_STATE.ACCEPTED_BY_BOTH;
+        } else if (proposalAcceptedByUsers.includes(match.recruiterUserId)) {
+            proposalState = PROPOSAL_STATE.ACCEPTED_BY_RECRUITER;
+        } else if (proposalAcceptedByUsers.includes(match.candidateUserId)) {
+            proposalState = PROPOSAL_STATE.ACCEPTED_BY_CANDIDATE;
+        }
+        let recruiterData: { mobileNumber: string; latitude: number; longitude: number } | undefined = undefined;
+        let candidateData: { mobileNumber: string; latitude: number; longitude: number } | undefined = undefined;
+
+        if (proposalState === PROPOSAL_STATE.ACCEPTED_BY_BOTH) {
+            const [recruiter, candidate] = await Promise.all([
+                this.userRepository.getById(match.recruiterUserId),
+                this.userRepository.getById(match.candidateUserId)
+            ]);
+            recruiterData = {
+                mobileNumber: recruiter?.mobileNumber || '',
+                latitude: match.recruiterFormData?.latitude || 0,
+                longitude: match.recruiterFormData?.longitude || 0,
+            }
+            candidateData = {
+                mobileNumber: candidate?.mobileNumber || '',
+                latitude: match.candidateFormData?.latitude || 0,
+                longitude: match.candidateFormData?.longitude || 0,
+            }
+        }
+        socketGateway.sendCallEndResultEventToUser(match.recruiterUserId, {
+            proposalState,
+            user: candidateData,
+            message: getProposalAcceptedMessage(proposalState, true)
+        });
+        socketGateway.sendCallEndResultEventToUser(match.candidateUserId, {
+            proposalState,
+            user: recruiterData,
+            message: getProposalAcceptedMessage(proposalState, false)
+        });
+        this.redisCallService.deleteProposalAcceptedSet(match.id);
+    }
+
+    async endCall({ matchId, endBy, userIdEndingCall }: { matchId: bigint, endBy?: CALL_ENDED_BY, userIdEndingCall?: bigint }): Promise<void> {
+        const match = await this.matchRepository.getById(matchId);
+        if (!match) {
+            throw new Error(MESSAGES.MATCH.NOT_FOUND);
+        }
+        if (match?.callEndedBy) {
+            throw new Error(MESSAGES.CALL.ALREADY_ENDED);
+        }
+        if (userIdEndingCall) {
+            endBy = match.recruiterUserId === userIdEndingCall ? CALL_ENDED_BY.RECRUITER : CALL_ENDED_BY.CANDIDATE;
+        }
+        await this.matchRepository.update(matchId, {
+            callEndedBy: endBy,
+            finalState: MATCH_STATE.CALL_ENDED
+        });
+        this.matchTrackingRepository.create({
+            matchId,
+            state: MATCH_STATE.CALL_ENDED
+        });
+        socketGateway.sendCallEndedEventToUser(match.recruiterUserId, matchId);
+        socketGateway.sendCallEndedEventToUser(match.candidateUserId, matchId);
+        this.processAfterCallEnd(match);
+    }
+
+    async handleProposalAcceptance(userId: bigint, matchId: bigint): Promise<void> {
+        const match = await this.matchRepository.getById(matchId);
+        if (!match || (match.recruiterUserId !== userId && match.candidateUserId !== userId)) {
+            throw new Error(MESSAGES.MATCH.NOT_A_MEMBER_OF_MATCH);
+        }
+        const hasAlreadyAccepted = await this.redisCallService.hasAccepted(matchId, userId);
+        if (hasAlreadyAccepted) {
+            throw new Error(MESSAGES.CALL.ALREADY_ACCEPTED_PROPOSAL);
+        }
+        const isRecruiter = match.recruiterUserId === userId;
+        await this.redisCallService.acceptProposal(matchId, userId);
+        const acceptedUsers = await this.redisCallService.getAcceptedUsers(matchId);
+    }
 }
 
 export const callService = new CallService(
@@ -147,5 +233,7 @@ export const callService = new CallService(
     redisUserService,
     userWalletService,
     matchTrackingRepository,
-    categoryRepository
+    categoryRepository,
+    redisCallService,
+    userRepository
 );

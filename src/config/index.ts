@@ -73,6 +73,7 @@ const config = {
         userTokenExpirationSeconds: parseInt(process.env.STREAM_CALL_USER_TOKEN_EXPIRATION_SECONDS || '900', 10),
         maximumCallDurationSeconds: parseInt(process.env.STREAM_CALL_MAXIMUM_CALL_DURATION_SECONDS || '600', 10),
         maximumRingingDurationSeconds: parseInt(process.env.STREAM_CALL_MAXIMUM_RINGING_DURATION_SECONDS || '60', 10),
+        callEndBufferSeconds: parseInt(process.env.STREAM_CALL_END_BUFFER_SECONDS || '30', 10),
     },
 
     streamChat: {

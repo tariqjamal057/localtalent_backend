@@ -3,7 +3,7 @@ import { SOCKET_OUTGOING_EVENT } from "../enums/socket";
 import { USER_STATUS } from "../enums/user";
 import logger from "../utils/logger";
 import { redisUserService } from "../services/redis/redis-user.service";
-import { MatchRequest, MatchResponse } from "../types/socket-data.type";
+import { CallEndResult, MatchRequest, MatchResponse } from "../types/socket-data.type";
 import { UserDataToJoinCall } from "../types/call.type";
 
 class SocketGateway {
@@ -80,6 +80,24 @@ class SocketGateway {
             this.socketService.emitToUser(userId, SOCKET_OUTGOING_EVENT.INCOMING_CALL, formData);
         } catch (error) {
             logger.error(`Failed to send incoming call event to user ${userId}: ${error instanceof Error ? error.message : String(error)}`);
+        }
+    }
+
+    public async sendCallEndedEventToUser(userId: bigint, matchId: bigint): Promise<void> {
+        try {
+            logger.info(`Sending call ended event to user ${userId} for match ${matchId}`);
+            this.socketService.emitToUser(userId, SOCKET_OUTGOING_EVENT.CALL_ENDED, { matchId });
+        } catch (error) {
+            logger.error(`Failed to send call ended event to user ${userId}: ${error instanceof Error ? error.message : String(error)}`);
+        }
+    }
+
+    public async sendCallEndResultEventToUser(userId: bigint, callEndResult: CallEndResult): Promise<void> {
+        try {
+            logger.info(`Sending call end result to user ${userId} with data: ${JSON.stringify(callEndResult)}`);
+            this.socketService.emitToUser(userId, SOCKET_OUTGOING_EVENT.CALL_END_RESULT, callEndResult);
+        } catch (error) {
+            logger.error(`Failed to send call end result to user ${userId}: ${error instanceof Error ? error.message : String(error)}`);
         }
     }
 }
