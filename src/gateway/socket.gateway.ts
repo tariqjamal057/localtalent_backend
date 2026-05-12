@@ -3,7 +3,7 @@ import { SOCKET_OUTGOING_EVENT } from "../enums/socket";
 import { USER_STATUS } from "../enums/user";
 import logger from "../utils/logger";
 import { redisUserService } from "../services/redis/redis-user.service";
-import { CallEndResult, MatchRequest, MatchResponse } from "../types/socket-data.type";
+import { CallEndResult, MatchResponse } from "../types/socket-data.type";
 import { UserDataToJoinCall } from "../types/call.type";
 
 class SocketGateway {
@@ -35,15 +35,6 @@ class SocketGateway {
             logger.error(`Failed to mark user ${userId} offline: ${error instanceof Error ? error.message : String(error)}`);
         }
     }
-
-    public async handleMatchRequest(userId: bigint, formData: MatchRequest): Promise<void> {
-        try {
-            logger.debug(`Received get_match event from user ${userId} with data: ${JSON.stringify(formData)}`);
-        } catch (error) {
-            logger.error(`Error processing get_match event from user ${userId}: ${error instanceof Error ? error.message : String(error)}`);
-        }
-    }
-
 
     //outgoing events to Socket.IO connections
 

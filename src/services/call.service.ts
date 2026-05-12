@@ -138,8 +138,8 @@ export class CallService {
             this.categoryRepository.getById(BigInt(data?.categoryLevelThreeId!), DEFAULT_LANGUAGE)
         ]);
         socketGateway.sendIncomingCallEventToUser(otherUserId, {
-            matchId: matchId,
-            userId: otherUserId,
+            matchId: Number(match.id),
+            userId: Number(otherUserId),
             name: data?.name || '',
             age: data?.age || 0,
             experience: data?.experience || 0,

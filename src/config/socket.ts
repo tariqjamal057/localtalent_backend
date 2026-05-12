@@ -7,6 +7,7 @@ import { socketGateway } from '../gateway/socket.gateway';
 import { getUserRoomId } from '../utils/socket';
 import { SOCKET_INCOMING_EVENT, SOCKET_OUTGOING_EVENT } from '../enums/socket';
 import { MatchRequest } from '../types/socket-data.type';
+import { matchService } from '../services/match.service';
 
 export class SocketService {
     private static instance: SocketService;
@@ -63,7 +64,7 @@ export class SocketService {
             return;
         }
         const roomId = getUserRoomId(userId);
-        this.io.to(roomId).emit(event, data);
+        this.io.to(roomId)?.emit(event, data);
         logger.debug(`Emitted event=${event} to userId=${userId}`);
     }
 
@@ -77,7 +78,7 @@ export class SocketService {
 
     private registerMiddleware(): void {
         this.io!.use((socket: Socket, next) => {
-            const token = socket.handshake.auth?.token as string | undefined;
+            const token = (socket.handshake.auth?.token || socket.handshake.query?.token || socket.handshake.headers?.token) as string | undefined;
             if (!token) {
                 return next(new Error('Authentication token required'));
             }
@@ -104,7 +105,7 @@ export class SocketService {
             logger.info(`User connected via socket: userId=${user.id} socketId=${socket.id}`);
             const roomId = getUserRoomId(user.id);
             socket.join(roomId);
-            logger.debug(`Socket ${socket.id} joined room ${roomId}`);
+            logger.info(`Socket ${socket.id} joined room ${roomId}`);
             socketGateway.markUserOnline(user.id);
 
             socket.on(SOCKET_INCOMING_EVENT.ERROR, (err: Error) => {
@@ -112,14 +113,19 @@ export class SocketService {
             });
 
             socket.on(SOCKET_INCOMING_EVENT.DISCONNECT, (reason: string) => {
-                logger.debug(`Socket disconnected: id=${socket.id} reason=${reason}`);
+                logger.info(`Socket disconnected: id=${socket.id} reason=${reason}`);
                 socketGateway.markUserOffline(user.id);
                 socket.leave(roomId);
                 logger.debug(`Socket ${socket.id} left room ${roomId}`);
             });
 
-            socket.on(SOCKET_INCOMING_EVENT.GET_MATCH, (formData: MatchRequest) => {
-                socketGateway.handleMatchRequest(user.id, formData);
+            socket.on(SOCKET_INCOMING_EVENT.GET_MATCH, async (formData: MatchRequest) => {
+                try {
+                    await matchService.handleMatchRequest(user.id, formData);
+                } catch (error) {
+                    logger.info(`Error handling get_match event for user ${user.id}: ${error instanceof Error ? error.message : String(error)}`);
+                    socketGateway.sendErrorToUser(user.id, error instanceof Error ? error.message : String(error));
+                }
             });
 
         });

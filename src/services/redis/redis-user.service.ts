@@ -8,9 +8,8 @@ const sleep = (ms: number): Promise<void> => new Promise(resolve => setTimeout(r
 
 
 export class RedisUserService {
-    private client: Redis;
-    constructor() {
-        this.client = redisClient.getClient();
+    private get client(): Redis {
+        return redisClient.getClient();
     }
 
     //priority-queue operations for user matches

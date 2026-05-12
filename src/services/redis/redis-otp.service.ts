@@ -3,9 +3,8 @@ import RedisKeys from '../../utils/redisKeys';
 import { redisClient } from '../../config/redis';
 
 class RedisOtpService {
-    private client: Redis;
-    constructor() {
-        this.client = redisClient.getClient();
+    private get client(): Redis {
+        return redisClient.getClient();
     }
     async setOtp(countryCode: string, phoneNumber: string, otp: string, expiresInSeconds: number): Promise<void> {
         const key = RedisKeys.getPhoneNumberOtp(countryCode, phoneNumber);

@@ -44,14 +44,16 @@ process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
 process.on('uncaughtException', (error: Error) => {
-    logger.error('Uncaught Exception:', error);
+    logger.info('Uncaught Exception:', error);
     process.exit(1);
 });
 
 process.on('unhandledRejection', (reason: unknown) => {
-    logger.error('Unhandled Rejection:', reason);
+    logger.info('Unhandled Rejection:', reason);
     process.exit(1);
 });
+
+
 
 bootstrap().catch((err) => {
     logger.error('Bootstrap failed:', err);

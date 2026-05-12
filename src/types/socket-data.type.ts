@@ -26,9 +26,9 @@ export interface MatchRequest {
 }
 
 export interface MatchResponse {
-    matchId: bigint;
+    matchId: number;
 
-    userId: bigint;
+    userId: number;
     name: string;
     age: number;
     experience: number;

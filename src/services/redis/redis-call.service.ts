@@ -3,9 +3,8 @@ import { redisClient } from '../../config/redis';
 import RedisKeys from '../../utils/redisKeys';
 
 export class RedisCallService {
-    private client: Redis;
-    constructor() {
-        this.client = redisClient.getClient();
+    private get client(): Redis {
+        return redisClient.getClient();
     }
 
     public async acceptProposal(matchId: bigint, userId: bigint): Promise<boolean> {

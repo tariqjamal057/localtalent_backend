@@ -120,8 +120,8 @@ export class MatchService {
                 logger.info(`[MatchService] Created match with ID ${match.id} between user ${recruiterUserId} and user ${candidateUserId}.`);
 
                 return {
-                    matchId: match.id,
-                    userId: matchedUserId,
+                    matchId: Number(match.id),
+                    userId: Number(matchedUserId),
                     name: matchedUserSearchData.name,
                     age: matchedUserSearchData.age,
                     experience: matchedUserSearchData.experience,
@@ -148,6 +148,7 @@ export class MatchService {
         if (topMatch) {
             logger.info(`[MatchService] Sending top match with ID ${topMatch.matchId} to user ${userId}.`);
             await this.redisUserService.setUserStatus(userId, USER_STATUS.MATCHED);
+            logger.info(`[MatchService] Updated status to MATCHED for user ${userId} in Redis.`);
             socketGateway.sendMatchToUser(userId, topMatch);
         } else {
             logger.info(`[MatchService] No top match found to send to user ${userId}.`);
@@ -259,51 +260,45 @@ export class MatchService {
     }
 
     async handleMatchRequest(userId: bigint, formData: MatchRequest): Promise<void> {
-        try {
-            logger.info(`[MatchService] Handling match request for user ${userId}.`);
-            logger.debug(`[MatchService] Match request data for user ${userId}: ${JSON.stringify(formData)}`);
+        logger.info(`[MatchService] Handling match request for user ${userId}.`);
+        logger.debug(`[MatchService] Match request data for user ${userId}: ${JSON.stringify(formData)}`);
 
-            const isBalanceAvailable = await this.userWalletService.isBalanceAvailiableToSearch(userId);
-            if (!isBalanceAvailable) {
-                logger.info(`[MatchService] User ${userId} does not have available balance to search. Sending error.`);
-                throw new Error(MESSAGES.SEARCH.INSUFFICIENT_BALANCE);
-            }
-
-            const existingSearchData = await this.redisUserService.getUserSearchData(userId);
-
-            if (existingSearchData) {
-                const changeType = this.isSameSearchData(existingSearchData, formData);
-                if (changeType === SEARCH_CHANGE_TYPE.NO_CHANGE) {
-                    await this.redisUserService.setUserStatus(userId, USER_STATUS.SEARCHING);
-                    logger.info(`[MatchService] No search data changes for user ${userId}. Resuming match search.`);
-                    return this.sendTopMatchToUser(userId);
-                } else if (changeType === SEARCH_CHANGE_TYPE.NON_CRITICAL_CHANGE) {
-                    await this.redisUserService.setUserSearchData(userId, { ...formData, spokenLanguageIds: JSON.stringify(formData.spokenLanguageIds) });
-                    await this.redisUserService.setUserStatus(userId, USER_STATUS.SEARCHING);
-                    logger.info(`[MatchService] Non-critical search data updated for user ${userId}. Resuming match search.`);
-                    return this.sendTopMatchToUser(userId);
-                }
-            }
-
-            await this.redisUserService.setUserSearchData(userId, { ...formData, spokenLanguageIds: JSON.stringify(formData.spokenLanguageIds) });
-            logger.debug(`[MatchService] Search data stored in Redis for user ${userId}.`);
-
-            await this.redisUserService.setUserGeo(userId, formData.latitude, formData.longitude);
-            logger.debug(`[MatchService] Geo data stored in Redis for user ${userId}: lat=${formData.latitude}, lon=${formData.longitude}.`);
-
-            const userBlockedUserIds = await this.userBlockRepository.getAllByUserId(userId).then(blocks => blocks.map(block => block.blockedUserId));
-            logger.debug(`[MatchService] Loaded ${userBlockedUserIds.length} blocked user IDs for user ${userId}.`);
-
-            await this.redisUserService.addManyToSeenSet(userId, userBlockedUserIds);
-            logger.debug(`[MatchService] Blocked users added to seen set for user ${userId}.`);
-
-            await this.redisUserService.setUserStatus(userId, USER_STATUS.SEARCHING);
-            await this.buildPriorityQueueForUser(userId, formData);
-
-        } catch (error) {
-            logger.error(`[MatchService] Error handling match request for user ${userId}: ${error instanceof Error ? error.message : String(error)}`);
-            socketGateway.sendErrorToUser(userId, error instanceof Error ? error.message : 'An unexpected error occurred while processing your match request. Please try again.');
+        const isBalanceAvailable = await this.userWalletService.isBalanceAvailiableToSearch(userId);
+        if (!isBalanceAvailable) {
+            logger.info(`[MatchService] User ${userId} does not have available balance to search. Sending error.`);
+            throw new Error(MESSAGES.SEARCH.INSUFFICIENT_BALANCE);
         }
+
+        const existingSearchData = await this.redisUserService.getUserSearchData(userId);
+
+        if (existingSearchData) {
+            const changeType = this.isSameSearchData(existingSearchData, formData);
+            if (changeType === SEARCH_CHANGE_TYPE.NO_CHANGE) {
+                await this.redisUserService.setUserStatus(userId, USER_STATUS.SEARCHING);
+                logger.info(`[MatchService] No search data changes for user ${userId}. Resuming match search.`);
+                return this.sendTopMatchToUser(userId);
+            } else if (changeType === SEARCH_CHANGE_TYPE.NON_CRITICAL_CHANGE) {
+                await this.redisUserService.setUserSearchData(userId, { ...formData, spokenLanguageIds: JSON.stringify(formData.spokenLanguageIds) });
+                await this.redisUserService.setUserStatus(userId, USER_STATUS.SEARCHING);
+                logger.info(`[MatchService] Non-critical search data updated for user ${userId}. Resuming match search.`);
+                return this.sendTopMatchToUser(userId);
+            }
+        }
+
+        await this.redisUserService.setUserSearchData(userId, { ...formData, spokenLanguageIds: JSON.stringify(formData.spokenLanguageIds) });
+        logger.debug(`[MatchService] Search data stored in Redis for user ${userId}.`);
+
+        await this.redisUserService.setUserGeo(userId, formData.latitude, formData.longitude);
+        logger.debug(`[MatchService] Geo data stored in Redis for user ${userId}: lat=${formData.latitude}, lon=${formData.longitude}.`);
+
+        const userBlockedUserIds = await this.userBlockRepository.getAllByUserId(userId).then(blocks => blocks.map(block => block.blockedUserId));
+        logger.debug(`[MatchService] Loaded ${userBlockedUserIds.length} blocked user IDs for user ${userId}.`);
+
+        await this.redisUserService.addManyToSeenSet(userId, userBlockedUserIds);
+        logger.debug(`[MatchService] Blocked users added to seen set for user ${userId}.`);
+
+        await this.redisUserService.setUserStatus(userId, USER_STATUS.SEARCHING);
+        await this.buildPriorityQueueForUser(userId, formData);
     }
 
     async updateState(matchId: bigint, newState: MATCH_STATE, additionalFields?: UpdateMatchDto): Promise<void> {
