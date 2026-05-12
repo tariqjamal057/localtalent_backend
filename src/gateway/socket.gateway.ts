@@ -100,6 +100,14 @@ class SocketGateway {
             logger.error(`Failed to send call end result to user ${userId}: ${error instanceof Error ? error.message : String(error)}`);
         }
     }
-}
 
+    public async sendVideoRequestEventToUser(userId: bigint, matchId: bigint): Promise<void> {
+        try {
+            logger.info(`Sending video request event to user ${userId} for match ${matchId}`);
+            this.socketService.emitToUser(userId, SOCKET_OUTGOING_EVENT.VIDEO_REQUEST, { matchId });
+        } catch (error) {
+            logger.error(`Failed to send video request event to user ${userId}: ${error instanceof Error ? error.message : String(error)}`);
+        }
+    }
+}
 export const socketGateway = new SocketGateway(SocketService.getInstance());

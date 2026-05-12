@@ -1,6 +1,11 @@
-export enum CALL_TYPE {
+export enum STREAM_CALL_TYPE {
     AUDIO_CALL = 'audio_room',
     DEFAULT = 'default',
+}
+
+export enum CALL_TYPE {
+    AUDIO_CALL = 1,
+    VIDEO_CALL = 2,
 }
 
 export enum CALL_ENDED_BY {

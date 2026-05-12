@@ -286,3 +286,5 @@ CREATE TRIGGER trg_video_requests_updated_at
     FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
 ALTER TABLE matches ADD COLUMN call_ended_by BIGINT;
+
+ALTER TABLE matches ADD COLUMN call_type SMALLINT;

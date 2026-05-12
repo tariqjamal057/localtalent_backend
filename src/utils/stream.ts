@@ -1,9 +1,10 @@
 import config from "../config";
 import { StreamCallClient, StreamChatClient } from "../config/stream";
 import { MESSAGES } from "../constants/messages";
-import { CALL_TYPE } from "../enums/call";
+import { STREAM_CALL_TYPE } from "../enums/call";
 import { SESSION_TYPE } from "../enums/sessions";
 import { UserDataToJoinCall } from "../types/call.type";
+import { UserDataToJoinChat } from "../types/chat.type";
 
 export class StreamUtil {
     private static streamChatClient = StreamChatClient.getInstance();
@@ -64,7 +65,7 @@ export class StreamUtil {
         return this.streamCallClient.generateUserToken({ user_id: streamUserId, validity_in_seconds: config.streamCall.userTokenExpirationSeconds });
     }
 
-    private static async createCall(userIds: bigint[], callType: CALL_TYPE): Promise<string> {
+    private static async createCall(userIds: bigint[], callType: STREAM_CALL_TYPE): Promise<string> {
         const callId = this.getCallId(userIds);
         const call = this.streamCallClient.video.call(callType, callId);
         await call.create(
@@ -96,13 +97,7 @@ export class StreamUtil {
         return call.id;
     }
 
-    public static async setupChatForUsers(users: { id: bigint; name: string }[]): Promise<{
-        userId: bigint;
-        streamUserId: string;
-        token: string;
-        channelId: string;
-        sessionType: SESSION_TYPE;
-    }[]> {
+    public static async setupChatForUsers(users: { id: bigint; name: string }[]): Promise<UserDataToJoinChat[]> {
         await this.upsertUsersForChat(users);
         const userIds = users.map(user => user.id);
         const streamUserIds = users.map(user => this.getStreamUserId(user.id));
@@ -117,7 +112,8 @@ export class StreamUtil {
         }));
     }
 
-    public static async setupCallForUsers(users: { id: bigint; name: string }[], callType: CALL_TYPE = CALL_TYPE.AUDIO_CALL): Promise<UserDataToJoinCall[]> {
+    public static async setupCallForUsers(users: { id: bigint; name: string, canRequestVideoCall: boolean }[]): Promise<UserDataToJoinCall[]> {
+        const callType = users.some(user => user.canRequestVideoCall) ? STREAM_CALL_TYPE.DEFAULT : STREAM_CALL_TYPE.AUDIO_CALL;
         await this.upsertUsersForCall(users);
         const userIds = users.map(user => user.id);
         const streamUserIds = users.map(user => this.getStreamUserId(user.id));
@@ -129,8 +125,14 @@ export class StreamUtil {
             token: tokens[index],
             callId,
             sessionType: SESSION_TYPE.CALL,
-            isVideoCallAllowed: callType === CALL_TYPE.DEFAULT,
+            isVideoCallAllowed: callType === STREAM_CALL_TYPE.DEFAULT,
             maxCallDurationSeconds: config.streamCall.maximumCallDurationSeconds + config.streamCall.callEndBufferSeconds,
+            canRequestVideoCall: users[index].canRequestVideoCall
         }));
+    }
+
+    public static async endCall(callId: string, callType: STREAM_CALL_TYPE): Promise<void> {
+        const call = this.streamCallClient.video.call(callType, callId);
+        await call.end();
     }
 }

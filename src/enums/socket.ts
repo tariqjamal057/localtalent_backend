@@ -14,4 +14,5 @@ export enum SOCKET_OUTGOING_EVENT {
     INCOMING_CALL = 'incoming_call',
     CALL_ENDED = 'call_ended',
     CALL_END_RESULT = 'call_end_result',
+    VIDEO_REQUEST = 'video_request',
 }

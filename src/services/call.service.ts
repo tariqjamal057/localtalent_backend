@@ -1,6 +1,6 @@
 import config from "../config";
 import { MESSAGES } from "../constants/messages";
-import { CALL_ENDED_BY, CALL_TYPE, PROPOSAL_STATE } from "../enums/call";
+import { CALL_ENDED_BY, CALL_TYPE, PROPOSAL_STATE, STREAM_CALL_TYPE } from "../enums/call";
 import { DEFAULT_LANGUAGE } from "../enums/language";
 import { MATCH_STATE } from "../enums/match";
 import { USER_STATUS } from "../enums/user";
@@ -8,10 +8,13 @@ import { socketGateway } from "../gateway/socket.gateway";
 import { categoryRepository, CategoryRepository } from "../repositories/category.repository";
 import { matchTrackingRepository, MatchTrackingRepository } from "../repositories/match-tracking.repository";
 import { matchRepository, MatchRepository } from "../repositories/match.repository";
+import { userBlockRepository, UserBlockRepository } from "../repositories/user-block.repository";
 import { userRepository, UserRepository } from "../repositories/user.repository";
 import { UserDataToJoinCall } from "../types/call.type";
 import { Match } from "../types/match.types";
 import { getProposalAcceptedMessage } from "../utils/call";
+import logger from "../utils/logger";
+import { getOtherUserIdInMatch } from "../utils/match";
 import { StreamUtil } from "../utils/stream";
 import CallQueue from "./queue/call.queue";
 import { redisCallService, RedisCallService } from "./redis/redis-call.service";
@@ -27,13 +30,16 @@ export class CallService {
         private readonly matchTrackingRepository: MatchTrackingRepository,
         private readonly categoryRepository: CategoryRepository,
         private readonly redisCallService: RedisCallService,
-        private readonly userRepository: UserRepository
+        private readonly userRepository: UserRepository,
+        private readonly userBlockRepository: UserBlockRepository
     ) { }
 
     async createCall(userId1: bigint, userId2: bigint, user1Name: string, user2Name: string, matchId: bigint): Promise<UserDataToJoinCall[]> {
 
         const smallerUserId = userId1 < userId2 ? userId1 : userId2;
         const largerUserId = userId1 < userId2 ? userId2 : userId1;
+        const smallerUserName = userId1 < userId2 ? user1Name : user2Name;
+        const largerUserName = userId1 < userId2 ? user2Name : user1Name;
 
         let gotlockOnSmallerId = false;
         let gotlockOnLargerId = false;
@@ -61,14 +67,13 @@ export class CallService {
                 this.userWalletService.isBalanceForVideoCallAvailable(smallerUserId),
                 this.userWalletService.isBalanceForVideoCallAvailable(largerUserId),
             ]);
-            const isVideoCall = isSmallUserVideoRequestAvailable || isLargeUserVideoRequestAvailable;
             const callData = await StreamUtil.setupCallForUsers([
-                { id: userId1, name: user1Name },
-                { id: userId2, name: user2Name }
-            ], isVideoCall ? CALL_TYPE.DEFAULT : CALL_TYPE.AUDIO_CALL);
+                { id: smallerUserId, name: smallerUserName, canRequestVideoCall: isSmallUserVideoRequestAvailable },
+                { id: largerUserId, name: largerUserName, canRequestVideoCall: isLargeUserVideoRequestAvailable }
+            ]);
             await Promise.all([
-                this.redisUserService.setUserStatus(userId1, USER_STATUS.IN_CALL),
-                this.redisUserService.setUserStatus(userId2, USER_STATUS.IN_CALL),
+                this.redisUserService.setUserStatus(smallerUserId, USER_STATUS.IN_CALL),
+                this.redisUserService.setUserStatus(largerUserId, USER_STATUS.IN_CALL),
             ]);
             const maximumCallDuration = config.streamCall.maximumCallDurationSeconds;
             CallQueue.scheduleCallEnd(matchId, maximumCallDuration * 1000);
@@ -95,14 +100,16 @@ export class CallService {
         if ((isRecruiter && match.finalState !== MATCH_STATE.CALL_INITIATED_BY_CANDIDATE) || (!isRecruiter && match.finalState !== MATCH_STATE.CALL_INITIATED_BY_RECRUITER)) {
             throw new Error(MESSAGES.MATCH.INVALID_STATE_TO_START_CALL);
         }
+        const callData = await this.createCall(match.recruiterUserId, match.candidateUserId, match.recruiterFormData?.name || '', match.candidateFormData?.name || '', matchId);
         await this.matchRepository.update(matchId, {
-            finalState: isRecruiter ? MATCH_STATE.CALL_ACCEPTED_BY_RECRUITER : MATCH_STATE.CALL_ACCEPTED_BY_CANDIDATE
+            finalState: isRecruiter ? MATCH_STATE.CALL_ACCEPTED_BY_RECRUITER : MATCH_STATE.CALL_ACCEPTED_BY_CANDIDATE,
+            providerCallId: callData[0].callId,
+            callType: callData[0].isVideoCallAllowed ? CALL_TYPE.VIDEO_CALL : CALL_TYPE.AUDIO_CALL
         });
         this.matchTrackingRepository.create({
             matchId,
             state: isRecruiter ? MATCH_STATE.CALL_ACCEPTED_BY_RECRUITER : MATCH_STATE.CALL_ACCEPTED_BY_CANDIDATE
         });
-        const callData = await this.createCall(match.recruiterUserId, match.candidateUserId, match.recruiterFormData?.name || '', match.candidateFormData?.name || '', matchId);
         callData.forEach(data => {
             socketGateway.sendJoinCallEventToUser(data.userId, data);
         });
@@ -208,6 +215,7 @@ export class CallService {
             matchId,
             state: MATCH_STATE.CALL_ENDED
         });
+        await StreamUtil.endCall(match.providerCallId!, match.callType === CALL_TYPE.VIDEO_CALL ? STREAM_CALL_TYPE.DEFAULT : STREAM_CALL_TYPE.AUDIO_CALL);
         socketGateway.sendCallEndedEventToUser(match.recruiterUserId, matchId);
         socketGateway.sendCallEndedEventToUser(match.candidateUserId, matchId);
         this.processAfterCallEnd(match);
@@ -223,8 +231,58 @@ export class CallService {
             throw new Error(MESSAGES.CALL.ALREADY_ACCEPTED_PROPOSAL);
         }
         const isRecruiter = match.recruiterUserId === userId;
-        await this.redisCallService.acceptProposal(matchId, userId);
-        const acceptedUsers = await this.redisCallService.getAcceptedUsers(matchId);
+        const isAccepted = await this.redisCallService.acceptProposal(matchId, userId);
+        if (!isAccepted) {
+            throw new Error(MESSAGES.CALL.FAILED_TO_ACCEPT_PROPOSAL);
+        }
+        await this.matchRepository.update(matchId, {
+            proposalAcceptedCount: (match.proposalAcceptedCount || 0) + 1,
+            finalState: isRecruiter ? MATCH_STATE.PROPOSAL_ACCEPTED_BY_RECRUITER : MATCH_STATE.PROPOSAL_ACCEPTED_BY_CANDIDATE
+        });
+        this.matchTrackingRepository.create({
+            matchId,
+            state: isRecruiter ? MATCH_STATE.PROPOSAL_ACCEPTED_BY_RECRUITER : MATCH_STATE.PROPOSAL_ACCEPTED_BY_CANDIDATE
+        });
+        const acceptedCount = await this.redisCallService.getAcceptedCount(matchId);
+        if (acceptedCount === match.totalUsers) {
+            try {
+                await Promise.all([
+                    this.userWalletService.deductMatchCount(match.recruiterUserId),
+                    this.userWalletService.deductMatchCount(match.candidateUserId)
+                ]);
+            } catch (error) {
+                logger.error('Error deducting match count after proposal acceptance', { error, matchId });
+                await this.redisCallService.deleteProposalAcceptedSet(matchId);
+            }
+        }
+    }
+
+    async handleVideoRequest(userId: bigint, matchId: bigint) {
+        const match = await this.matchRepository.getById(matchId);
+        if (!match || (match.recruiterUserId !== userId && match.candidateUserId !== userId)) {
+            throw new Error(MESSAGES.MATCH.NOT_A_MEMBER_OF_MATCH);
+        }
+        const otherUserId = match.recruiterUserId === userId ? match.candidateUserId : match.recruiterUserId;
+        const isVideoRequestAvailable = await this.userWalletService.isBalanceForVideoCallAvailable(userId);
+        if (!isVideoRequestAvailable) {
+            throw new Error(MESSAGES.CALL.INSUFFICIENT_BALANCE_FOR_VIDEO_CALL);
+        }
+        await this.userWalletService.deductVideoRequestCount(userId);
+        socketGateway.sendVideoRequestEventToUser(otherUserId, matchId);
+    }
+
+    async handleBlocking(userId: bigint, matchId: bigint): Promise<void> {
+        const match = await this.matchRepository.getById(matchId);
+        const otherUserId = getOtherUserIdInMatch(match!, userId);
+        const isRecruiter = match?.recruiterUserId === userId;
+        await this.matchRepository.update(matchId, {
+            finalState: isRecruiter ? MATCH_STATE.RECRUITER_BLOCKED_CANDIDATE : MATCH_STATE.CANDIDATE_BLOCKED_RECRUITER
+        });
+        await this.userBlockRepository.block(userId, otherUserId);
+        this.matchTrackingRepository.create({
+            matchId,
+            state: isRecruiter ? MATCH_STATE.RECRUITER_BLOCKED_CANDIDATE : MATCH_STATE.CANDIDATE_BLOCKED_RECRUITER
+        });
     }
 }
 
@@ -235,5 +293,6 @@ export const callService = new CallService(
     matchTrackingRepository,
     categoryRepository,
     redisCallService,
-    userRepository
+    userRepository,
+    userBlockRepository
 );

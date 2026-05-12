@@ -20,6 +20,13 @@ export class CallController {
         await this.callService.handleCallAccepted(userId, matchId);
         sendResponse(res, StatusCodes.OK, MESSAGES.CALL.ACCEPTED_SUCCESSFULLY);
     };
+
+    handleVideoRequest = async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
+        const userId = req.user!.id;
+        const matchId = req.params.matchId as unknown as bigint;
+        await this.callService.handleVideoRequest(userId, matchId);
+        sendResponse(res, StatusCodes.OK, MESSAGES.CALL.VIDEO_REQUEST_SENT);
+    };
 }
 
 export const callController = new CallController(callService);

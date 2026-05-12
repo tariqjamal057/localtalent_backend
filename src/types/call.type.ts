@@ -8,4 +8,5 @@ export interface UserDataToJoinCall {
     sessionType: SESSION_TYPE;
     isVideoCallAllowed: boolean;
     maxCallDurationSeconds: number;
+    canRequestVideoCall: boolean;
 }

@@ -44,6 +44,9 @@ export const MESSAGES = {
     },
     USER_WALLET: {
         FETCHED_SUCCESSFULLY: 'Wallet fetched successfully',
+        NOT_FOUND: 'User wallet not found',
+        NO_MATCH_COUNT_AVAILABLE: 'No match count available to deduct',
+        NO_VIDEO_REQUEST_COUNT_AVAILABLE: 'No video request count available to deduct',
     },
     MATCH: {
         FETCHED_SUCCESSFULLY: 'Matches fetched successfully',
@@ -72,5 +75,11 @@ export const MESSAGES = {
         ACCEPTED_SUCCESSFULLY: 'Call accepted successfully',
         ALREADY_ENDED: 'Call has already been ended',
         ALREADY_ACCEPTED_PROPOSAL: 'You have already accepted the proposal',
-    }
+        FAILED_TO_ACCEPT_PROPOSAL: 'Failed to accept the proposal, please try again later',
+        INSUFFICIENT_BALANCE_FOR_VIDEO_CALL: 'You do not have enough video request count available. Please purchase more to be able to request video calls.',
+        VIDEO_REQUEST_SENT: 'Video request sent successfully',
+    },
+    CHAT: {
+        ROOM_FETCHED_SUCCESSFULLY: 'Chat room fetched successfully',
+    },
 };

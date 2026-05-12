@@ -24,4 +24,11 @@ router.post(
     callController.handleCallAccepted
 );
 
+router.post(
+    '/:matchId/video-request',
+    authenticate,
+    validate(matchIdParamsSchema, VALIDATION_SOURCE.PARAMS),
+    callController.handleVideoRequest
+);
+
 export default router;

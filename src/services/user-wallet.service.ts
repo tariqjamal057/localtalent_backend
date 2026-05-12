@@ -1,3 +1,4 @@
+import { MESSAGES } from '../constants/messages';
 import { userWalletRepository, UserWalletRepository } from '../repositories/user-wallet.repository';
 
 export class UserWalletService {
@@ -18,6 +19,34 @@ export class UserWalletService {
         const wallet = await this.userWalletRepository.getByUserId(userId);
         if (!wallet) return false;
         return wallet.videoRequestCountAvailable > 0;
+    }
+
+    async deductMatchCount(userId: bigint): Promise<void> {
+        const wallet = await this.userWalletRepository.getByUserId(userId);
+        if (!wallet) throw new Error(MESSAGES.USER_WALLET.NOT_FOUND);
+        if (wallet.freeMatchCountAvailable > 0) {
+            await this.userWalletRepository.updateByUserId(userId, {
+                freeMatchCountAvailable: wallet.freeMatchCountAvailable - 1
+            });
+        } else if (wallet.availableMatchCount > 0) {
+            await this.userWalletRepository.updateByUserId(userId, {
+                availableMatchCount: wallet.availableMatchCount - 1
+            });
+        } else {
+            throw new Error(MESSAGES.USER_WALLET.NO_MATCH_COUNT_AVAILABLE);
+        }
+    }
+
+    async deductVideoRequestCount(userId: bigint): Promise<void> {
+        const wallet = await this.userWalletRepository.getByUserId(userId);
+        if (!wallet) throw new Error(MESSAGES.USER_WALLET.NOT_FOUND);
+        if (wallet.videoRequestCountAvailable > 0) {
+            await this.userWalletRepository.updateByUserId(userId, {
+                videoRequestCountAvailable: wallet.videoRequestCountAvailable - 1
+            });
+        } else {
+            throw new Error(MESSAGES.USER_WALLET.NO_VIDEO_REQUEST_COUNT_AVAILABLE);
+        }
     }
 }
 

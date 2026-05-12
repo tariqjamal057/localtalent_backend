@@ -17,7 +17,8 @@ function matchRowToDto(row: MatchRow): Match {
         totalUsers: row.total_users,
         proposalAcceptedCount: row.proposal_accepted_count,
         providerCallId: row.provider_call_id,
-        callEndedBy: row.call_ended_by
+        callEndedBy: row.call_ended_by,
+        callType: row.call_type
     };
 }
 
@@ -95,17 +96,13 @@ export class MatchRepository {
         const values: unknown[] = [];
         let idx = 1;
 
-        if (dto.provider_call_id !== undefined) {
+        if (dto.proposalAcceptedCount !== undefined) {
             fields.push(`provider_call_id = $${idx++}`);
-            values.push(dto.provider_call_id);
+            values.push(dto.proposalAcceptedCount);
         }
-        if (dto.total_users !== undefined) {
+        if (dto.totalUsers !== undefined) {
             fields.push(`total_users = $${idx++}`);
-            values.push(dto.total_users);
-        }
-        if (dto.proposal_accepted_count !== undefined) {
-            fields.push(`proposal_accepted_count = $${idx++}`);
-            values.push(dto.proposal_accepted_count);
+            values.push(dto.totalUsers);
         }
 
         if (dto.finalState !== undefined) {
@@ -115,6 +112,10 @@ export class MatchRepository {
         if (dto.callEndedBy !== undefined) {
             fields.push(`call_ended_by = $${idx++}`);
             values.push(dto.callEndedBy);
+        }
+        if (dto.callType !== undefined) {
+            fields.push(`call_type = $${idx++}`);
+            values.push(dto.callType);
         }
 
         if (fields.length === 0) return this.getById(matchId);

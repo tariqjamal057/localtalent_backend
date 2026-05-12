@@ -1,3 +1,5 @@
+import { Match } from "../types/match.types";
+
 export const calculateDistanceKm = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
     const toRadians = (degrees: number) => degrees * (Math.PI / 180);
     const R = 6371;
@@ -10,4 +12,14 @@ export const calculateDistanceKm = (lat1: number, lon1: number, lat2: number, lo
         Math.sin(dLon / 2) * Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c;
+}
+
+export const getOtherUserIdInMatch = (match: Match, userId: bigint): bigint => {
+    if (match.recruiterUserId === userId) {
+        return match.candidateUserId;
+    } else if (match.candidateUserId === userId) {
+        return match.recruiterUserId;
+    } else {
+        throw new Error('User is not part of the match');
+    }
 }
