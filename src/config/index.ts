@@ -1,4 +1,3 @@
-import { match } from 'assert';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -47,6 +46,7 @@ const config = {
 
     smsService: {
         serviceAvailable: process.env.SMS_SERVICE_AVAILIABLE === 'true',
+        DEFAULT_TEST_OTP: '7777',
     },
 
     jwt: {

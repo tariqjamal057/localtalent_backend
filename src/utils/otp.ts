@@ -6,6 +6,9 @@ const isSmsServiceAvailable = config.smsService.serviceAvailable;
 
 export class Otp {
     static generateOTP = (): string => {
+        if (!isSmsServiceAvailable) {
+            return config.smsService.DEFAULT_TEST_OTP;
+        }
         return crypto.randomInt(1000, 10000).toString();
     };
     static sendOTP = async (phoneNumber: string, otp: string): Promise<void> => {
