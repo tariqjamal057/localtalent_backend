@@ -45,6 +45,10 @@ export class DatabaseService {
 
         this.pool = new Pool(poolConfig);
 
+        this.pool.on('error', (err: Error) => {
+            logger.error('Unexpected error on idle PostgreSQL client', err);
+        });
+
         const client = await this.pool.connect();
         try {
             await client.query('SELECT 1');

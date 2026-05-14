@@ -69,6 +69,7 @@ export class MatchService {
             logger.debug(`[MatchService] Attempting to get top match for user ${userId}, iteration ${iterationNumber}`);
 
             const topMatchElements = await this.redisUserService.popFromPriorityQueue(userId, config.matching.PRIORITY_QUEUE_BATCH_SIZE);
+            logger.debug(`[MatchService] Retrieved ${topMatchElements.length} elements from priority queue for user ${userId} in iteration ${iterationNumber} and topMatchelements.`);
             if (!topMatchElements || topMatchElements.length === 0) {
                 logger.info(`[MatchService] Priority queue exhausted for user ${userId}. No match found.`);
                 return null;
@@ -85,7 +86,7 @@ export class MatchService {
 
                 const matchedUserSearchData = await this.redisUserService.getUserSearchData(matchedUserId);
                 if (!matchedUserSearchData) {
-                    logger.warn(`[MatchService] No search data found for candidate ${matchedUserId}. Skipping.`);
+                    logger.debug(`[MatchService] No search data found for candidate ${matchedUserId}. Skipping.`);
                     continue;
                 }
 
@@ -148,6 +149,7 @@ export class MatchService {
         if (topMatch) {
             logger.info(`[MatchService] Sending top match with ID ${topMatch.matchId} to user ${userId}.`);
             await this.redisUserService.setUserStatus(userId, USER_STATUS.MATCHED);
+            await this.redisUserService.addToSeenSet(userId, BigInt(topMatch.userId));
             logger.info(`[MatchService] Updated status to MATCHED for user ${userId} in Redis.`);
             socketGateway.sendMatchToUser(userId, topMatch);
         } else {
@@ -155,6 +157,10 @@ export class MatchService {
         }
     }
     async addPotentialUserToPriorityQueue(userId: bigint, matchedUserId: bigint, priority: number): Promise<void> {
+        if (matchedUserId === userId) {
+            logger.debug(`[MatchService] Skipping adding user ${userId} to their own priority queue.`);
+            return;
+        }
         const size = await this.redisUserService.pushToPriorityQueueAndGetSize(userId, matchedUserId.toString(), priority);
         logger.debug(`[MatchService] Added candidate ${matchedUserId} to priority queue for user ${userId} (priority=${priority}, queueSize=${size}).`);
         if (size === 1) {
@@ -177,6 +183,10 @@ export class MatchService {
 
         const itemsToAdd: { element: string, priority: number }[] = [];
         for (const matchedUserId of matchedUserIds) {
+            if (matchedUserId === userId) {
+                logger.debug(`[MatchService] Skipping adding user ${userId} to their own priority queue.`);
+                continue;
+            }
             const matchedUserSearchData = await this.redisUserService.getUserSearchData(BigInt(matchedUserId));
             if (!matchedUserSearchData) {
                 logger.warn(`[MatchService] No search data found for matched user ${matchedUserId}. Skipping.`);

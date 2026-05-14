@@ -28,8 +28,8 @@ class SocketGateway {
     public async markUserOffline(userId: bigint) {
         try {
             logger.info(`Marking user offline: userId=${userId}`);
-            await redisUserService.setUserStatus(userId, USER_STATUS.OFFLINE);
-            await redisUserService.clearAllUserData(userId);
+            redisUserService.setUserStatus(userId, USER_STATUS.OFFLINE);
+            redisUserService.clearAllUserData(userId);
             logger.debug(`User ${userId} marked OFFLINE in Redis`);
         } catch (error) {
             logger.error(`Failed to mark user ${userId} offline: ${error instanceof Error ? error.message : String(error)}`);

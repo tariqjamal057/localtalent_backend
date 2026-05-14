@@ -3,6 +3,7 @@ import { redisClient } from '../../config/redis';
 import RedisKeys from '../../utils/redisKeys';
 import { USER_STATUS } from '../../enums/user';
 import { MatchRequest } from '../../types/socket-data.type';
+import logger from '../../utils/logger';
 
 const sleep = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -17,7 +18,13 @@ export class RedisUserService {
     public async pushMultipleItemsToPriorityQueue(userId: bigint, items: { element: string, priority: number }[]): Promise<void> {
         const key = RedisKeys.getUserPriorityQueueKey(userId);
         const flattenedItems = items.flatMap(item => [item.priority, item.element]);
-        await this.client.zadd(key, ...flattenedItems);
+        try {
+            logger.info(`Pushing ${items.length} items to priority queue for user ${userId} and items: ${JSON.stringify(items)}.`);
+            await this.client.zadd(key, ...flattenedItems);
+            logger.info(`Successfully pushed ${items.length} items to priority queue for user ${userId}.`);
+        } catch (error) {
+            logger.info(`Failed to push multiple items to priority queue for user ${userId}: ${error instanceof Error ? error.message : String(error)}`);
+        }
     }
 
     public async pushToPriorityQueueAndGetSize(userId: bigint, element: string, priority: number): Promise<number> {
@@ -30,9 +37,27 @@ export class RedisUserService {
     }
 
     //lower number higher priority
-    public async popFromPriorityQueue(userId: bigint, count: number = 1): Promise<bigint[]> {
-        const result = await this.client.zpopmin(RedisKeys.getUserPriorityQueueKey(userId), count);
-        return result.map(item => BigInt(item[0]));
+    public async popFromPriorityQueue(
+        userId: bigint,
+        count: number = 1
+    ): Promise<bigint[]> {
+
+        const result = await this.client.zpopmin(
+            RedisKeys.getUserPriorityQueueKey(userId),
+            count
+        );
+
+        logger.info(
+            `Popped ${result.length} items from priority queue for user ${userId}. Result: ${JSON.stringify(result)}`
+        );
+
+        const elements: bigint[] = [];
+
+        for (let i = 0; i < result.length; i += 2) {
+            elements.push(BigInt(result[i]));
+        }
+
+        return elements;
     }
 
     public async sizeOfPriorityQueue(userId: bigint): Promise<number> {
@@ -81,16 +106,13 @@ export class RedisUserService {
         const value = await this.client.hgetall(
             RedisKeys.getUserSearchKey(userId)
         );
-
         if (!value || Object.keys(value).length === 0) return null;
-
+        const spokenLangIds = JSON.parse(value.spokenLanguageIds) as number[];
         return {
             name: value.name,
             age: Number(value.age),
             experience: Number(value.experience),
-            spokenLanguageIds: value.spokenLanguageIds
-                .split(",")
-                .map(Number),
+            spokenLanguageIds: spokenLangIds,
 
             latitude: Number(value.latitude),
             longitude: Number(value.longitude),
