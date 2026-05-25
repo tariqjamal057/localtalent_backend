@@ -9,6 +9,7 @@ import { redisOtpService } from '../services/redis/redis-otp.service';
 import config from '../config';
 import { Otp } from '../utils/otp';
 import { USER_TYPE } from '../enums/user';
+import logger from '../utils/logger';
 
 
 export class AuthController {
@@ -16,14 +17,16 @@ export class AuthController {
         const { refreshToken } = req.body as { refreshToken: string };
         try {
             const decoded = verifyRefreshToken(refreshToken);
+            logger.info(`Refresh token verified for userId: ${decoded.userId}`);
             const accessToken = signAccessToken({ userId: decoded.userId });
             const [user, userProfile] = await Promise.all([
                 userRepository.getById(BigInt(decoded.userId)),
                 userProfileRepository.getByUserId(BigInt(decoded.userId))
             ]);
-            if (!user || !userProfile || !user?.isActive) throw new ApiError(MESSAGES.AUTH.INVALID_REFRESH_TOKEN, StatusCodes.UNAUTHORIZED);
+            if (!user || !user?.isActive) throw new ApiError(MESSAGES.AUTH.INVALID_REFRESH_TOKEN, StatusCodes.UNAUTHORIZED);
             sendResponse(res, StatusCodes.OK, MESSAGES.AUTH.TOKEN_REFRESHED, { accessToken, userProfile, appLanguageCode: user.appLanguageCode });
-        } catch {
+        } catch (error) {
+            logger.error('Error refreshing token', { error });
             throw new ApiError(MESSAGES.AUTH.INVALID_REFRESH_TOKEN, StatusCodes.UNAUTHORIZED);
         }
     };

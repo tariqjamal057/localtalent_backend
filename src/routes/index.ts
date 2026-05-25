@@ -9,6 +9,8 @@ import userWalletRouter from './user-wallet.route';
 import userBlockRouter from './user-block.route';
 import matchRouter from './match.route';
 import chatRouter from './chat.route';
+import translationRouter from './translation.route';
+import appConstantRouter from './app-constant.route';
 
 const router = Router();
 
@@ -22,5 +24,7 @@ router.use('/user-wallet', userWalletRouter);
 router.use('/user-blocks', userBlockRouter);
 router.use('/matches', matchRouter);
 router.use('/chats', chatRouter);
+router.use('/translations', translationRouter);
+router.use('/app-constants', appConstantRouter);
 
 export default router;

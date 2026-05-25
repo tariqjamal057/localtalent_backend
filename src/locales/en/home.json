@@ -1,0 +1,31 @@
+{
+    "header": {
+        "matchPoints": "Points",
+        "language": "Language"
+    },
+    "languageModal": {
+        "title": "Choose Language",
+        "subtitle": "Select a language to continue",
+        "apply": "Apply"
+    },
+    "form": {
+        "category": "Category",
+        "selectCategory": "Select category",
+        "subCategory": "Sub Category",
+        "selectSubCategory": "Select sub-category",
+        "jobRole": "Job Role",
+        "selectJobRole": "Select job role",
+        "gender": "Gender",
+        "age": "Age",
+        "language": "Language",
+        "timing": "Timing",
+        "distance": "Distance",
+        "noOfPeople": "No. People",
+        "ratePerDay": "Rate/day",
+        "experience": "Experience"
+    },
+    "needSlider": {
+        "worker": "Worker",
+        "job": "Job"
+    }
+}

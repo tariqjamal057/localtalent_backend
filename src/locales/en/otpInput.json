@@ -1,0 +1,13 @@
+{
+    "title": "Enter OTP",
+    "subtitle": "We sent a 4-digit code to",
+    "errors": {
+        "otpIncomplete": "Please enter the complete OTP",
+        "otpInvalid": "Invalid OTP. Please try again."
+    },
+    "resend": {
+        "waitText": "Resend code in",
+        "action": "Resend OTP"
+    },
+    "verifyButton": "Verify"
+}

@@ -1,0 +1,31 @@
+{
+    "header": {
+        "matchPoints": "पॉइंट्स",
+        "language": "भाषा"
+    },
+    "languageModal": {
+        "title": "भाषा चुनें",
+        "subtitle": "जारी रखने के लिए भाषा चुनें",
+        "apply": "लागू करें"
+    },
+    "form": {
+        "category": "श्रेणी",
+        "selectCategory": "श्रेणी चुनें",
+        "subCategory": "उप-श्रेणी",
+        "selectSubCategory": "उप-श्रेणी चुनें",
+        "jobRole": "काम का प्रकार",
+        "selectJobRole": "काम का प्रकार चुनें",
+        "gender": "लिंग",
+        "age": "उम्र",
+        "language": "भाषा",
+        "timing": "समय",
+        "distance": "दूरी",
+        "noOfPeople": "लोगों की संख्या",
+        "ratePerDay": "दर/दिन",
+        "experience": "अनुभव"
+    },
+    "needSlider": {
+        "worker": "मज़दूर",
+        "job": "काम"
+    }
+}

@@ -82,4 +82,9 @@ export const MESSAGES = {
     CHAT: {
         ROOM_FETCHED_SUCCESSFULLY: 'Chat room fetched successfully',
     },
+    TRANSLATION: {
+        FETCHED_SUCCESSFULLY: 'Translations fetched successfully',
+        UNSUPPORTED_LOCALE: 'Unsupported locale. Supported locales are: en, hi',
+        NAMESPACE_NOT_FOUND: 'Translation namespace not found',
+    },
 };

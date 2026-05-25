@@ -1,0 +1,62 @@
+{
+    "title": "अपना प्रोफ़ाइल बनाएं",
+    "subtitle": "शुरू करने के लिए अपने बारे में थोड़ा बताएं",
+    "submitButton": "प्रोफ़ाइल सहेजें",
+    "doneButton": "हो गया",
+    "fields": {
+        "fullName": "पूरा नाम",
+        "gender": "लिंग",
+        "age": "आयु",
+        "experienceLevel": "अनुभव स्तर",
+        "pricePerDay": "प्रति दिन मूल्य",
+        "spokenLanguages": "बोली जाने वाली भाषाएं"
+    },
+    "placeholders": {
+        "fullName": "अपना पूरा नाम दर्ज करें",
+        "age": "अपनी आयु दर्ज करें",
+        "pricePerDay": "अपनी दैनिक दर दर्ज करें",
+        "spokenLanguages": "भाषाएं चुनें",
+        "searchLanguage": "भाषाएं खोजें..."
+    },
+    "genderOptions": {
+        "male": "पुरुष",
+        "female": "महिला",
+        "other": "अन्य"
+    },
+    "experienceOptions": {
+        "beginner": "शुरुआती",
+        "intermediate": "मध्यवर्ती",
+        "expert": "विशेषज्ञ"
+    },
+    "languageOptions": {
+        "english": "अंग्रेज़ी",
+        "hindi": "हिंदी",
+        "telugu": "तेलुगु",
+        "tamil": "तमिल",
+        "kannada": "कन्नड़",
+        "malayalam": "मलयालम",
+        "bengali": "बंगाली",
+        "marathi": "मराठी",
+        "gujarati": "गुजराती",
+        "punjabi": "पंजाबी",
+        "odia": "उड़िया",
+        "urdu": "उर्दू",
+        "assamese": "असमिया",
+        "maithili": "मैथिली",
+        "konkani": "कोंकणी",
+        "kashmiri": "कश्मीरी",
+        "sindhi": "सिंधी",
+        "nepali": "नेपाली",
+        "manipuri": "मणिपुरी",
+        "dogri": "डोगरी",
+        "bodo": "बोडो",
+        "santali": "संताली",
+        "sanskrit": "संस्कृत"
+    },
+    "errors": {
+        "fullNameTooLong": "नाम अधिकतम 120 अक्षरों का होना चाहिए",
+        "ageInvalid": "कृपया एक मान्य आयु दर्ज करें",
+        "priceInvalid": "कृपया एक मान्य मूल्य दर्ज करें",
+        "submitFailed": "प्रोफ़ाइल सहेजने में विफल। कृपया पुनः प्रयास करें।"
+    }
+}

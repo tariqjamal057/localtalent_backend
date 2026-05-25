@@ -1,0 +1,24 @@
+{
+    "title": "Enter Your Phone Number",
+    "subtitle": "We'll send you a one-time verification code",
+    "phoneNumber": {
+        "label": "Phone Number",
+        "placeholder": "Enter phone number"
+    },
+    "errors": {
+        "phoneNumberRequired": "Please enter your phone number",
+        "phoneNumberInvalid": "Please enter a valid phone number",
+        "generic": "Something went wrong. Please try again."
+    },
+    "termsAndConditions": {
+        "prefix": "By continuing, you agree to our",
+        "termsOfService": "Terms of Service",
+        "and": "and",
+        "privacyPolicy": "Privacy Policy"
+    },
+    "continueButton": "Continue",
+    "countryPicker": {
+        "title": "Select Country",
+        "searchPlaceholder": "Search by name or code"
+    }
+}

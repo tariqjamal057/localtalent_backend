@@ -1,0 +1,62 @@
+{
+    "title": "Create Your Profile",
+    "subtitle": "Tell us a bit about yourself to get started",
+    "submitButton": "Save Profile",
+    "doneButton": "Done",
+    "fields": {
+        "fullName": "Full Name",
+        "gender": "Gender",
+        "age": "Age",
+        "experienceLevel": "Experience Level",
+        "pricePerDay": "Price Per Day",
+        "spokenLanguages": "Spoken Languages"
+    },
+    "placeholders": {
+        "fullName": "Enter your full name",
+        "age": "Enter your age",
+        "pricePerDay": "Enter your daily rate",
+        "spokenLanguages": "Select languages",
+        "searchLanguage": "Search languages..."
+    },
+    "genderOptions": {
+        "male": "Male",
+        "female": "Female",
+        "other": "Other"
+    },
+    "experienceOptions": {
+        "beginner": "Beginner",
+        "intermediate": "Intermediate",
+        "expert": "Expert"
+    },
+    "languageOptions": {
+        "english": "English",
+        "hindi": "Hindi",
+        "telugu": "Telugu",
+        "tamil": "Tamil",
+        "kannada": "Kannada",
+        "malayalam": "Malayalam",
+        "bengali": "Bengali",
+        "marathi": "Marathi",
+        "gujarati": "Gujarati",
+        "punjabi": "Punjabi",
+        "odia": "Odia",
+        "urdu": "Urdu",
+        "assamese": "Assamese",
+        "maithili": "Maithili",
+        "konkani": "Konkani",
+        "kashmiri": "Kashmiri",
+        "sindhi": "Sindhi",
+        "nepali": "Nepali",
+        "manipuri": "Manipuri",
+        "dogri": "Dogri",
+        "bodo": "Bodo",
+        "santali": "Santali",
+        "sanskrit": "Sanskrit"
+    },
+    "errors": {
+        "fullNameTooLong": "Name must be at most 120 characters",
+        "ageInvalid": "Please enter a valid age",
+        "priceInvalid": "Please enter a valid price",
+        "submitFailed": "Failed to save profile. Please try again."
+    }
+}

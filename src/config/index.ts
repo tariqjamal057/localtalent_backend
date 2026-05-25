@@ -87,7 +87,12 @@ const config = {
 
     call: {
         USER_LOCK_TTL_SECONDS: parseInt(process.env.CALL_USER_LOCK_TTL_SECONDS || '30', 10),
-    }
+    },
+
+    i18n: {
+        supportedLocales: requireEnv('SUPPORTED_LOCALES').split(',') as string[],
+        cacheMaxAgeSeconds: parseInt(process.env.TRANSLATION_CACHE_MAX_AGE_SECONDS || '86400', 10),
+    },
 };
 
 export default config;

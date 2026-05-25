@@ -1,5 +1,6 @@
 import jwt, { SignOptions, JwtPayload } from 'jsonwebtoken';
 import config from '../config';
+import logger from './logger';
 
 export interface TokenPayload {
     userId: string;
@@ -24,5 +25,10 @@ export const verifyAccessToken = (token: string): DecodedToken => {
 };
 
 export const verifyRefreshToken = (token: string): DecodedToken => {
-    return jwt.verify(token, config.jwt.refreshSecret) as DecodedToken;
+    try {
+        return jwt.verify(token, config.jwt.refreshSecret) as DecodedToken;
+    } catch (error) {
+        logger.error('Error verifying refresh token', { error });
+        throw error;
+    }
 };
