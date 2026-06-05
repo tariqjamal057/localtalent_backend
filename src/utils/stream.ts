@@ -78,8 +78,10 @@ export class StreamUtil {
                             role: 'user'
                         }
                     }),
+                    created_by_id: this.getStreamUserId(userIds[0]),
                     settings_override: {
                         audio: { mic_default_on: true, default_device: "speaker" },
+                        // video: { camera_default_on: true, target_resolution: { width: 480, height: 360, bitrate: 600000 } },
                         ring: {
                             incoming_call_timeout_ms: config.streamCall.maximumRingingDurationSeconds * 1000,
                             auto_cancel_timeout_ms: config.streamCall.maximumRingingDurationSeconds * 1000,

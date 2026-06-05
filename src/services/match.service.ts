@@ -1,6 +1,6 @@
 import { matchRepository, MatchRepository, Match, UpdateMatchDto } from '../repositories/match.repository';
 import { MATCH_STATE, SEARCH_CHANGE_TYPE, SEARCH_TYPE } from '../enums/match';
-import { MatchRequest, MatchResponse } from '../types/socket-data.type';
+import { MatchRequest } from '../types/socket-data.type';
 import { redisUserService, RedisUserService } from './redis/redis-user.service';
 import logger from '../utils/logger';
 import { userBlockRepository, UserBlockRepository } from '../repositories/user-block.repository';
@@ -13,6 +13,8 @@ import { socketGateway } from '../gateway/socket.gateway';
 import config from '../config';
 import { userWalletService, UserWalletService } from './user-wallet.service';
 import { MESSAGES } from '../constants/messages';
+import { TopMatch } from '../types/match.types';
+import { callService, CallService } from './call.service';
 
 export class MatchService {
     constructor(
@@ -21,11 +23,12 @@ export class MatchService {
         private readonly userBlockRepository: UserBlockRepository,
         private readonly categoryRepository: CategoryRepository,
         private readonly matchTrackingRepository: MatchTrackingRepository,
-        private readonly userWalletService: UserWalletService
+        private readonly userWalletService: UserWalletService,
+        private readonly callService: CallService
     ) { }
 
     async getAcceptedMatches(userId: bigint): Promise<Match[]> {
-        return this.matchRepository.getByUserIdAndFinalState(userId, MATCH_STATE.PROPOSAL_ACCEPTED_BY_BOTH);
+        return this.matchRepository.getAcceptedProposalsOfUser(userId);
     }
 
     async getMatchedUserPriorityScore(userSearchData: MatchRequest, matchedUserSearchData: MatchRequest): Promise<number> {
@@ -54,7 +57,7 @@ export class MatchService {
         return Number.POSITIVE_INFINITY;
     };
 
-    async getTopMatchForUser(userId: bigint, userData?: MatchRequest): Promise<MatchResponse | null> {
+    async getTopMatchForUser(userId: bigint, userData?: MatchRequest): Promise<TopMatch | null> {
 
         const userSearchData = userData ?? await this.redisUserService.getUserSearchData(userId);
         if (!userSearchData) {
@@ -79,7 +82,8 @@ export class MatchService {
                 logger.debug(`[MatchService] Evaluating candidate ${matchedUserId} for user ${userId}.`);
 
                 const topUserStatus = await this.redisUserService.getUserStatus(matchedUserId);
-                if (topUserStatus !== USER_STATUS.SEARCHING && topUserStatus !== USER_STATUS.MATCHED) {
+                logger.info(`[MatchService] Candidate ${matchedUserId} status: ${topUserStatus}`);
+                if (topUserStatus !== USER_STATUS.SEARCHING) {
                     logger.debug(`[MatchService] Candidate ${matchedUserId} not searching (status: ${topUserStatus}). Skipping.`);
                     continue;
                 }
@@ -140,18 +144,40 @@ export class MatchService {
     };
 
     async sendTopMatchToUser(userId: bigint): Promise<void> {
-        const userStatus = await this.redisUserService.getUserStatus(userId);
-        if (userStatus !== USER_STATUS.SEARCHING) {
-            logger.info(`[MatchService] User ${userId} is not currently searching (status: ${userStatus}). Will not send top match.`);
-            return;
-        }
+        // const userStatus = await this.redisUserService.getUserStatus(userId);
+        // if (userStatus !== USER_STATUS.SEARCHING) {
+        //     logger.info(`[MatchService] User ${userId} is not currently searching (status: ${userStatus}). Will not send top match.`);
+        //     return;
+        // }
         const topMatch = await this.getTopMatchForUser(userId);
         if (topMatch) {
-            logger.info(`[MatchService] Sending top match with ID ${topMatch.matchId} to user ${userId}.`);
-            await this.redisUserService.setUserStatus(userId, USER_STATUS.MATCHED);
-            await this.redisUserService.addToSeenSet(userId, BigInt(topMatch.userId));
-            logger.info(`[MatchService] Updated status to MATCHED for user ${userId} in Redis.`);
-            socketGateway.sendMatchToUser(userId, topMatch);
+
+            this.redisUserService.addToSeenSet(userId, BigInt(topMatch.userId));
+            this.redisUserService.addToSeenSet(BigInt(topMatch.userId), userId);
+
+            const userName = (await this.redisUserService.getUserSearchData(userId))?.name;
+            const callData = await this.callService.createCall(BigInt(topMatch.userId), userId, topMatch.name, userName!, BigInt(topMatch.matchId));
+            const ownSearchData = await this.redisUserService.getUserSearchData(userId);
+            const userOwnData: TopMatch = {
+                matchId: Number(topMatch.matchId),
+                userId: Number(userId),
+                name: userName!,
+                age: (ownSearchData)?.age!,
+                experience: (ownSearchData)?.experience!,
+                spokenLanguageIds: (ownSearchData)?.spokenLanguageIds!,
+                categoryLevelTwo: (await this.categoryRepository.getById(BigInt((await this.redisUserService.getUserSearchData(userId))?.categoryLevelTwoId!), DEFAULT_LANGUAGE))?.title || '',
+                categoryLevelThree: (await this.categoryRepository.getById(BigInt((await this.redisUserService.getUserSearchData(userId))?.categoryLevelThreeId!), DEFAULT_LANGUAGE))?.title || '',
+                rate: (ownSearchData)?.rate!,
+                rateType: (ownSearchData)?.rateType!,
+                availableTiming: (ownSearchData)?.availableTiming!,
+                availabilityType: (ownSearchData)?.availabilityType!,
+                gender: (ownSearchData)?.gender!
+            }
+            callData.forEach(c => {
+                const data = c.userId === userId ? { ...topMatch, callData: c } : { ...userOwnData, callData: c };
+                socketGateway.sendMatchToUser(c.userId, data);
+            });
+            logger.info(`[MatchService] Sent top match with ID ${topMatch.matchId} to user ${userId}.`);
         } else {
             logger.info(`[MatchService] No top match found to send to user ${userId}.`);
         }
@@ -163,10 +189,10 @@ export class MatchService {
         }
         const size = await this.redisUserService.pushToPriorityQueueAndGetSize(userId, matchedUserId.toString(), priority);
         logger.debug(`[MatchService] Added candidate ${matchedUserId} to priority queue for user ${userId} (priority=${priority}, queueSize=${size}).`);
-        if (size === 1) {
-            logger.info(`[MatchService] Priority queue ready for user ${userId}. Triggering top match send.`);
-            this.sendTopMatchToUser(userId);
-        }
+        // if (size === 1) {
+        //     logger.info(`[MatchService] Priority queue ready for user ${userId}. Triggering top match send.`);
+        //     this.sendTopMatchToUser(userId);
+        // }
     };
 
     async addPotentialUsersToPriorityQueue(userId: bigint, matchedUserIds: bigint[]): Promise<void> {
@@ -178,8 +204,8 @@ export class MatchService {
             return;
         }
 
-        const previousSize = await this.redisUserService.sizeOfPriorityQueue(userId);
-        logger.debug(`[MatchService] Previous priority queue size for user ${userId}: ${previousSize}`);
+        // const previousSize = await this.redisUserService.sizeOfPriorityQueue(userId);
+        // logger.info(`[MatchService] Previous priority queue size for user ${userId}: ${previousSize}`);
 
         const itemsToAdd: { element: string, priority: number }[] = [];
         for (const matchedUserId of matchedUserIds) {
@@ -206,13 +232,8 @@ export class MatchService {
 
         if (itemsToAdd.length > 0) {
             await this.redisUserService.pushMultipleItemsToPriorityQueue(userId, itemsToAdd);
-            logger.debug(`[MatchService] Added ${itemsToAdd.length} items to priority queue for user ${userId}.`);
-
-            if (previousSize === 0) {
-                logger.info(`[MatchService] Priority queue ready for user ${userId}. Triggering top match send.`);
-                this.sendTopMatchToUser(userId);
-            }
-
+            logger.info(`[MatchService] Added ${itemsToAdd.length} items to priority queue for user ${userId}.`);
+            this.sendTopMatchToUser(userId);
         } else {
             logger.debug(`[MatchService] No valid candidates to add to priority queue for user ${userId}.`);
         }
@@ -241,26 +262,27 @@ export class MatchService {
         return true;
     }
     isSameSearchData(data1: MatchRequest, data2: MatchRequest): SEARCH_CHANGE_TYPE {
-        if (data1.categoryLevelOneId !== data2.categoryLevelOneId ||
-            data1.categoryLevelTwoId !== data2.categoryLevelTwoId ||
-            data1.categoryLevelThreeId !== data2.categoryLevelThreeId ||
-            data1.latitude !== data2.latitude ||
-            data1.longitude !== data2.longitude ||
-            data1.searchRadiusKm !== data2.searchRadiusKm ||
+        logger.info(`[MatchService] Comparing search data for changes. Data1: ${JSON.stringify(data1)}, Data2: ${JSON.stringify(data2)}`);
+        if (data1.categoryLevelOneId != data2.categoryLevelOneId ||
+            data1.categoryLevelTwoId != data2.categoryLevelTwoId ||
+            data1.categoryLevelThreeId != data2.categoryLevelThreeId ||
+            data1.latitude != data2.latitude ||
+            data1.longitude != data2.longitude ||
+            data1.searchRadiusKm != data2.searchRadiusKm ||
             data1.searchType !== data2.searchType
         ) {
             //critical change need to rebuild all
             return SEARCH_CHANGE_TYPE.CRITICAL_CHANGE;
         }
-        if (data1.name !== data2.name ||
-            data1.age !== data2.age ||
-            data1.experience !== data2.experience ||
+        if (data1.name != data2.name ||
+            data1.age != data2.age ||
+            data1.experience != data2.experience ||
             !this.isSameSpokenLanguages(data1.spokenLanguageIds, data2.spokenLanguageIds) ||
-            data1.gender !== data2.gender ||
-            data1.rate !== data2.rate ||
-            data1.rateType !== data2.rateType ||
-            data1.availableTiming !== data2.availableTiming ||
-            data1.availabilityType !== data2.availabilityType
+            data1.gender != data2.gender ||
+            data1.rate != data2.rate ||
+            data1.rateType != data2.rateType ||
+            data1.availableTiming != data2.availableTiming ||
+            data1.availabilityType != data2.availabilityType
         ) {
             //non critical change, need to override current search data but can keep priority queue and seen data as is
             return SEARCH_CHANGE_TYPE.NON_CRITICAL_CHANGE;
@@ -283,6 +305,7 @@ export class MatchService {
 
         if (existingSearchData) {
             const changeType = this.isSameSearchData(existingSearchData, formData);
+            logger.info(`[MatchService] Detected search data change type ${changeType} for user ${userId}.`);
             if (changeType === SEARCH_CHANGE_TYPE.NO_CHANGE) {
                 await this.redisUserService.setUserStatus(userId, USER_STATUS.SEARCHING);
                 logger.info(`[MatchService] No search data changes for user ${userId}. Resuming match search.`);
@@ -294,7 +317,9 @@ export class MatchService {
                 return this.sendTopMatchToUser(userId);
             }
         }
-
+        if (existingSearchData) {
+            await this.redisUserService.clearAllUserData(userId);
+        }
         await this.redisUserService.setUserSearchData(userId, { ...formData, spokenLanguageIds: JSON.stringify(formData.spokenLanguageIds) });
         logger.debug(`[MatchService] Search data stored in Redis for user ${userId}.`);
 
@@ -322,6 +347,11 @@ export class MatchService {
             state: newState
         });
     }
+
+    async handleStopMatching(userId: bigint): Promise<void> {
+        await this.redisUserService.setUserStatus(userId, USER_STATUS.ONLINE);
+        logger.info(`[MatchService] User ${userId} stopped matching. Status set to ONLINE and removed from search.`);
+    };
 }
 
-export const matchService = new MatchService(matchRepository, redisUserService, userBlockRepository, categoryRepository, matchTrackingRepository, userWalletService);
+export const matchService = new MatchService(matchRepository, redisUserService, userBlockRepository, categoryRepository, matchTrackingRepository, userWalletService, callService);

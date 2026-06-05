@@ -130,6 +130,18 @@ export class MatchRepository {
         if (result.rows.length === 0) return null;
         return matchRowToDto(result.rows[0]);
     }
+
+    async getAcceptedProposalsOfUser(userId: bigint): Promise<Match[]> {
+        const query = `
+            SELECT *
+            FROM matches
+            WHERE (recruiter_user_id = $1 OR candidate_user_id = $1)
+              AND totalUsers = proposalAcceptedCount
+            ORDER BY created_at DESC
+        `;
+        const result: QueryResult<MatchRow> = await this.db.query(query, [userId]);
+        return result.rows.map(matchRowToDto);
+    }
 }
 
 export const matchRepository = new MatchRepository(DatabaseService.getInstance());

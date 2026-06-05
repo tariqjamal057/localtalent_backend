@@ -1,3 +1,4 @@
+import { UserDataToJoinCall } from "./call.type";
 import { MatchRequest } from "./socket-data.type";
 
 export interface Match {
@@ -48,4 +49,23 @@ export interface MatchRow {
     provider_call_id?: string;
     call_ended_by?: number;
     call_type?: number;
+}
+
+export interface TopMatch {
+    matchId: number;
+    userId: number;
+    name: string;
+    age: number;
+    experience: number;
+    spokenLanguageIds: number[];
+    gender: number;
+
+    rate: number;
+    rateType: number;
+
+    availableTiming: number;
+    availabilityType: number;
+
+    categoryLevelTwo: string;
+    categoryLevelThree: string;
 }

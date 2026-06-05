@@ -11,24 +11,17 @@ const matchIdParamsSchema = z.object({
 });
 
 router.post(
-    '/:matchId/request',
-    authenticate,
-    validate(matchIdParamsSchema, VALIDATION_SOURCE.PARAMS),
-    callController.requestCall
-);
-
-router.post(
-    '/:matchId/accept',
-    authenticate,
-    validate(matchIdParamsSchema, VALIDATION_SOURCE.PARAMS),
-    callController.handleCallAccepted
-);
-
-router.post(
     '/:matchId/video-request',
     authenticate,
     validate(matchIdParamsSchema, VALIDATION_SOURCE.PARAMS),
     callController.handleVideoRequest
+);
+
+router.post(
+    '/:matchId/end',
+    authenticate,
+    validate(matchIdParamsSchema, VALIDATION_SOURCE.PARAMS),
+    callController.handleCallEnd
 );
 
 export default router;

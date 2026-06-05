@@ -6,7 +6,6 @@ export enum USER_TYPE {
 export enum USER_STATUS {
     ONLINE = 'online',
     OFFLINE = 'offline',
-    IN_CALL = 'in_call',
     SEARCHING = 'searching',
     MATCHED = 'matched',
 }

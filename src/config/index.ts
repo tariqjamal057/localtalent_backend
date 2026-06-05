@@ -87,6 +87,8 @@ const config = {
 
     call: {
         USER_LOCK_TTL_SECONDS: parseInt(process.env.CALL_USER_LOCK_TTL_SECONDS || '30', 10),
+        PROPOSAL_ACCEPTED_SET_TTL_SECONDS: parseInt(process.env.CALL_PROPOSAL_ACCEPTED_SET_TTL_SECONDS || '10800', 10),
+        PROPOSAL_AUTO_CANCEL_TIMEOUT_SECONDS: parseInt(process.env.CALL_PROPOSAL_AUTO_CANCEL_TIMEOUT_SECONDS || '60', 10),
     },
 
     i18n: {

@@ -7,6 +7,15 @@ import socketService from './config/socket';
 import queueService from './services/queue/queue.service';
 import { redisClient } from './config/redis';
 
+declare global {
+    interface BigInt {
+        toJSON(): string;
+    }
+}
+
+BigInt.prototype.toJSON = function (): string {
+    return this.toString();
+};
 const server = http.createServer(app);
 
 async function bootstrap(): Promise<void> {

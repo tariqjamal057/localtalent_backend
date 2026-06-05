@@ -1,4 +1,5 @@
 import { PROPOSAL_STATE } from "../enums/call";
+import { UserDataToJoinCall } from "./call.type";
 
 export interface MatchRequest {
     name: string;
@@ -43,6 +44,8 @@ export interface MatchResponse {
 
     categoryLevelTwo: string;
     categoryLevelThree: string;
+
+    callData: UserDataToJoinCall;
 }
 
 export interface CallEndResult {

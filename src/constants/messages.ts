@@ -78,6 +78,8 @@ export const MESSAGES = {
         FAILED_TO_ACCEPT_PROPOSAL: 'Failed to accept the proposal, please try again later',
         INSUFFICIENT_BALANCE_FOR_VIDEO_CALL: 'You do not have enough video request count available. Please purchase more to be able to request video calls.',
         VIDEO_REQUEST_SENT: 'Video request sent successfully',
+        INVALID_CALL_END_PARAMETERS: 'Invalid parameters for ending call. Please provide either callEndBy or userId.',
+        CALL_ENDED: 'Call ended successfully',
     },
     CHAT: {
         ROOM_FETCHED_SUCCESSFULLY: 'Chat room fetched successfully',

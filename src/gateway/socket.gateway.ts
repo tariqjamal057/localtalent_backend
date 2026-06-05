@@ -5,6 +5,8 @@ import logger from "../utils/logger";
 import { redisUserService } from "../services/redis/redis-user.service";
 import { CallEndResult, MatchResponse } from "../types/socket-data.type";
 import { UserDataToJoinCall } from "../types/call.type";
+import { CALL_ENDED_BY } from "../enums/call";
+import { UserDataToJoinChat } from "../types/chat.type";
 
 class SocketGateway {
 
@@ -49,7 +51,6 @@ class SocketGateway {
 
     public async sendMatchToUser(userId: bigint, matchData: MatchResponse): Promise<void> {
         try {
-            logger.info(`Sending match data to user ${userId}: ${JSON.stringify(matchData)}`);
             this.socketService.emitToUser(userId, SOCKET_OUTGOING_EVENT.MATCH_FOUND, matchData);
         } catch (error) {
             logger.error(`Failed to send match data to user ${userId}: ${error instanceof Error ? error.message : String(error)}`);
@@ -74,15 +75,6 @@ class SocketGateway {
         }
     }
 
-    public async sendCallEndedEventToUser(userId: bigint, matchId: bigint): Promise<void> {
-        try {
-            logger.info(`Sending call ended event to user ${userId} for match ${matchId}`);
-            this.socketService.emitToUser(userId, SOCKET_OUTGOING_EVENT.CALL_ENDED, { matchId });
-        } catch (error) {
-            logger.error(`Failed to send call ended event to user ${userId}: ${error instanceof Error ? error.message : String(error)}`);
-        }
-    }
-
     public async sendCallEndResultEventToUser(userId: bigint, callEndResult: CallEndResult): Promise<void> {
         try {
             logger.info(`Sending call end result to user ${userId} with data: ${JSON.stringify(callEndResult)}`);
@@ -98,6 +90,32 @@ class SocketGateway {
             this.socketService.emitToUser(userId, SOCKET_OUTGOING_EVENT.VIDEO_REQUEST, { matchId });
         } catch (error) {
             logger.error(`Failed to send video request event to user ${userId}: ${error instanceof Error ? error.message : String(error)}`);
+        }
+    }
+
+    public async sendCallEndedEvent(userId: bigint, data: { matchId: bigint, callEndedBy: CALL_ENDED_BY, message: string, proposalAutoCancelTimeoutSeconds: number }): Promise<void> {
+        try {
+            logger.info(`Sending call ended event to user ${userId} for match ${data.matchId} with message: ${data.message}`);
+            this.socketService.emitToUser(userId, SOCKET_OUTGOING_EVENT.CALL_ENDED, data);
+        } catch (error) {
+            logger.error(`Failed to send call ended event to user ${userId}: ${error instanceof Error ? error.message : String(error)}`);
+        }
+    }
+
+    public async sendAllAcceptedProposalEvent(userId: bigint, data: {
+        matchId: bigint, userData: {
+            latitude: number, longitude: number, name: string | undefined | null
+        }, chatData: UserDataToJoinChat
+    }): Promise<void> {
+        try {
+            logger.info(`Sending all accepted proposal event to user ${userId} for match ${data.matchId} with user data: ${JSON.stringify(data.userData)} and chat data: ${JSON.stringify(data.chatData)}`);
+            this.socketService.emitToUser(userId, SOCKET_OUTGOING_EVENT.ALL_ACCEPTED_PROPOSAL, {
+                matchId: data.matchId,
+                userData: data.userData,
+                chatData: data.chatData
+            });
+        } catch (error) {
+            logger.error(`Failed to send all accepted proposal event to user ${userId}: ${error instanceof Error ? error.message : String(error)}`);
         }
     }
 }

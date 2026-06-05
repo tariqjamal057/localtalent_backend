@@ -7,25 +7,18 @@ import { sendResponse } from '../utils/response';
 export class CallController {
     constructor(private readonly callService: CallService) { }
 
-    requestCall = async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
-        const userId = req.user!.id;
-        const matchId = req.params.matchId as unknown as bigint;
-        await this.callService.requestCall(userId, matchId);
-        sendResponse(res, StatusCodes.OK, MESSAGES.CALL.REQUESTED_SUCCESSFULLY);
-    };
-
-    handleCallAccepted = async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
-        const userId = req.user!.id;
-        const matchId = req.params.matchId as unknown as bigint;
-        await this.callService.handleCallAccepted(userId, matchId);
-        sendResponse(res, StatusCodes.OK, MESSAGES.CALL.ACCEPTED_SUCCESSFULLY);
-    };
-
     handleVideoRequest = async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
         const userId = req.user!.id;
         const matchId = req.params.matchId as unknown as bigint;
         await this.callService.handleVideoRequest(userId, matchId);
         sendResponse(res, StatusCodes.OK, MESSAGES.CALL.VIDEO_REQUEST_SENT);
+    };
+
+    handleCallEnd = async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
+        const userId = req.user!.id;
+        const matchId = req.params.matchId as unknown as bigint;
+        await this.callService.handleCallEnd({ matchId, userId });
+        sendResponse(res, StatusCodes.OK, MESSAGES.CALL.CALL_ENDED);
     };
 }
 

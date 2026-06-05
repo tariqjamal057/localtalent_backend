@@ -127,7 +127,14 @@ export class SocketService {
                     socketGateway.sendErrorToUser(user.id, error instanceof Error ? error.message : String(error));
                 }
             });
-
+            socket.on(SOCKET_INCOMING_EVENT.STOP_MATCH, async () => {
+                try {
+                    await matchService.handleStopMatching(user.id);
+                } catch (error) {
+                    logger.info(`Error handling stop_matching event for user ${user.id}: ${error instanceof Error ? error.message : String(error)}`);
+                    socketGateway.sendErrorToUser(user.id, error instanceof Error ? error.message : String(error));
+                }
+            });
         });
     }
 }

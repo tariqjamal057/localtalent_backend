@@ -1,4 +1,4 @@
-import { PROPOSAL_STATE } from "../enums/call";
+import { CALL_ENDED_BY, PROPOSAL_STATE } from "../enums/call";
 
 export const getProposalAcceptedMessage = (proposalState: PROPOSAL_STATE, isMesageForRecruiter: boolean): string => {
     switch (proposalState) {
@@ -12,5 +12,20 @@ export const getProposalAcceptedMessage = (proposalState: PROPOSAL_STATE, isMesa
             return 'Both parties have accepted the proposal';
         default:
             return '';
+    }
+}
+
+export const getCallEndedMessage = (callEndedBy: CALL_ENDED_BY, isMessageForRecruiter: boolean): string => {
+    switch (callEndedBy) {
+        case CALL_ENDED_BY.RECRUITER:
+            return isMessageForRecruiter ? 'Call ended by you' : 'Call ended by recruiter';
+        case CALL_ENDED_BY.CANDIDATE:
+            return isMessageForRecruiter ? 'Call ended by candidate' : 'Call ended by you';
+        case CALL_ENDED_BY.BULL_MQ_JOB:
+            return 'Call ended due to inactivity';
+        case CALL_ENDED_BY.PROVIDER_WEBHOOK:
+            return 'Call ended by provider';
+        default:
+            return 'Call ended';
     }
 }
