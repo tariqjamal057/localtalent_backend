@@ -108,7 +108,6 @@ class SocketGateway {
         }, chatData: UserDataToJoinChat
     }): Promise<void> {
         try {
-            logger.info(`Sending all accepted proposal event to user ${userId} for match ${data.matchId} with user data: ${JSON.stringify(data.userData)} and chat data: ${JSON.stringify(data.chatData)}`);
             this.socketService.emitToUser(userId, SOCKET_OUTGOING_EVENT.ALL_ACCEPTED_PROPOSAL, {
                 matchId: data.matchId,
                 userData: data.userData,

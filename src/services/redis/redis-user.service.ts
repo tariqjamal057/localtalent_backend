@@ -47,9 +47,9 @@ export class RedisUserService {
             count
         );
 
-        logger.info(
-            `Popped ${result.length} items from priority queue for user ${userId}. Result: ${JSON.stringify(result)}`
-        );
+        // logger.info(
+        //     `Popped ${result.length} items from priority queue for user ${userId}. Result: ${JSON.stringify(result)}`
+        // );
 
         const elements: bigint[] = [];
 
@@ -90,6 +90,18 @@ export class RedisUserService {
 
     public async clearSeenSet(userId: bigint): Promise<void> {
         await this.client.del(RedisKeys.getUserSeenSetKey(userId));
+    }
+
+    public async checkIsAlreadySeen(
+        userId: bigint,
+        targetUserId: bigint
+    ): Promise<boolean> {
+        const result = await this.client.sismember(
+            RedisKeys.getUserSeenSetKey(userId),
+            targetUserId.toString()
+        );
+
+        return result === 1;
     }
 
 

@@ -12,7 +12,6 @@ import { UserDataToJoinCall } from "../types/call.type";
 import { getCallEndedMessage } from "../utils/call";
 import logger from "../utils/logger";
 import { getOtherUserIdInMatch } from "../utils/match";
-import { ONGOING_CALL_KEYS } from "../utils/redisKeys";
 import { StreamUtil } from "../utils/stream";
 import CallQueue from "./queue/call.queue";
 import { redisCallService, RedisCallService } from "./redis/redis-call.service";
@@ -59,15 +58,15 @@ export class CallService {
                 { id: smallerUserId, name: smallerUserName, canRequestVideoCall: isSmallUserVideoRequestAvailable },
                 { id: largerUserId, name: largerUserName, canRequestVideoCall: isLargeUserVideoRequestAvailable }
             ]);
-            await this.redisCallService.setOngoingCall(matchId, {
-                [ONGOING_CALL_KEYS.STREAM_CALL_ID]: callData[0].callId,
-                [ONGOING_CALL_KEYS.USER_1_ID]: smallerUserId.toString(),
-                [ONGOING_CALL_KEYS.USER_2_ID]: largerUserId.toString(),
-                [ONGOING_CALL_KEYS.IS_USER_1_JOINED]: false,
-                [ONGOING_CALL_KEYS.IS_USER_2_JOINED]: false,
-                [ONGOING_CALL_KEYS.IS_USER_1_ACCEPTED_PROPOSAL]: false,
-                [ONGOING_CALL_KEYS.IS_USER_2_ACCEPTED_PROPOSAL]: false
-            });
+            // await this.redisCallService.setOngoingCall(matchId, {
+            //     [ONGOING_CALL_KEYS.STREAM_CALL_ID]: callData[0].callId,
+            //     [ONGOING_CALL_KEYS.USER_1_ID]: smallerUserId.toString(),
+            //     [ONGOING_CALL_KEYS.USER_2_ID]: largerUserId.toString(),
+            //     [ONGOING_CALL_KEYS.IS_USER_1_JOINED]: false,
+            //     [ONGOING_CALL_KEYS.IS_USER_2_JOINED]: false,
+            //     [ONGOING_CALL_KEYS.IS_USER_1_ACCEPTED_PROPOSAL]: false,
+            //     [ONGOING_CALL_KEYS.IS_USER_2_ACCEPTED_PROPOSAL]: false
+            // });
             const maximumCallDuration = config.streamCall.maximumCallDurationSeconds;
             CallQueue.scheduleCallEnd(matchId, maximumCallDuration * 1000);
             await Promise.all([
@@ -119,6 +118,7 @@ export class CallService {
             longitude: candidateSearchData.longitude,
             name: candidateProfile?.fullName
         }
+        logger.info("ALL accepted proposal")
         chatData.forEach(c => {
             const isRecruiter = c.userId === recruiterUserId;
             socketGateway.sendAllAcceptedProposalEvent(c.userId, {
@@ -130,7 +130,7 @@ export class CallService {
     }
     async handleProposalAcceptance(userId: bigint, matchId: bigint): Promise<void> {
         const match = await this.matchRepository.getById(matchId);
-        if (!match || (match.recruiterUserId !== userId && match.candidateUserId !== userId)) {
+        if (!match || (match.recruiterUserId != userId && match.candidateUserId != userId)) {
             throw new Error(MESSAGES.MATCH.NOT_A_MEMBER_OF_MATCH);
         }
         const hasAlreadyAccepted = await this.redisCallService.hasAccepted(matchId, userId);
@@ -151,6 +151,7 @@ export class CallService {
             state: isRecruiter ? MATCH_STATE.PROPOSAL_ACCEPTED_BY_RECRUITER : MATCH_STATE.PROPOSAL_ACCEPTED_BY_CANDIDATE
         });
         const acceptedCount = await this.redisCallService.getAcceptedCount(matchId);
+        logger.info("Proposal accepted count", { acceptedCount })
         if (acceptedCount === match.totalUsers) {
             try {
                 await Promise.all([

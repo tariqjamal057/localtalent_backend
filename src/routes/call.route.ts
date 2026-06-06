@@ -24,4 +24,18 @@ router.post(
     callController.handleCallEnd
 );
 
+router.post(
+    '/:matchId/block',
+    authenticate,
+    validate(matchIdParamsSchema, VALIDATION_SOURCE.PARAMS),
+    callController.handleBlocking
+);
+
+router.post(
+    '/:matchId/accept-proposal',
+    authenticate,
+    validate(matchIdParamsSchema, VALIDATION_SOURCE.PARAMS),
+    callController.handleProposalAcceptance
+);
+
 export default router;

@@ -11,6 +11,7 @@ import matchRouter from './match.route';
 import chatRouter from './chat.route';
 import translationRouter from './translation.route';
 import appConstantRouter from './app-constant.route';
+import callRouter from './call.route';
 
 const router = Router();
 
@@ -26,5 +27,6 @@ router.use('/matches', matchRouter);
 router.use('/chats', chatRouter);
 router.use('/translations', translationRouter);
 router.use('/app-constants', appConstantRouter);
+router.use('/call', callRouter)
 
 export default router;

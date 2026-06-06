@@ -20,6 +20,20 @@ export class CallController {
         await this.callService.handleCallEnd({ matchId, userId });
         sendResponse(res, StatusCodes.OK, MESSAGES.CALL.CALL_ENDED);
     };
+
+    handleBlocking = async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
+        const userId = req.user!.id;
+        const matchId = req.params.matchId as unknown as bigint;
+        await this.callService.handleBlocking(userId, matchId);
+        sendResponse(res, StatusCodes.OK, MESSAGES.USER_BLOCK.BLOCKED_SUCCESSFULLY);
+    };
+
+    handleProposalAcceptance = async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
+        const userId = req.user!.id;
+        const matchId = req.params.matchId as unknown as bigint;
+        await this.callService.handleProposalAcceptance(userId, matchId);
+        sendResponse(res, StatusCodes.OK, MESSAGES.CALL.ACCEPTED_SUCCESSFULLY);
+    };
 }
 
 export const callController = new CallController(callService);

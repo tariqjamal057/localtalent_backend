@@ -88,6 +88,14 @@ export class MatchService {
                     continue;
                 }
 
+                const isAlreadySeen = await this.redisUserService.checkIsAlreadySeen(userId, matchedUserId);
+
+                if (isAlreadySeen) {
+                    logger.info
+                        (`[MatchService] Candidate ${matchedUserId} already seen by user ${userId} . Skipping`);
+                    continue;
+                }
+
                 const matchedUserSearchData = await this.redisUserService.getUserSearchData(matchedUserId);
                 if (!matchedUserSearchData) {
                     logger.debug(`[MatchService] No search data found for candidate ${matchedUserId}. Skipping.`);

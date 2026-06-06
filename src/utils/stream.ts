@@ -5,6 +5,7 @@ import { STREAM_CALL_TYPE } from "../enums/call";
 import { SESSION_TYPE } from "../enums/sessions";
 import { UserDataToJoinCall } from "../types/call.type";
 import { UserDataToJoinChat } from "../types/chat.type";
+import logger from "./logger";
 
 export class StreamUtil {
     private static streamChatClient = StreamChatClient.getInstance();
@@ -43,6 +44,7 @@ export class StreamUtil {
         const channelId = this.getChatChannelId(userIds);
         const channel = this.streamChatClient.channel('messaging', channelId, {
             members: streamMemberIds,
+            created_by_id: streamMemberIds[0]
         });
         await channel.create();
         if (!channel.id) {
@@ -100,18 +102,23 @@ export class StreamUtil {
     }
 
     public static async setupChatForUsers(users: { id: bigint; name: string }[]): Promise<UserDataToJoinChat[]> {
-        await this.upsertUsersForChat(users);
-        const userIds = users.map(user => user.id);
-        const streamUserIds = users.map(user => this.getStreamUserId(user.id));
-        const tokens = await Promise.all(users.map(user => this.createChatToken(user.id)));
-        const channelId = await this.createChatChannel(userIds);
-        return users.map((_, index) => ({
-            userId: userIds[index],
-            streamUserId: streamUserIds[index],
-            token: tokens[index],
-            channelId,
-            sessionType: SESSION_TYPE.CHAT,
-        }));
+        try {
+            await this.upsertUsersForChat(users);
+            const userIds = users.map(user => user.id);
+            const streamUserIds = users.map(user => this.getStreamUserId(user.id));
+            const tokens = await Promise.all(users.map(user => this.createChatToken(user.id)));
+            const channelId = await this.createChatChannel(userIds);
+            return users.map((_, index) => ({
+                userId: userIds[index],
+                streamUserId: streamUserIds[index],
+                token: tokens[index],
+                channelId,
+                sessionType: SESSION_TYPE.CHAT,
+            }));
+        } catch (error) {
+            logger.info('Error occured during chat setup', { error })
+            throw error;
+        }
     }
 
     public static async setupCallForUsers(users: { id: bigint; name: string, canRequestVideoCall: boolean }[]): Promise<UserDataToJoinCall[]> {
