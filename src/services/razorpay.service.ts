@@ -1,4 +1,5 @@
 import Razorpay from 'razorpay';
+import crypto from 'crypto';
 import config from '../config';
 import { Orders } from 'razorpay/dist/types/orders';
 
@@ -18,6 +19,14 @@ export class RazorpayService {
             currency: 'INR'
         });
         return order;
+    }
+
+    verifyWebhookSignature(rawBody: Buffer, signature: string): boolean {
+        const expected = crypto
+            .createHmac('sha256', config.payment.RAZORPAY_WEBHOOK_SECRET)
+            .update(rawBody)
+            .digest('hex');
+        return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(signature));
     }
 }
 

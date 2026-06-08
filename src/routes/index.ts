@@ -12,6 +12,7 @@ import chatRouter from './chat.route';
 import translationRouter from './translation.route';
 import appConstantRouter from './app-constant.route';
 import callRouter from './call.route';
+import paymentRouter from './payment.route';
 
 const router = Router();
 
@@ -28,5 +29,6 @@ router.use('/chats', chatRouter);
 router.use('/translations', translationRouter);
 router.use('/app-constants', appConstantRouter);
 router.use('/call', callRouter)
+router.use('/payment', paymentRouter)
 
 export default router;

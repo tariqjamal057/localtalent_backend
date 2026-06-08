@@ -81,6 +81,11 @@ export const MESSAGES = {
         INVALID_CALL_END_PARAMETERS: 'Invalid parameters for ending call. Please provide either callEndBy or userId.',
         CALL_ENDED: 'Call ended successfully',
     },
+    PAYMENT: {
+        INVALID_SIGNATURE: 'Invalid webhook signature',
+        ORDER_NOT_FOUND: 'Payment order not found',
+        WEBHOOK_PROCESSED: 'Webhook processed successfully',
+    },
     CHAT: {
         ROOM_FETCHED_SUCCESSFULLY: 'Chat room fetched successfully',
     },

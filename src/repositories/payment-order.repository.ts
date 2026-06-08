@@ -65,6 +65,17 @@ export class PaymentOrderRepository {
         return result.rows.map(row => paymentOrderRowToDto(row));
     }
 
+    async getByOrderId(orderId: string): Promise<PaymentOrder | null> {
+        const query = `
+            SELECT *
+            FROM payment_orders
+            WHERE order_id = $1
+        `;
+        const result: QueryResult<PaymentOrderRow> = await this.db.query(query, [orderId]);
+        if (result.rows.length === 0) return null;
+        return paymentOrderRowToDto(result.rows[0]);
+    }
+
     async updateStatus(id: bigint, dto: UpdatePaymentOrderDto): Promise<void> {
         const query = `
             UPDATE payment_orders

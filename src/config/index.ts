@@ -65,6 +65,7 @@ const config = {
         TAX_RATE: parseFloat(requireEnv('TAX_PERCENTAGE')) / 100,
         RAZORPAY_KEY_ID: requireEnv('RAZORPAY_KEY_ID'),
         RAZORPAY_KEY_SECRET: requireEnv('RAZORPAY_KEY_SECRET'),
+        RAZORPAY_WEBHOOK_SECRET: requireEnv('RAZORPAY_WEBHOOK_SECRET'),
     },
 
     streamCall: {
