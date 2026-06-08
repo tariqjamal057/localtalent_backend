@@ -21,7 +21,8 @@ export class PaymentController {
         }
         logger.info('[PaymentWebhook] Signature header present, verifying...');
 
-        const isValid = razorpayService.verifyWebhookSignature(req.body as Buffer, signature);
+        const rawBody = (req as any).rawBody as Buffer;
+        const isValid = razorpayService.verifyWebhookSignature(rawBody, signature);
         if (!isValid) {
             logger.warn('[PaymentWebhook] Signature verification failed');
             sendError(res, MESSAGES.PAYMENT.INVALID_SIGNATURE, StatusCodes.UNAUTHORIZED);
@@ -29,7 +30,7 @@ export class PaymentController {
         }
         logger.info('[PaymentWebhook] Signature verified successfully');
 
-        const payload = JSON.parse((req.body as Buffer).toString());
+        const payload = req.body;
         const event: string = payload.event;
         logger.info(`[PaymentWebhook] Event type: ${event}`);
 
