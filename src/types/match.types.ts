@@ -1,4 +1,3 @@
-import { UserDataToJoinCall } from "./call.type";
 import { MatchRequest } from "./socket-data.type";
 
 export interface Match {
