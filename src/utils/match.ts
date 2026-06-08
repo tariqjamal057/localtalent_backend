@@ -15,9 +15,9 @@ export const calculateDistanceKm = (lat1: number, lon1: number, lat2: number, lo
 }
 
 export const getOtherUserIdInMatch = (match: Match, userId: bigint): bigint => {
-    if (match.recruiterUserId === userId) {
+    if (match.recruiterUserId == userId) {
         return match.candidateUserId;
-    } else if (match.candidateUserId === userId) {
+    } else if (match.candidateUserId == userId) {
         return match.recruiterUserId;
     } else {
         throw new Error('User is not part of the match');

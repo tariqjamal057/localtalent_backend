@@ -5,6 +5,7 @@ import { sendResponse, ApiError, sendError } from '../utils/response';
 import { MESSAGES } from '../constants/messages';
 import { userProfileRepository } from '../repositories/user-profile.repository';
 import { userRepository } from '../repositories/user.repository';
+import { userWalletRepository } from '../repositories/user-wallet.repository';
 import { redisOtpService } from '../services/redis/redis-otp.service';
 import config from '../config';
 import { Otp } from '../utils/otp';
@@ -53,16 +54,19 @@ export class AuthController {
             return;
         }
         redisOtpService.deleteOtp(countryCode, phoneNumber);
-        const user = await userRepository.upsert({
+        const { user, isNewUser } = await userRepository.upsert({
             countryCode,
             mobileNumber: phoneNumber,
             userType: USER_TYPE.INDIVIDUAL,
             appLanguageCode
         });
+        if (isNewUser) {
+            userWalletRepository.insert(user.id);
+        }
         const refreshToken = signRefreshToken({ userId: user.id.toString() });
         const accessToken = signAccessToken({ userId: user.id.toString() });
         const userProfile = await userProfileRepository.getByUserId(user.id);
-        sendResponse(res, StatusCodes.OK, MESSAGES.AUTH.OTP_VERIFIED, { accessToken, refreshToken, userProfile, appLanguageCode: user.appLanguageCode });
+        sendResponse(res, StatusCodes.OK, MESSAGES.AUTH.OTP_VERIFIED, { accessToken, refreshToken, userProfile, appLanguageCode: user.appLanguageCode, isNewUser });
     };
 }
 

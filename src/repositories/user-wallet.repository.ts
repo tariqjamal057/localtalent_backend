@@ -19,6 +19,41 @@ export class UserWalletRepository {
         return userWalletRowToDto(result.rows[0]);
     }
 
+    async insert(
+        userId: bigint,
+        data?: Partial<Pick<UserWallet, 'availableMatchCount' | 'freeMatchCountAvailable' | 'videoRequestCountAvailable'>>
+    ): Promise<UserWallet> {
+        const fields = ['user_id'];
+        const placeholders = ['$1'];
+        const values: unknown[] = [userId];
+        let idx = 2;
+
+        if (data?.availableMatchCount !== undefined) {
+            fields.push('available_match_count');
+            placeholders.push(`$${idx++}`);
+            values.push(data.availableMatchCount);
+        }
+        if (data?.freeMatchCountAvailable !== undefined) {
+            fields.push('free_match_count_available');
+            placeholders.push(`$${idx++}`);
+            values.push(data.freeMatchCountAvailable);
+        }
+        if (data?.videoRequestCountAvailable !== undefined) {
+            fields.push('video_request_count_available');
+            placeholders.push(`$${idx++}`);
+            values.push(data.videoRequestCountAvailable);
+        }
+
+        const query = `
+            INSERT INTO user_wallets (${fields.join(', ')})
+            VALUES (${placeholders.join(', ')})
+            RETURNING *
+        `;
+
+        const result: QueryResult<UserWalletRow> = await this.db.query(query, values);
+        return userWalletRowToDto(result.rows[0]);
+    }
+
     async updateByUserId(
         userId: bigint,
         data: Partial<Pick<UserWallet, 'availableMatchCount' | 'freeMatchCountAvailable' | 'videoRequestCountAvailable'>>

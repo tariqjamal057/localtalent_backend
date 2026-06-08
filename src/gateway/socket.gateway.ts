@@ -84,15 +84,6 @@ class SocketGateway {
         }
     }
 
-    public async sendVideoRequestEventToUser(userId: bigint, matchId: bigint): Promise<void> {
-        try {
-            logger.info(`Sending video request event to user ${userId} for match ${matchId}`);
-            this.socketService.emitToUser(userId, SOCKET_OUTGOING_EVENT.VIDEO_REQUEST, { matchId });
-        } catch (error) {
-            logger.error(`Failed to send video request event to user ${userId}: ${error instanceof Error ? error.message : String(error)}`);
-        }
-    }
-
     public async sendCallEndedEvent(userId: bigint, data: { matchId: bigint, callEndedBy: CALL_ENDED_BY, message: string, proposalAutoCancelTimeoutSeconds: number }): Promise<void> {
         try {
             logger.info(`Sending call ended event to user ${userId} for match ${data.matchId} with message: ${data.message}`);
@@ -115,6 +106,45 @@ class SocketGateway {
             });
         } catch (error) {
             logger.error(`Failed to send all accepted proposal event to user ${userId}: ${error instanceof Error ? error.message : String(error)}`);
+        }
+    }
+
+    public sendRequestPhoneNumberResponse(userId: bigint, data: {
+        phoneNumber?: string,
+        isAcepted: boolean,
+        matchId: bigint
+    }) {
+        try {
+            this.socketService.emitToUser(userId, SOCKET_OUTGOING_EVENT.REQUEST_PHONE_NUMBER_RESPONSE, data);
+        } catch (_) {
+            logger.error('Failed to send request phoneNumber response')
+        }
+    }
+
+    public sendRequestPhoneNumber(userId: bigint, data: {
+        matchId: bigint
+    }) {
+        try {
+            this.socketService.emitToUser(userId, SOCKET_OUTGOING_EVENT.REQUEST_PHONE_NUMBER, data);
+        } catch (_) {
+            logger.error('Failed to send request phoneNumber')
+        }
+    }
+
+    public async sendVideoRequestEventToUser(userId: bigint, matchId: bigint): Promise<void> {
+        try {
+            logger.info(`Sending video request event to user ${userId} for match ${matchId}`);
+            this.socketService.emitToUser(userId, SOCKET_OUTGOING_EVENT.VIDEO_REQUEST, { matchId });
+        } catch (error) {
+            logger.error(`Failed to send video request event to user ${userId}: ${error instanceof Error ? error.message : String(error)}`);
+        }
+    }
+
+    public sendVideoRequestResponse(userId: bigint, data: { isAccepted: boolean, matchId: bigint, isAllowed: boolean }) {
+        try {
+            this.socketService.emitToUser(userId, SOCKET_OUTGOING_EVENT.VIDEO_REQUEST_RESPONSE, data);
+        } catch (_) {
+            logger.error('Failed to send video request response')
         }
     }
 }

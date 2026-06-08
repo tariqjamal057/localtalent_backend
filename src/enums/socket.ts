@@ -6,6 +6,10 @@ export enum SOCKET_INCOMING_EVENT {
 
     GET_MATCH = 'get_match',
     STOP_MATCH = 'stop_match',
+    REQUEST_PHONE_NUMBER = 'request_phone_number',
+    REQUEST_PHONE_NUMBER_RESPONSE = 'request_phone_number_response',
+    REQUEST_VIDEO = 'request_video',
+    REQUEST_VIDEO_RESPONSE = 'request_video_response'
 }
 
 export enum SOCKET_OUTGOING_EVENT {
@@ -16,5 +20,8 @@ export enum SOCKET_OUTGOING_EVENT {
     CALL_ENDED = 'call_ended',
     CALL_END_RESULT = 'call_end_result',
     VIDEO_REQUEST = 'video_request',
-    ALL_ACCEPTED_PROPOSAL = 'all_accepted_proposal'
+    VIDEO_REQUEST_RESPONSE = 'video_request_response',
+    ALL_ACCEPTED_PROPOSAL = 'all_accepted_proposal',
+    REQUEST_PHONE_NUMBER_RESPONSE = 'request_phone_number_response',
+    REQUEST_PHONE_NUMBER = 'request_phone_number',
 }

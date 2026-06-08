@@ -135,6 +135,34 @@ export class SocketService {
                     socketGateway.sendErrorToUser(user.id, error instanceof Error ? error.message : String(error));
                 }
             });
+            socket.on(SOCKET_INCOMING_EVENT.REQUEST_PHONE_NUMBER, async (matchId: bigint) => {
+                try {
+                    await matchService.handleRequestPhoneNumber(user.id, matchId)
+                } catch (error) {
+                    logger.info('Error while handling reques-phone-number')
+                }
+            })
+            socket.on(SOCKET_INCOMING_EVENT.REQUEST_PHONE_NUMBER_RESPONSE, async (data: { matchId: bigint, isAccepted: boolean }) => {
+                try {
+                    await matchService.handleRequestPhoneNumberResponse(user.id, data.matchId, data.isAccepted)
+                } catch (error) {
+                    logger.info('Error while handling request-phone-number-response')
+                }
+            })
+            socket.on(SOCKET_INCOMING_EVENT.REQUEST_VIDEO, async (matchId: bigint) => {
+                try {
+                    await matchService.handleRequestVideo(user.id, matchId)
+                } catch (error) {
+                    logger.info('Error while handling request-video')
+                }
+            })
+            socket.on(SOCKET_INCOMING_EVENT.REQUEST_VIDEO_RESPONSE, async (data: { matchId: bigint, isAccepted: boolean }) => {
+                try {
+                    await matchService.handleRequestVideoResponse(user.id, data.matchId, data.isAccepted)
+                } catch (error) {
+                    logger.info('Error while handling request-video-response')
+                }
+            })
         });
     }
 }

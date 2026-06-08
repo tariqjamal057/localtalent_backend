@@ -32,22 +32,23 @@ export class UserRepository {
         return userRowToDto(result.rows[0]);
     }
 
-    async upsert(dto: CreateUserDto): Promise<User> {
+    async upsert(dto: CreateUserDto): Promise<{ user: User; isNewUser: boolean }> {
+        const existing = await this.getByMobileNumber(dto.mobileNumber, dto.countryCode);
+        if (existing) {
+            return { user: existing, isNewUser: false };
+        }
         const query = `
             INSERT INTO users (mobile_number, country_code, user_type, app_language_code)
             VALUES ($1, $2, $3, $4)
-            ON CONFLICT (mobile_number)
-            DO UPDATE SET app_language_code = EXCLUDED.app_language_code
             RETURNING *
         `;
-        const values = [
+        const result: QueryResult<UserRow> = await this.db.query(query, [
             dto.mobileNumber,
             dto.countryCode,
             dto.userType,
             dto.appLanguageCode ?? DEFAULT_LANGUAGE,
-        ];
-        const result: QueryResult<UserRow> = await this.db.query(query, values);
-        return userRowToDto(result.rows[0]);
+        ]);
+        return { user: userRowToDto(result.rows[0]), isNewUser: true };
     }
 
     async update(id: bigint, dto: UpdateUserDto): Promise<void> {

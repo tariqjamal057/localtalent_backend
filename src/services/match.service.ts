@@ -4,7 +4,7 @@ import { MatchRequest } from '../types/socket-data.type';
 import { redisUserService, RedisUserService } from './redis/redis-user.service';
 import logger from '../utils/logger';
 import { userBlockRepository, UserBlockRepository } from '../repositories/user-block.repository';
-import { calculateDistanceKm } from '../utils/match';
+import { calculateDistanceKm, getOtherUserIdInMatch } from '../utils/match';
 import { USER_STATUS } from '../enums/user';
 import { categoryRepository, CategoryRepository } from '../repositories/category.repository';
 import { DEFAULT_LANGUAGE } from '../enums/language';
@@ -15,6 +15,7 @@ import { userWalletService, UserWalletService } from './user-wallet.service';
 import { MESSAGES } from '../constants/messages';
 import { TopMatch } from '../types/match.types';
 import { callService, CallService } from './call.service';
+import { userRepository, UserRepository } from '../repositories/user.repository';
 
 export class MatchService {
     constructor(
@@ -24,7 +25,8 @@ export class MatchService {
         private readonly categoryRepository: CategoryRepository,
         private readonly matchTrackingRepository: MatchTrackingRepository,
         private readonly userWalletService: UserWalletService,
-        private readonly callService: CallService
+        private readonly callService: CallService,
+        private readonly userRepository: UserRepository
     ) { }
 
     async getAcceptedMatches(userId: bigint): Promise<Match[]> {
@@ -360,6 +362,77 @@ export class MatchService {
         await this.redisUserService.setUserStatus(userId, USER_STATUS.ONLINE);
         logger.info(`[MatchService] User ${userId} stopped matching. Status set to ONLINE and removed from search.`);
     };
+
+    async handleRequestPhoneNumberResponse(userId: bigint, matchId: bigint, isAccepted: boolean): Promise<void> {
+        try {
+            const match = await this.matchRepository.getById(matchId);
+            if (match?.recruiterUserId != userId && match?.candidateUserId != userId) {
+                throw new Error(MESSAGES.MATCH.NOT_A_MEMBER_OF_MATCH);
+            }
+            const otherUserId = getOtherUserIdInMatch(match, userId);
+            if (!isAccepted) {
+                socketGateway.sendRequestPhoneNumberResponse(otherUserId, {
+                    isAcepted: false,
+                    matchId: match.id
+                });
+                return;
+            }
+            const user = await this.userRepository.getById(userId);
+            const phoneNumber = user?.mobileNumber;
+            socketGateway.sendRequestPhoneNumberResponse(otherUserId, {
+                isAcepted: true,
+                phoneNumber,
+                matchId: match.id
+            })
+        } catch (error) {
+            logger.info(`[MatchService] error while sending request-phone-number-respose`)
+        }
+    }
+
+    async handleRequestPhoneNumber(userId: bigint, matchId: bigint) {
+        try {
+            const match = await this.matchRepository.getById(matchId);
+            if (match?.recruiterUserId != userId && match?.candidateUserId != userId) {
+                throw new Error(MESSAGES.MATCH.NOT_A_MEMBER_OF_MATCH);
+            }
+            const otherUserId = getOtherUserIdInMatch(match, userId);
+            socketGateway.sendRequestPhoneNumber(otherUserId, { matchId })
+        } catch (error) {
+            logger.info(`[MatchService] error while handling request-phone-number ${error}`)
+        }
+    }
+
+    async handleRequestVideo(userId: bigint, matchId: bigint): Promise<void> {
+        try {
+            const isVideoRequestAvailaible = await this.userWalletService.isBalanceForVideoCallAvailable(userId);
+            if (!isVideoRequestAvailaible) {
+                socketGateway.sendVideoRequestResponse(userId, { isAccepted: false, matchId: matchId, isAllowed: false });
+                return;
+            }
+            await this.userWalletService.deductVideoRequestCount(userId);
+            const match = await this.matchRepository.getById(matchId);
+            if (match?.recruiterUserId != userId && match?.candidateUserId != userId) {
+                throw new Error(MESSAGES.MATCH.NOT_A_MEMBER_OF_MATCH);
+            }
+            const otherUserId = getOtherUserIdInMatch(match, userId);
+            socketGateway.sendVideoRequestEventToUser(otherUserId, matchId);
+        } catch (error) {
+            logger.info(`[MatchService] error while handling request-video`)
+        }
+    }
+
+    async handleRequestVideoResponse(userId: bigint, matchId: bigint, isAccepted: boolean): Promise<void> {
+        try {
+            const match = await this.matchRepository.getById(matchId);
+            if (match?.recruiterUserId != userId && match?.candidateUserId != userId) {
+                throw new Error(MESSAGES.MATCH.NOT_A_MEMBER_OF_MATCH);
+            }
+            const otherUserId = getOtherUserIdInMatch(match, userId);
+            socketGateway.sendVideoRequestResponse(otherUserId, { isAccepted, matchId: match.id, isAllowed: true });
+        } catch (error) {
+            logger.info(`[MatchService] error while sending request-video-response`)
+        }
+    }
 }
 
-export const matchService = new MatchService(matchRepository, redisUserService, userBlockRepository, categoryRepository, matchTrackingRepository, userWalletService, callService);
+export const matchService = new MatchService(matchRepository, redisUserService, userBlockRepository, categoryRepository, matchTrackingRepository, userWalletService, callService, userRepository);
