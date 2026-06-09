@@ -35,6 +35,10 @@ export class UserRepository {
     async upsert(dto: CreateUserDto): Promise<{ user: User; isNewUser: boolean }> {
         const existing = await this.getByMobileNumber(dto.mobileNumber, dto.countryCode);
         if (existing) {
+            if (dto.appLanguageCode) {
+                await this.update(existing.id, { appLanguageCode: dto.appLanguageCode });
+                existing.appLanguageCode = dto.appLanguageCode;
+            }
             return { user: existing, isNewUser: false };
         }
         const query = `
