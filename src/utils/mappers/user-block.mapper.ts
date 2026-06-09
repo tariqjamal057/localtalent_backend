@@ -26,6 +26,7 @@ export function userBlockWithProfileRowToDto(row: UserBlockWithProfileRow): User
             latitude: row.latitude !== null ? Number(row.latitude) : null,
             longitude: row.longitude !== null ? Number(row.longitude) : null,
             spokenLanguages: row.spoken_languages,
+            profileImageUrl: row.profile_image_url,
             createdAt: row.profile_created_at!,
             updatedAt: row.profile_updated_at!,
         }

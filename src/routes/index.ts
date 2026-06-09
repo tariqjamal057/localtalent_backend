@@ -19,7 +19,7 @@ const router = Router();
 router.use('/auth', authRouter);
 router.use('/categories', categoryRouter);
 router.use('/packs', packRouter);
-router.use('/user-profiles', userProfileRouter);
+router.use('/user-profile', userProfileRouter);
 router.use('/ads', adRouter);
 router.use('/user-reviews', userReviewRouter);
 router.use('/user-wallet', userWalletRouter);

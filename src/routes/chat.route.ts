@@ -10,6 +10,13 @@ const otherUserIdParamsSchema = z.object({
     otherUserId: z.coerce.bigint().positive(),
 });
 
+router.get(
+    '/:otherUserId/token',
+    authenticate,
+    validate(otherUserIdParamsSchema, VALIDATION_SOURCE.PARAMS),
+    chatController.getChatEntryDetails
+);
+
 router.post(
     '/:otherUserId/room',
     authenticate,

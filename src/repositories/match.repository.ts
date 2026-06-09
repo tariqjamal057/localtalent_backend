@@ -1,8 +1,8 @@
 import { QueryResult } from 'pg';
 import { DatabaseService } from '../config/database';
-import { Match, MatchRow, CreateMatchDto, UpdateMatchDto } from '../types/match.types';
+import { Match, MatchRow, CreateMatchDto, UpdateMatchDto, AcceptedMatchRow, PaginatedAcceptedMatches } from '../types/match.types';
 
-export type { Match, CreateMatchDto, UpdateMatchDto };
+export type { Match, CreateMatchDto, UpdateMatchDto, PaginatedAcceptedMatches };
 
 function matchRowToDto(row: MatchRow): Match {
     return {
@@ -117,6 +117,10 @@ export class MatchRepository {
             fields.push(`call_type = $${idx++}`);
             values.push(dto.callType);
         }
+        if (dto.proposalAcceptedCount !== undefined) {
+            fields.push(`proposal_accepted_count = $${idx++}`);
+            values.push(dto.proposalAcceptedCount);
+        }
 
         if (fields.length === 0) return this.getById(matchId);
 
@@ -141,6 +145,71 @@ export class MatchRepository {
         `;
         const result: QueryResult<MatchRow> = await this.db.query(query, [userId]);
         return result.rows.map(matchRowToDto);
+    }
+
+    async getAcceptedMatchesPaginated(userId: bigint, page: number, limit: number): Promise<PaginatedAcceptedMatches> {
+        const offset = (page - 1) * limit;
+        const query = `
+            SELECT
+                m.id,
+                m.recruiter_user_id,
+                m.candidate_user_id,
+                m.final_state,
+                m.created_at,
+                m.updated_at,
+                up.full_name          AS other_user_full_name,
+                up.profile_image_url  AS other_user_profile_image_url,
+                COUNT(*) OVER()       AS total_count,
+                CASE WHEN m.recruiter_user_id = $1
+                    THEN (m.recruiter_form_data->>'latitude')
+                    ELSE (m.candidate_form_data->>'latitude')
+                END AS user_latitude,
+                CASE WHEN m.recruiter_user_id = $1
+                    THEN (m.recruiter_form_data->>'longitude')
+                    ELSE (m.candidate_form_data->>'longitude')
+                END AS user_longitude,
+                CASE WHEN m.recruiter_user_id = $1
+                    THEN (m.candidate_form_data->>'latitude')
+                    ELSE (m.recruiter_form_data->>'latitude')
+                END AS other_user_latitude,
+                CASE WHEN m.recruiter_user_id = $1
+                    THEN (m.candidate_form_data->>'longitude')
+                    ELSE (m.recruiter_form_data->>'longitude')
+                END AS other_user_longitude
+            FROM matches m
+            JOIN user_profiles up ON up.user_id = CASE
+                WHEN m.recruiter_user_id = $1 THEN m.candidate_user_id
+                ELSE m.recruiter_user_id
+            END
+            WHERE (m.recruiter_user_id = $1 OR m.candidate_user_id = $1)
+              AND m.total_users = m.proposal_accepted_count
+            ORDER BY m.created_at DESC
+            LIMIT $2 OFFSET $3
+        `;
+        const result: QueryResult<AcceptedMatchRow> = await this.db.query(query, [userId, limit, offset]);
+        const total = result.rows.length > 0 ? parseInt(result.rows[0].total_count, 10) : 0;
+        return {
+            data: result.rows.map(row => {
+                const userLat = row.user_latitude != null ? parseFloat(row.user_latitude) : null;
+                const userLng = row.user_longitude != null ? parseFloat(row.user_longitude) : null;
+                const otherLat = row.other_user_latitude != null ? parseFloat(row.other_user_latitude) : null;
+                const otherLng = row.other_user_longitude != null ? parseFloat(row.other_user_longitude) : null;
+                return {
+                    matchId: row.id,
+                    otherUserId: row.recruiter_user_id === userId ? row.candidate_user_id : row.recruiter_user_id,
+                    otherUserFullName: row.other_user_full_name,
+                    otherUserProfileImageUrl: row.other_user_profile_image_url,
+                    finalState: row.final_state,
+                    createdAt: row.created_at,
+                    updatedAt: row.updated_at,
+                    userLocation: userLat != null && userLng != null ? { latitude: userLat, longitude: userLng } : null,
+                    otherUserLocation: otherLat != null && otherLng != null ? { latitude: otherLat, longitude: otherLng } : null,
+                };
+            }),
+            total,
+            page,
+            limit,
+        };
     }
 }
 

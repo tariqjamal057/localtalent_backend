@@ -31,6 +31,7 @@ export interface UserBlockWithProfileRow extends UserBlockRow {
     latitude: string | null;
     longitude: string | null;
     spoken_languages: string[] | null;
+    profile_image_url: string | null;
     profile_created_at: Date | null;
     profile_updated_at: Date | null;
 }

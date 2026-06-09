@@ -66,6 +66,7 @@ export class UserBlockRepository {
                 up.latitude,
                 up.longitude,
                 up.spoken_languages,
+                up.profile_image_url,
                 up.created_at    AS profile_created_at,
                 up.updated_at    AS profile_updated_at
             FROM user_blocks ub

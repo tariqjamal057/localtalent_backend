@@ -1,4 +1,4 @@
-import { matchRepository, MatchRepository, Match, UpdateMatchDto } from '../repositories/match.repository';
+import { matchRepository, MatchRepository, Match, UpdateMatchDto, PaginatedAcceptedMatches } from '../repositories/match.repository';
 import { MATCH_STATE, SEARCH_CHANGE_TYPE, SEARCH_TYPE } from '../enums/match';
 import { MatchRequest } from '../types/socket-data.type';
 import { redisUserService, RedisUserService } from './redis/redis-user.service';
@@ -31,6 +31,10 @@ export class MatchService {
 
     async getAcceptedMatches(userId: bigint): Promise<Match[]> {
         return this.matchRepository.getAcceptedProposalsOfUser(userId);
+    }
+
+    async getAcceptedMatchesPaginated(userId: bigint, page: number, limit: number): Promise<PaginatedAcceptedMatches> {
+        return this.matchRepository.getAcceptedMatchesPaginated(userId, page, limit);
     }
 
     async getMatchedUserPriorityScore(userSearchData: MatchRequest, matchedUserSearchData: MatchRequest): Promise<number> {

@@ -31,6 +31,13 @@ router.post(
     callController.handleBlocking
 );
 
+router.delete(
+    '/:matchId/remove-block',
+    authenticate,
+    validate(matchIdParamsSchema, VALIDATION_SOURCE.PARAMS),
+    callController.handleUnblocking
+);
+
 router.post(
     '/:matchId/accept-proposal',
     authenticate,

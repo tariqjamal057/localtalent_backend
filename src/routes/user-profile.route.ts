@@ -16,6 +16,7 @@ const createUserProfileSchema = z.object({
     latitude: z.number().min(-90).max(90).optional().nullable(),
     longitude: z.number().min(-180).max(180).optional().nullable(),
     spokenLanguages: z.array(z.string()).optional().nullable(),
+    profileImageUrl: z.string().url().optional().nullable(),
 });
 
 const updateUserProfileSchema = createUserProfileSchema;

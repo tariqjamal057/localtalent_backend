@@ -5,10 +5,11 @@ import {
     PaymentOrderRow,
     CreatePaymentOrderDto,
     UpdatePaymentOrderDto,
+    PaginatedPaymentOrders,
 } from '../types/payment.types';
 import { paymentOrderRowToDto } from '../utils/mappers/payment.mapper';
 
-export type { PaymentOrder, CreatePaymentOrderDto, UpdatePaymentOrderDto };
+export type { PaymentOrder, CreatePaymentOrderDto, UpdatePaymentOrderDto, PaginatedPaymentOrders };
 
 export class PaymentOrderRepository {
     constructor(private readonly db: DatabaseService) { }
@@ -63,6 +64,25 @@ export class PaymentOrderRepository {
         `;
         const result: QueryResult<PaymentOrderRow> = await this.db.query(query, [userId]);
         return result.rows.map(row => paymentOrderRowToDto(row));
+    }
+
+    async getByUserIdPaginated(userId: bigint, page: number, limit: number): Promise<PaginatedPaymentOrders> {
+        const offset = (page - 1) * limit;
+        const query = `
+            SELECT *, COUNT(*) OVER() AS total_count
+            FROM payment_orders
+            WHERE user_id = $1
+            ORDER BY created_at DESC
+            LIMIT $2 OFFSET $3
+        `;
+        const result: QueryResult<PaymentOrderRow & { total_count: string }> = await this.db.query(query, [userId, limit, offset]);
+        const total = result.rows.length > 0 ? parseInt(result.rows[0].total_count, 10) : 0;
+        return {
+            data: result.rows.map(paymentOrderRowToDto),
+            total,
+            page,
+            limit,
+        };
     }
 
     async getByOrderId(orderId: string): Promise<PaymentOrder | null> {

@@ -10,6 +10,14 @@ import logger from '../utils/logger';
 
 export class PaymentController {
 
+    getOrdersByUserId = async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
+        const userId = BigInt(req.user!.id);
+        const page = Number(req.query.page);
+        const limit = Number(req.query.limit);
+        const result = await paymentOrderRepository.getByUserIdPaginated(userId, page, limit);
+        sendResponse(res, StatusCodes.OK, MESSAGES.PAYMENT.FETCHED_SUCCESSFULLY, result);
+    };
+
     handleRazorpayWebhook = async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
         logger.info('[PaymentWebhook] Webhook received from Razorpay');
 

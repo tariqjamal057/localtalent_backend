@@ -50,6 +50,46 @@ export interface MatchRow {
     call_type?: number;
 }
 
+export interface UserLocation {
+    latitude: number;
+    longitude: number;
+}
+
+export interface AcceptedMatchItem {
+    matchId: bigint;
+    otherUserId: bigint;
+    otherUserFullName: string | null;
+    otherUserProfileImageUrl: string | null;
+    finalState: number;
+    createdAt: Date;
+    updatedAt: Date;
+    userLocation: UserLocation | null;
+    otherUserLocation: UserLocation | null;
+}
+
+export interface AcceptedMatchRow {
+    id: bigint;
+    recruiter_user_id: bigint;
+    candidate_user_id: bigint;
+    final_state: number;
+    created_at: Date;
+    updated_at: Date;
+    other_user_full_name: string | null;
+    other_user_profile_image_url: string | null;
+    total_count: string;
+    user_latitude: string | null;
+    user_longitude: string | null;
+    other_user_latitude: string | null;
+    other_user_longitude: string | null;
+}
+
+export interface PaginatedAcceptedMatches {
+    data: AcceptedMatchItem[];
+    total: number;
+    page: number;
+    limit: number;
+}
+
 export interface TopMatch {
     matchId: number;
     userId: number;

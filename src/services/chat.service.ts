@@ -10,6 +10,10 @@ class ChatService {
         private readonly matchRepository: MatchRepository,
         private readonly userProfileRepository: UserProfileRepository,
     ) { }
+    async getChatEntryDetails(userId: bigint, otherUserId: bigint) {
+        return StreamUtil.getChatTokenAndChannelId(userId, otherUserId);
+    }
+
     async createOrGetChatRoom(userId: bigint, otherUserId: bigint) {
         const existingMatches = await this.matchRepository.getByTwoUsers(userId, otherUserId, MATCH_STATE.MATCHED);
         if (!existingMatches || existingMatches.length === 0) {
