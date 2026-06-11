@@ -18,7 +18,8 @@ function matchRowToDto(row: MatchRow): Match {
         proposalAcceptedCount: row.proposal_accepted_count,
         providerCallId: row.provider_call_id,
         callEndedBy: row.call_ended_by,
-        callType: row.call_type
+        callType: row.call_type,
+        ratingReviewId: row.rating_review_id,
     };
 }
 
@@ -120,6 +121,10 @@ export class MatchRepository {
         if (dto.proposalAcceptedCount !== undefined) {
             fields.push(`proposal_accepted_count = $${idx++}`);
             values.push(dto.proposalAcceptedCount);
+        }
+        if (dto.ratingReviewId !== undefined) {
+            fields.push(`rating_review_id = $${idx++}`);
+            values.push(dto.ratingReviewId);
         }
 
         if (fields.length === 0) return this.getById(matchId);

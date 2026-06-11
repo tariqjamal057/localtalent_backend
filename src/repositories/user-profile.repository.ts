@@ -59,6 +59,7 @@ export class UserProfileRepository {
         if (dto.longitude !== undefined) { fields.push(`longitude = $${idx++}`); values.push(dto.longitude); }
         if (dto.spokenLanguages !== undefined) { fields.push(`spoken_languages = $${idx++}`); values.push(dto.spokenLanguages ? JSON.stringify(dto.spokenLanguages) : null); }
         if (dto.profileImageUrl !== undefined) { fields.push(`profile_image_url = $${idx++}`); values.push(dto.profileImageUrl); }
+        if (dto.averageRating !== undefined) { fields.push(`average_rating = $${idx++}`); values.push(dto.averageRating); }
 
         if (fields.length === 0) return this.getByUserId(userId);
 

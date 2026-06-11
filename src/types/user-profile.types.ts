@@ -41,6 +41,7 @@ export interface UpdateUserProfileDto {
     longitude?: number | null;
     spokenLanguages?: string[] | null;
     profileImageUrl?: string | null;
+    averageRating?: number | null
 }
 
 export interface UserProfileRow {

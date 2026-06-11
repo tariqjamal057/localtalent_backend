@@ -14,6 +14,7 @@ export interface Match {
     providerCallId?: string;
     callEndedBy?: number;
     callType?: number;
+    ratingReviewId?: bigint | null;
 }
 
 export interface CreateMatchDto {
@@ -32,6 +33,7 @@ export interface UpdateMatchDto {
     finalState?: number;
     callEndedBy?: number;
     callType?: number;
+    ratingReviewId?: bigint | null;
 }
 
 export interface MatchRow {
@@ -48,6 +50,7 @@ export interface MatchRow {
     provider_call_id?: string;
     call_ended_by?: number;
     call_type?: number;
+    rating_review_id?: bigint | null;
 }
 
 export interface UserLocation {
