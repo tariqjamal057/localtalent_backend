@@ -12,13 +12,14 @@ import chatRouter from './chat.route';
 import translationRouter from './translation.route';
 import appConstantRouter from './app-constant.route';
 import callRouter from './call.route';
+import paymentRouter from './payment.route';
 
 const router = Router();
 
 router.use('/auth', authRouter);
 router.use('/categories', categoryRouter);
 router.use('/packs', packRouter);
-router.use('/user-profiles', userProfileRouter);
+router.use('/user-profile', userProfileRouter);
 router.use('/ads', adRouter);
 router.use('/user-reviews', userReviewRouter);
 router.use('/user-wallet', userWalletRouter);
@@ -28,5 +29,6 @@ router.use('/chats', chatRouter);
 router.use('/translations', translationRouter);
 router.use('/app-constants', appConstantRouter);
 router.use('/call', callRouter)
+router.use('/payment', paymentRouter)
 
 export default router;

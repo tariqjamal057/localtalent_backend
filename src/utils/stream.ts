@@ -144,4 +144,16 @@ export class StreamUtil {
         const call = this.streamCallClient.video.call(callType, callId);
         await call.end();
     }
+
+    public static async getChatTokenAndChannelId(userId: bigint, otherUserId: bigint) {
+        try {
+            const chanelId = this.getChatChannelId([userId, otherUserId]);
+            const chatToken = await this.createChatToken(userId);
+            const streamUserId = this.getStreamUserId(userId);
+            return { chanelId, chatToken, streamUserId }
+        } catch (error) {
+            logger.info(`Error while creating chatToken ${error}`);
+            throw error;
+        }
+    }
 }

@@ -12,6 +12,7 @@ export interface UserProfile {
     latitude: number | null;
     longitude: number | null;
     spokenLanguages: string[] | null;
+    profileImageUrl: string | null;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -26,6 +27,7 @@ export interface CreateUserProfileDto {
     latitude?: number | null;
     longitude?: number | null;
     spokenLanguages?: string[] | null;
+    profileImageUrl?: string | null;
 }
 
 export interface UpdateUserProfileDto {
@@ -38,6 +40,8 @@ export interface UpdateUserProfileDto {
     latitude?: number | null;
     longitude?: number | null;
     spokenLanguages?: string[] | null;
+    profileImageUrl?: string | null;
+    averageRating?: number | null
 }
 
 export interface UserProfileRow {
@@ -54,6 +58,7 @@ export interface UserProfileRow {
     latitude: string | null;
     longitude: string | null;
     spoken_languages: string[] | null;
+    profile_image_url: string | null;
     created_at: Date;
     updated_at: Date;
 }

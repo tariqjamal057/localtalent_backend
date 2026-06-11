@@ -28,6 +28,13 @@ export class CallController {
         sendResponse(res, StatusCodes.OK, MESSAGES.USER_BLOCK.BLOCKED_SUCCESSFULLY);
     };
 
+    handleUnblocking = async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
+        const userId = req.user!.id;
+        const matchId = req.params.matchId as unknown as bigint;
+        await this.callService.handleUnblocking(userId, matchId);
+        sendResponse(res, StatusCodes.OK, MESSAGES.USER_BLOCK.UNBLOCKED_SUCCESSFULLY);
+    };
+
     handleProposalAcceptance = async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
         const userId = req.user!.id;
         const matchId = req.params.matchId as unknown as bigint;

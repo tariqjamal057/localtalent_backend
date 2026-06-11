@@ -187,6 +187,12 @@ export class CallService {
         await this.userBlockRepository.block(userId, otherUserId);
     }
 
+    async handleUnblocking(userId: bigint, matchId: bigint): Promise<void> {
+        const match = await this.matchRepository.getById(matchId);
+        const otherUserId = getOtherUserIdInMatch(match!, userId);
+        await this.userBlockRepository.unblock(userId, otherUserId);
+    }
+
     async handleCallEnd({ matchId, callEndBy, userId }: { matchId: bigint, callEndBy?: CALL_ENDED_BY, userId?: bigint }): Promise<void> {
         if (!callEndBy && !userId) {
             throw new Error(MESSAGES.CALL.INVALID_CALL_END_PARAMETERS);

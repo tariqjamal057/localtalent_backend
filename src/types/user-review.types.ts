@@ -4,7 +4,6 @@ export interface UserReview {
     reviewedUserId: bigint;
     rating: number;
     reviewText: string | null;
-    relatedMatchId: bigint | null;
     createdAt: Date;
 }
 
@@ -12,7 +11,6 @@ export interface CreateUserReviewDto {
     reviewedUserId: bigint;
     rating: number;
     reviewText?: string | null;
-    relatedMatchId?: bigint | null;
 }
 
 export interface UserReviewRow {
@@ -21,6 +19,5 @@ export interface UserReviewRow {
     reviewed_user_id: bigint;
     rating: number;
     review_text: string | null;
-    related_match_id: bigint | null;
     created_at: Date;
 }

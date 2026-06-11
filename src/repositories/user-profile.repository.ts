@@ -23,8 +23,8 @@ export class UserProfileRepository {
         const query = `
             INSERT INTO user_profiles (
                 user_id, full_name, gender, age, experience_level, price_per_day,
-                location_name, latitude, longitude, spoken_languages
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+                location_name, latitude, longitude, spoken_languages, profile_image_url
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
             RETURNING *
         `;
         const values = [
@@ -38,6 +38,7 @@ export class UserProfileRepository {
             dto.latitude ?? null,
             dto.longitude ?? null,
             dto.spokenLanguages ? JSON.stringify(dto.spokenLanguages) : null,
+            dto.profileImageUrl ?? null,
         ];
         const result: QueryResult<UserProfileRow> = await this.db.query(query, values);
         return userProfileRowToDto(result.rows[0]);
@@ -57,6 +58,8 @@ export class UserProfileRepository {
         if (dto.latitude !== undefined) { fields.push(`latitude = $${idx++}`); values.push(dto.latitude); }
         if (dto.longitude !== undefined) { fields.push(`longitude = $${idx++}`); values.push(dto.longitude); }
         if (dto.spokenLanguages !== undefined) { fields.push(`spoken_languages = $${idx++}`); values.push(dto.spokenLanguages ? JSON.stringify(dto.spokenLanguages) : null); }
+        if (dto.profileImageUrl !== undefined) { fields.push(`profile_image_url = $${idx++}`); values.push(dto.profileImageUrl); }
+        if (dto.averageRating !== undefined) { fields.push(`average_rating = $${idx++}`); values.push(dto.averageRating); }
 
         if (fields.length === 0) return this.getByUserId(userId);
 

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { z } from 'zod';
-import { matchController } from '../controllers/match.controller';
+import { paymentController } from '../controllers/payment.controller';
 import authenticate from '../middleware/authenticate';
 import validate, { VALIDATION_SOURCE } from '../middleware/validate';
 
@@ -12,16 +12,12 @@ const paginationQuerySchema = z.object({
 });
 
 router.get(
-    '/',
-    authenticate,
-    matchController.getAcceptedMatches
-);
-
-router.get(
-    '/accepted',
+    '/orders',
     authenticate,
     validate(paginationQuerySchema, VALIDATION_SOURCE.QUERY),
-    matchController.getAcceptedMatchesPaginated
+    paymentController.getOrdersByUserId
 );
+
+router.post('/webhook/razorpay', paymentController.handleRazorpayWebhook);
 
 export default router;

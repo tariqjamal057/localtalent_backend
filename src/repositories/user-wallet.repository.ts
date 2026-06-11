@@ -54,6 +54,17 @@ export class UserWalletRepository {
         return userWalletRowToDto(result.rows[0]);
     }
 
+    async incrementMatchPackCredits(userId: bigint, matchCount: number, videoRequestCount: number): Promise<void> {
+        const query = `
+            UPDATE user_wallets
+            SET available_match_count = available_match_count + $2,
+                video_request_count_available = video_request_count_available + $3,
+                updated_at = NOW()
+            WHERE user_id = $1
+        `;
+        await this.db.query(query, [userId, matchCount, videoRequestCount]);
+    }
+
     async updateByUserId(
         userId: bigint,
         data: Partial<Pick<UserWallet, 'availableMatchCount' | 'freeMatchCountAvailable' | 'videoRequestCountAvailable'>>

@@ -6,6 +6,10 @@ export class UserReviewService {
     async create(reviewerUserId: bigint, dto: CreateUserReviewDto): Promise<UserReview> {
         return this.userReviewRepository.create(reviewerUserId, dto);
     }
+
+    async getAverageRatingOfUser(userId: bigint): Promise<number | null> {
+        return this.userReviewRepository.getAverageRating(userId);
+    }
 }
 
 export const userReviewService = new UserReviewService(userReviewRepository);

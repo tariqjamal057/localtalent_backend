@@ -59,6 +59,13 @@ export interface UpdatePaymentOrderDto {
     status: number;
 }
 
+export interface PaginatedPaymentOrders {
+    data: PaymentOrder[];
+    total: number;
+    page: number;
+    limit: number;
+}
+
 export interface Transaction {
     id: bigint;
     userId: bigint;
