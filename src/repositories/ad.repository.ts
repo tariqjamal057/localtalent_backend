@@ -83,7 +83,7 @@ export class AdRepository {
             SET is_live = TRUE,
                 max_days = $2,
                 max_impressions = $3,
-                expires_on = NOW() + ($2 || ' days')::INTERVAL
+                expires_on = NOW() + ($2 * INTERVAL '1 day')
             WHERE id = $1
             RETURNING *
         `;
