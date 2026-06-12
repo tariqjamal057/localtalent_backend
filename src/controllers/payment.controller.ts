@@ -4,6 +4,7 @@ import { razorpayService } from '../services/razorpay.service';
 import { paymentOrderRepository } from '../repositories/payment-order.repository';
 import { userWalletRepository } from '../repositories/user-wallet.repository';
 import { PAYMENT_ORDER_STATUS, PAYMENT_PURPOSE } from '../enums/payment';
+import { adRepository } from '../repositories/ad.repository';
 import { sendResponse, sendError } from '../utils/response';
 import { MESSAGES } from '../constants/messages';
 import logger from '../utils/logger';
@@ -80,6 +81,16 @@ export class PaymentController {
             logger.info(`[PaymentWebhook] Crediting wallet for userId=${order.userId}: matchCount+=${matchCredit}, videoRequestCount+=${videoCredit}`);
             await userWalletRepository.incrementMatchPackCredits(order.userId, matchCredit, videoCredit);
             logger.info(`[PaymentWebhook] Wallet credited successfully for userId=${order.userId}`);
+        } else if (order.purpose === PAYMENT_PURPOSE.AD_PACK) {
+            const maxAdDays = (order.purchasedAdDays ?? 0) + (order.bonusAdDays ?? 0);
+            const maxAdImpressions = (order.purchasedAdImpressions ?? 0) + (order.bonusAdImpressions ?? 0);
+            if (order.productId) {
+                logger.info(`[PaymentWebhook] Activating ad id=${order.productId} for userId=${order.userId}: maxDays=${maxAdDays}, maxImpressions=${maxAdImpressions}`);
+                await adRepository.activateAd(order.productId, maxAdDays, maxAdImpressions);
+                logger.info(`[PaymentWebhook] Ad ${order.productId} activated successfully`);
+            } else {
+                logger.warn(`[PaymentWebhook] AD_PACK order ${order.id} has no productId — cannot activate ad`);
+            }
         } else {
             logger.info(`[PaymentWebhook] Purpose ${order.purpose} — no wallet action taken`);
         }

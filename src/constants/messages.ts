@@ -41,6 +41,10 @@ export const MESSAGES = {
     },
     USER_REVIEW: {
         CREATED_SUCCESSFULLY: 'Review submitted successfully',
+        PENDING_MATCH_FETCHED: 'Pending review match fetched successfully',
+        NO_PENDING_MATCH: 'No pending review match found',
+        REVIEW_DISMISSED: 'Review dismissed successfully',
+        DISMISS_FAILED: 'Could not dismiss review. Match not found or already reviewed.',
     },
     USER_WALLET: {
         FETCHED_SUCCESSFULLY: 'Wallet fetched successfully',
@@ -95,5 +99,9 @@ export const MESSAGES = {
         FETCHED_SUCCESSFULLY: 'Translations fetched successfully',
         UNSUPPORTED_LOCALE: 'Unsupported locale. Supported locales are: en, hi',
         NAMESPACE_NOT_FOUND: 'Translation namespace not found',
+    },
+
+    UPLOAD: {
+        PRESIGNED_URL_GENERATED: 'Presigned upload URL generated successfully',
     },
 };

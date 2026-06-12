@@ -21,14 +21,15 @@ const paginationQuerySchema = z.object({
 });
 
 const createAdSchema = z.object({
-    mediaType: z.number().int().positive(),
-    mediaUrl: z.string(),
+    mediaType: z.number().int().positive().optional(),
+    mediaUrl: z.string().optional(),
     title: z.string().max(150).optional().nullable(),
     description: z.string().optional().nullable(),
     adPackId: z.string().optional(),
     shouldAutoExecuteOrder: z.boolean().default(false),
     promoCode: z.string().optional(),
-    userPlatform: z.enum(USER_PLATFORM)
+    userPlatform: z.enum(USER_PLATFORM),
+    adId: z.number().int().optional()
 });
 
 router.get(

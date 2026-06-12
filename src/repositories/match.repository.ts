@@ -1,8 +1,9 @@
 import { QueryResult } from 'pg';
 import { DatabaseService } from '../config/database';
-import { Match, MatchRow, CreateMatchDto, UpdateMatchDto, AcceptedMatchRow, PaginatedAcceptedMatches } from '../types/match.types';
+import config from '../config';
+import { Match, MatchRow, CreateMatchDto, UpdateMatchDto, AcceptedMatchRow, PaginatedAcceptedMatches, PendingReviewMatchRow, PendingReviewMatch } from '../types/match.types';
 
-export type { Match, CreateMatchDto, UpdateMatchDto, PaginatedAcceptedMatches };
+export type { Match, CreateMatchDto, UpdateMatchDto, PaginatedAcceptedMatches, PendingReviewMatch };
 
 function matchRowToDto(row: MatchRow): Match {
     return {
@@ -19,7 +20,8 @@ function matchRowToDto(row: MatchRow): Match {
         providerCallId: row.provider_call_id,
         callEndedBy: row.call_ended_by,
         callType: row.call_type,
-        ratingReviewId: row.rating_review_id,
+        recruiterReviewId: row.recruiter_review_id,
+        candidateReviewId: row.candidate_review_id,
     };
 }
 
@@ -122,9 +124,13 @@ export class MatchRepository {
             fields.push(`proposal_accepted_count = $${idx++}`);
             values.push(dto.proposalAcceptedCount);
         }
-        if (dto.ratingReviewId !== undefined) {
-            fields.push(`rating_review_id = $${idx++}`);
-            values.push(dto.ratingReviewId);
+        if (dto.recruiterReviewId !== undefined) {
+            fields.push(`recruiter_review_id = $${idx++}`);
+            values.push(dto.recruiterReviewId);
+        }
+        if (dto.candidateReviewId !== undefined) {
+            fields.push(`candidate_review_id = $${idx++}`);
+            values.push(dto.candidateReviewId);
         }
 
         if (fields.length === 0) return this.getById(matchId);
@@ -214,6 +220,60 @@ export class MatchRepository {
             total,
             page,
             limit,
+        };
+    }
+
+    async dismissReview(matchId: bigint, userId: bigint): Promise<boolean> {
+        const query = `
+            UPDATE matches
+            SET
+                recruiter_review_id = CASE WHEN recruiter_user_id = $1 AND recruiter_review_id IS NULL THEN -1 ELSE recruiter_review_id END,
+                candidate_review_id = CASE WHEN candidate_user_id = $1 AND candidate_review_id IS NULL THEN -1 ELSE candidate_review_id END
+            WHERE id = $2
+              AND (recruiter_user_id = $1 OR candidate_user_id = $1)
+              AND (
+                  (recruiter_user_id = $1 AND recruiter_review_id IS NULL)
+                  OR (candidate_user_id = $1 AND candidate_review_id IS NULL)
+              )
+        `;
+        const result = await this.db.query(query, [userId, matchId]);
+        return (result.rowCount ?? 0) > 0;
+    }
+
+    async getPendingReviewMatch(userId: bigint): Promise<PendingReviewMatch | null> {
+        const query = `
+            SELECT
+                m.id,
+                m.recruiter_user_id,
+                m.candidate_user_id,
+                m.created_at,
+                up.full_name         AS other_user_full_name,
+                up.profile_image_url AS other_user_profile_image_url
+            FROM matches m
+            JOIN user_profiles up ON up.user_id = CASE
+                WHEN m.recruiter_user_id = $1 THEN m.candidate_user_id
+                ELSE m.recruiter_user_id
+            END
+            WHERE (m.recruiter_user_id = $1 OR m.candidate_user_id = $1)
+              AND m.proposal_accepted_count = m.total_users
+              AND m.created_at + ($2 * INTERVAL '1 minute') <= NOW()
+              AND (
+                  (m.recruiter_user_id = $1 AND m.recruiter_review_id IS NULL)
+                  OR
+                  (m.candidate_user_id = $1 AND m.candidate_review_id IS NULL)
+              )
+            ORDER BY m.created_at ASC
+            LIMIT 1
+        `;
+        const result: QueryResult<PendingReviewMatchRow> = await this.db.query(query, [userId, config.review.reviewEligibleAfterMinutes]);
+        if (result.rows.length === 0) return null;
+        const row = result.rows[0];
+        return {
+            matchId: row.id,
+            otherUserId: row.recruiter_user_id == userId ? row.candidate_user_id : row.recruiter_user_id,
+            otherUserFullName: row.other_user_full_name,
+            otherUserProfileImageUrl: row.other_user_profile_image_url,
+            createdAt: row.created_at,
         };
     }
 }

@@ -10,8 +10,25 @@ const createUserReviewSchema = z.object({
     reviewedUserId: z.number().int().positive(),
     rating: z.number().int().min(1).max(5),
     reviewText: z.string().optional().nullable(),
-    relatedMatchId: z.number().int(),
+    matchId: z.number().int(),
 });
+
+const dismissReviewSchema = z.object({
+    matchId: z.number().int().positive(),
+});
+
+router.get(
+    '/pending-review',
+    authenticate,
+    userReviewController.getPendingReviewMatch
+);
+
+router.patch(
+    '/skip',
+    authenticate,
+    validate(dismissReviewSchema, VALIDATION_SOURCE.BODY),
+    userReviewController.dismissReview
+);
 
 router.post(
     '/',

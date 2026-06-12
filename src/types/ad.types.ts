@@ -1,3 +1,5 @@
+import { AD_STATUS } from "../enums/ad";
+
 export interface UserAd {
     id: bigint;
     userId: bigint;
@@ -14,6 +16,7 @@ export interface UserAd {
     isLive: boolean;
     createdAt: Date;
     updatedAt: Date;
+    status: AD_STATUS
 }
 
 export interface UserAdRow {
@@ -43,6 +46,7 @@ export interface CreateAdDto {
     shouldAutoExecuteOrder?: boolean;
     promoCode?: string;
     userPlatform?: string;
+    adId?: number
 }
 
 export interface UpdateAdDto {

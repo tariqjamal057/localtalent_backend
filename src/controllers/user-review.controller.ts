@@ -10,6 +10,27 @@ import { matchRepository, MatchRepository } from '../repositories/match.reposito
 export class UserReviewController {
     constructor(private readonly userReviewService: UserReviewService, private readonly userProfileRepository: UserProfileRepository, private readonly matchRepository: MatchRepository) { }
 
+    dismissReview = async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
+        const userId = BigInt(req.user!.id);
+        const matchId = BigInt(req.body.matchId);
+        const dismissed = await this.matchRepository.dismissReview(matchId, userId);
+        if (!dismissed) {
+            sendResponse(res, StatusCodes.BAD_REQUEST, MESSAGES.USER_REVIEW.DISMISS_FAILED, null);
+            return;
+        }
+        sendResponse(res, StatusCodes.OK, MESSAGES.USER_REVIEW.REVIEW_DISMISSED, null);
+    };
+
+    getPendingReviewMatch = async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
+        const userId = BigInt(req.user!.id);
+        const match = await this.matchRepository.getPendingReviewMatch(userId);
+        if (!match) {
+            sendResponse(res, StatusCodes.OK, MESSAGES.USER_REVIEW.NO_PENDING_MATCH, null);
+            return;
+        }
+        sendResponse(res, StatusCodes.OK, MESSAGES.USER_REVIEW.PENDING_MATCH_FETCHED, match);
+    };
+
     create = async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
         const reviewerUserId = BigInt(req.user!.id);
         const dto = {
@@ -18,13 +39,22 @@ export class UserReviewController {
             reviewText: req.body.reviewText,
         };
         const review = await this.userReviewService.create(reviewerUserId, dto);
+        const matchId = req.body.matchId ? BigInt(req.body.matchId) : null;
         this.userReviewService.getAverageRatingOfUser(dto.reviewedUserId).
-            then((avgRating: number | null) => {
+            then(async (avgRating: number | null) => {
                 this.userProfileRepository.update(dto.reviewedUserId, {
                     averageRating: avgRating
                 });
-                const matchId = req.body.relatedMatchId;
-                this.matchRepository.update(matchId, { ratingReviewId: review.id })
+                if (matchId) {
+                    const match = await this.matchRepository.getById(matchId);
+                    if (match) {
+                        const isRecruiter = match.recruiterUserId == reviewerUserId;
+                        await this.matchRepository.update(matchId, isRecruiter
+                            ? { recruiterReviewId: review.id }
+                            : { candidateReviewId: review.id }
+                        );
+                    }
+                }
             }).catch((error: any) => {
                 logger.error(`[UserReviewController] Error occured while getting average review of user ${dto.reviewedUserId} error ${error}`)
             })

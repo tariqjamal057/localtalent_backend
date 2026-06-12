@@ -86,6 +86,18 @@ const config = {
         PRIORITY_QUEUE_BATCH_SIZE: parseInt(process.env.MATCHING_BATCH_SIZE || '1', 10),
     },
 
+    review: {
+        reviewEligibleAfterMinutes: parseInt(process.env.REVIEW_ELIGIBLE_AFTER_MINUTES || '60', 10),
+    },
+
+    s3: {
+        region: requireEnv('AWS_REGION'),
+        accessKeyId: requireEnv('AWS_ACCESS_KEY_ID'),
+        secretAccessKey: requireEnv('AWS_SECRET_ACCESS_KEY'),
+        bucketName: requireEnv('AWS_S3_BUCKET_NAME'),
+        presignedUrlExpiresInSeconds: parseInt(process.env.AWS_S3_PRESIGNED_URL_EXPIRES_IN || '300', 10),
+    },
+
     call: {
         USER_LOCK_TTL_SECONDS: parseInt(process.env.CALL_USER_LOCK_TTL_SECONDS || '30', 10),
         PROPOSAL_ACCEPTED_SET_TTL_SECONDS: parseInt(process.env.CALL_PROPOSAL_ACCEPTED_SET_TTL_SECONDS || '10800', 10),

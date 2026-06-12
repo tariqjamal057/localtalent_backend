@@ -1,4 +1,15 @@
+import { AD_STATUS } from '../../enums/ad';
 import { UserAd, UserAdRow } from '../../types/ad.types';
+
+function getAdStaus(row: UserAdRow): AD_STATUS {
+    if (!row.expires_on) {
+        return AD_STATUS.PAYMENT_PENDING
+    } else if (row.expires_on > new Date(Date.now()) && row.impression_count < row.max_impressions) {
+        return AD_STATUS.LIVE;
+    } else {
+        return AD_STATUS.EXPIRED
+    }
+}
 
 export function userAdRowToDto(row: UserAdRow): UserAd {
     return {
@@ -17,5 +28,6 @@ export function userAdRowToDto(row: UserAdRow): UserAd {
         isLive: row.is_live,
         createdAt: row.created_at,
         updatedAt: row.updated_at,
+        status: getAdStaus(row)
     };
 }

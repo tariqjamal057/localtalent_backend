@@ -46,17 +46,18 @@ export class AdRepository {
         };
     }
 
-    async getAdsForDisplay(page: number, limit: number): Promise<PaginatedAds> {
+    async getAdsForDisplay(userId: bigint, page: number, limit: number): Promise<PaginatedAds> {
         const offset = (page - 1) * limit;
         const query = `
             SELECT *, COUNT(*) OVER() AS total_count
             FROM user_ads
             WHERE is_live = TRUE
-              AND (expires_on IS NULL OR expires_on > NOW())
-            ORDER BY impression_count ASC, last_shown_at ASC NULLS FIRST
-            LIMIT $1 OFFSET $2
+              AND expires_on > NOW()
+              AND user_id != $1
+            ORDER BY impression_count ASC
+            LIMIT $2 OFFSET $3
         `;
-        const result: QueryResult<UserAdRow & { total_count: string }> = await this.db.query(query, [limit, offset]);
+        const result: QueryResult<UserAdRow & { total_count: string }> = await this.db.query(query, [userId, limit, offset]);
         const total = result.rows.length > 0 ? parseInt(result.rows[0].total_count, 10) : 0;
         return {
             data: result.rows.map(row => userAdRowToDto(row)),
@@ -74,6 +75,21 @@ export class AdRepository {
             WHERE id = $1
         `;
         await this.db.query(query, [id]);
+    }
+
+    async activateAd(id: bigint, maxDays: number, maxImpressions: number): Promise<UserAd | null> {
+        const query = `
+            UPDATE user_ads
+            SET is_live = TRUE,
+                max_days = $2,
+                max_impressions = $3,
+                expires_on = NOW() + ($2 || ' days')::INTERVAL
+            WHERE id = $1
+            RETURNING *
+        `;
+        const result: QueryResult<UserAdRow> = await this.db.query(query, [id, maxDays, maxImpressions]);
+        if (result.rows.length === 0) return null;
+        return userAdRowToDto(result.rows[0]);
     }
 
     async updateAdStatus(id: bigint, isLive: boolean): Promise<UserAd | null> {

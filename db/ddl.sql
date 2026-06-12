@@ -294,4 +294,12 @@ ADD COLUMN IF NOT EXISTS profile_image_url TEXT;
 
 ALTER TABLE user_reviews DROP COLUMN related_match_id;
 
-ALTER TABLE matches ADD COLUMN rating_review_id BIGINT REFERENCES user_reviews (id);
+ALTER TABLE matches DROP COLUMN IF EXISTS rating_review_id;
+
+ALTER TABLE matches ADD COLUMN recruiter_review_id BIGINT;
+
+ALTER TABLE matches ADD COLUMN candidate_review_id BIGINT;
+
+ALTER TABLE user_ads ALTER COLUMN max_impressions DROP NOT NULL;
+
+ALTER TABLE user_ads ALTER COLUMN max_days DROP NOT NULL;

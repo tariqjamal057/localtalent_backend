@@ -13,6 +13,7 @@ import translationRouter from './translation.route';
 import appConstantRouter from './app-constant.route';
 import callRouter from './call.route';
 import paymentRouter from './payment.route';
+import uploadRouter from './upload.route';
 
 const router = Router();
 
@@ -21,7 +22,7 @@ router.use('/categories', categoryRouter);
 router.use('/packs', packRouter);
 router.use('/user-profile', userProfileRouter);
 router.use('/ads', adRouter);
-router.use('/user-reviews', userReviewRouter);
+router.use('/user-review', userReviewRouter);
 router.use('/user-wallet', userWalletRouter);
 router.use('/user-blocks', userBlockRouter);
 router.use('/matches', matchRouter);
@@ -30,5 +31,6 @@ router.use('/translations', translationRouter);
 router.use('/app-constants', appConstantRouter);
 router.use('/call', callRouter)
 router.use('/payment', paymentRouter)
+router.use('/upload', uploadRouter)
 
 export default router;

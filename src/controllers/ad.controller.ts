@@ -8,8 +8,9 @@ export class AdController {
     constructor(private readonly adService: AdService) { }
 
     getAdsForDisplay = async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
+        const userId = req.user!.id;
         const { page, limit } = req.query;
-        const ads = await this.adService.getAdsForDisplay(page as unknown as number, limit as unknown as number);
+        const ads = await this.adService.getAdsForDisplay(userId, page as unknown as number, limit as unknown as number);
         sendResponse(res, StatusCodes.OK, MESSAGES.AD.FETCHED_SUCCESSFULLY, ads);
     };
 

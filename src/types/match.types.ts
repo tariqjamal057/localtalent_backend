@@ -14,7 +14,8 @@ export interface Match {
     providerCallId?: string;
     callEndedBy?: number;
     callType?: number;
-    ratingReviewId?: bigint | null;
+    recruiterReviewId?: bigint | null;
+    candidateReviewId?: bigint | null;
 }
 
 export interface CreateMatchDto {
@@ -33,7 +34,8 @@ export interface UpdateMatchDto {
     finalState?: number;
     callEndedBy?: number;
     callType?: number;
-    ratingReviewId?: bigint | null;
+    recruiterReviewId?: bigint | null;
+    candidateReviewId?: bigint | null;
 }
 
 export interface MatchRow {
@@ -50,7 +52,25 @@ export interface MatchRow {
     provider_call_id?: string;
     call_ended_by?: number;
     call_type?: number;
-    rating_review_id?: bigint | null;
+    recruiter_review_id?: bigint | null;
+    candidate_review_id?: bigint | null;
+}
+
+export interface PendingReviewMatchRow {
+    id: bigint;
+    recruiter_user_id: bigint;
+    candidate_user_id: bigint;
+    created_at: Date;
+    other_user_full_name: string | null;
+    other_user_profile_image_url: string | null;
+}
+
+export interface PendingReviewMatch {
+    matchId: bigint;
+    otherUserId: bigint;
+    otherUserFullName: string | null;
+    otherUserProfileImageUrl: string | null;
+    createdAt: Date;
 }
 
 export interface UserLocation {
