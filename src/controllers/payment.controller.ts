@@ -85,8 +85,10 @@ export class PaymentController {
             const maxAdDays = (order.purchasedAdDays ?? 0) + (order.bonusAdDays ?? 0);
             const maxAdImpressions = (order.purchasedAdImpressions ?? 0) + (order.bonusAdImpressions ?? 0);
             if (order.productId) {
-                logger.info(`[PaymentWebhook] Activating ad id=${order.productId} for userId=${order.userId}: maxDays=${maxAdDays}, maxImpressions=${maxAdImpressions}`);
-                await adRepository.activateAd(order.productId, maxAdDays, maxAdImpressions);
+                const expiresOn = new Date();
+                expiresOn.setDate(expiresOn.getDate() + maxAdDays);
+                logger.info(`[PaymentWebhook] Activating ad id=${order.productId} for userId=${order.userId}: maxDays=${maxAdDays}, maxImpressions=${maxAdImpressions}, expiresOn=${expiresOn.toISOString()}`);
+                await adRepository.activateAd(order.productId, maxAdDays, maxAdImpressions, expiresOn);
                 logger.info(`[PaymentWebhook] Ad ${order.productId} activated successfully`);
             } else {
                 logger.warn(`[PaymentWebhook] AD_PACK order ${order.id} has no productId — cannot activate ad`);

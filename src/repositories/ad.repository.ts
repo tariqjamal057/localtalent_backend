@@ -77,17 +77,17 @@ export class AdRepository {
         await this.db.query(query, [id]);
     }
 
-    async activateAd(id: bigint, maxDays: number, maxImpressions: number): Promise<UserAd | null> {
+    async activateAd(id: bigint, maxDays: number, maxImpressions: number, expiresOn: Date): Promise<UserAd | null> {
         const query = `
             UPDATE user_ads
             SET is_live = TRUE,
                 max_days = $2,
                 max_impressions = $3,
-                expires_on = NOW() + ($2 * INTERVAL '1 day')
+                expires_on = $4
             WHERE id = $1
             RETURNING *
         `;
-        const result: QueryResult<UserAdRow> = await this.db.query(query, [id, maxDays, maxImpressions]);
+        const result: QueryResult<UserAdRow> = await this.db.query(query, [id, maxDays, maxImpressions, expiresOn]);
         if (result.rows.length === 0) return null;
         return userAdRowToDto(result.rows[0]);
     }
