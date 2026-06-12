@@ -38,6 +38,7 @@ export class AdService {
                 adId: adId.toString(),
                 userPlatform: dto.userPlatform,
                 promoCode: dto.promoCode,
+                adPackId: dto.adPackId
             });
             return order;
         } else {

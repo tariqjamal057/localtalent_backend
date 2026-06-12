@@ -81,14 +81,16 @@ export class PackService {
         userId,
         adId,
         userPlatform,
-        promoCode
+        promoCode,
+        adPackId
     }: {
         userId: bigint;
         adId: string;
         userPlatform: string;
         promoCode?: string | null;
+        adPackId: string
     }) {
-        logger.info(`Creating payment order for ad pack. userId: ${userId}, adId: ${adId}, userPlatform: ${userPlatform}, promoCode: ${promoCode}`);
+        logger.info(`Creating payment order for ad pack. userId: ${userId}, adId: ${adId}, userPlatform: ${userPlatform}, promoCode: ${promoCode} , adPackId ${adPackId}`);
         let promoCodeDetails;
         if (promoCode) {
             promoCodeDetails = await this.promoCodeRepository.getByCode(promoCode);
@@ -96,7 +98,7 @@ export class PackService {
                 throw new ApiError(MESSAGES.PROMOCODE.INVALID_CODE, StatusCodes.BAD_REQUEST);
             }
         }
-        const packDetails = await this.packRepository.getAdPackById(BigInt(adId));
+        const packDetails = await this.packRepository.getAdPackById(BigInt(adPackId));
         if (!packDetails) {
             throw new ApiError(MESSAGES.PACK.INVALID_PACK_ID, StatusCodes.BAD_REQUEST);
         }
