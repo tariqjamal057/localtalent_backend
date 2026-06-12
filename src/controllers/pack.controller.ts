@@ -22,12 +22,12 @@ export class PackController {
 
     createOrderForPack = async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
         const userId = req.user!.id;
-        const { packId, userPlatform, promoCode, type } = req.body;
+        const { packId, adId, userPlatform, promoCode, type } = req.body;
         if (type === PACK_TYPE.MATCH_COUNT) {
             const order = await this.packService.createMatchPointsPackPaymentOrder({ userId, packId, userPlatform, promoCode: promoCode });
             sendResponse(res, StatusCodes.OK, MESSAGES.PACK.ORDER_CREATED_SUCCESSFULLY, order);
         } else {
-            const order = await this.packService.createAdPackPaymentOrder({ userId, adId: packId, userPlatform, promoCode: promoCode });
+            const order = await this.packService.createAdPackPaymentOrder({ userId, adId, userPlatform, promoCode: promoCode, adPackId: packId });
             sendResponse(res, StatusCodes.OK, MESSAGES.PACK.ORDER_CREATED_SUCCESSFULLY, order);
         }
     }
