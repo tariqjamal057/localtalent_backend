@@ -24,6 +24,7 @@ const LOCALE_META: Record<string, LocaleMeta> = {
     en: { name: 'English', nativeName: 'English', symbol: 'Aa', symbolBg: '#e0f2fe', symbolColor: '#0284c7' },
     hi: { name: 'Hindi', nativeName: 'हिंदी', symbol: 'अ', symbolBg: '#fce7f3', symbolColor: '#db2777' },
     te: { name: 'Telugu', nativeName: 'తెలుగు', symbol: 'అ', symbolBg: '#e0f2fe', symbolColor: '#0284c7' },
+    ta: { name: 'Tamil', nativeName: 'தமிழ்', symbol: 'அ', symbolBg: '#fef3c7', symbolColor: '#d97706' },
 };
 
 interface TranslationEntry {

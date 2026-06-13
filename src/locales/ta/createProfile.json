@@ -1,0 +1,62 @@
+{
+  "title": "உங்கள் சுயவிவரத்தை உருவாக்குங்கள்",
+  "subtitle": "தொடங்குவதற்கு உங்களைப் பற்றி சிறிது சொல்லுங்கள்",
+  "fields": {
+    "fullName": "முழுப் பெயர்",
+    "gender": "பாலினம்",
+    "age": "வயது",
+    "experienceLevel": "அனுபவ நிலை",
+    "pricePerDay": "ஒரு நாளுக்கான விலை",
+    "spokenLanguages": "பேசும் மொழிகள்"
+  },
+  "placeholders": {
+    "fullName": "உங்கள் முழுப் பெயரை உள்ளிடவும்",
+    "age": "உங்கள் வயதை உள்ளிடவும்",
+    "pricePerDay": "உங்கள் தினசரி கட்டணத்தை உள்ளிடவும்",
+    "spokenLanguages": "மொழிகளைத் தேர்ந்தெடுக்கவும்",
+    "searchLanguage": "மொழிகளைத் தேடுங்கள்..."
+  },
+  "genderOptions": {
+    "male": "ஆண்",
+    "female": "பெண்",
+    "other": "மற்றவை"
+  },
+  "experienceOptions": {
+    "beginner": "தொடக்கநிலை",
+    "intermediate": "இடைநிலை",
+    "expert": "நிபுணர்"
+  },
+  "languageOptions": {
+    "english": "ஆங்கிலம்",
+    "hindi": "இந்தி",
+    "telugu": "தெலுங்கு",
+    "tamil": "தமிழ்",
+    "kannada": "கன்னடம்",
+    "malayalam": "மலையாளம்",
+    "bengali": "வங்காளம்",
+    "marathi": "மராத்தி",
+    "gujarati": "குஜராத்தி",
+    "punjabi": "பஞ்சாபி",
+    "odia": "ஒடியா",
+    "urdu": "உருது",
+    "assamese": "அசாமி",
+    "maithili": "மைதிலி",
+    "konkani": "கொங்கணி",
+    "kashmiri": "காஷ்மீரி",
+    "sindhi": "சிந்தி",
+    "nepali": "நேபாளி",
+    "manipuri": "மணிப்பூரி",
+    "dogri": "டோக்ரி",
+    "bodo": "போடோ",
+    "santali": "சந்தாலி",
+    "sanskrit": "சமஸ்கிருதம்"
+  },
+  "doneButton": "முடிந்தது",
+  "submitButton": "சுயவிவரத்தைச் சேமி",
+  "errors": {
+    "fullNameTooLong": "பெயர் அதிகபட்சம் 120 எழுத்துகள் இருக்க வேண்டும்",
+    "ageInvalid": "சரியான வயதை உள்ளிடவும்",
+    "priceInvalid": "சரியான விலையை உள்ளிடவும்",
+    "submitFailed": "சுயவிவரத்தைச் சேமிக்க முடியவில்லை. மீண்டும் முயற்சிக்கவும்."
+  }
+}

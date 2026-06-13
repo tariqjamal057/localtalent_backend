@@ -1,0 +1,107 @@
+{
+  "pageTitle": "பணியாளர்கள் & வேலைகளைக் கண்டறி",
+  "promoteAd": {
+    "title": "உங்கள் சேவைகளை விளம்பரப்படுத்துங்கள்",
+    "subtitle": "உங்கள் சொந்த விளம்பரத்தை உருவாக்கி அதிக வாடிக்கையாளர்களை அடையுங்கள்"
+  },
+  "validation": {
+    "category": "ஒரு வகையைத் தேர்ந்தெடுக்கவும்",
+    "subCategory": "ஒரு துணை வகையைத் தேர்ந்தெடுக்கவும்",
+    "jobRole": "ஒரு வேலைப் பாத்திரத்தைத் தேர்ந்தெடுக்கவும்",
+    "gender": "பாலினத்தைத் தேர்ந்தெடுக்கவும்",
+    "age": "வயதை உள்ளிடவும்",
+    "language": "குறைந்தது ஒரு மொழியையாவது தேர்ந்தெடுக்கவும்",
+    "timing": "நேரத்தை (நாட்கள்) உள்ளிடவும்",
+    "ratePerDay": "ஒரு நாளுக்கான கட்டணத்தை உள்ளிடவும்",
+    "distance": "தூரத்தை உள்ளிடவும்",
+    "numberOfPeople": "நபர்களின் எண்ணிக்கையை உள்ளிடவும்",
+    "experienceLevel": "அனுபவ நிலையைத் தேர்ந்தெடுக்கவும்"
+  },
+  "form": {
+    "jobInformation": "வேலை தகவல்",
+    "personalInformation": "தனிப்பட்ட தகவல்",
+    "workRequirements": "வேலைத் தேவைகள்",
+    "select": "தேர்ந்தெடு",
+    "selectedCount": "{{count}} தேர்ந்தெடுக்கப்பட்டது",
+    "agePlaceholder": "எ.கா. 25",
+    "daysPlaceholder": "நாட்கள்",
+    "kmPlaceholder": "கி.மீ",
+    "category": "வகை",
+    "selectCategory": "வகையைத் தேர்ந்தெடு",
+    "subCategory": "துணை வகை",
+    "selectSubCategory": "துணை வகையைத் தேர்ந்தெடு",
+    "jobRole": "வேலைப் பாத்திரம்",
+    "selectJobRole": "வேலைப் பாத்திரத்தைத் தேர்ந்தெடு",
+    "gender": "பாலினம்",
+    "age": "வயது",
+    "language": "மொழி",
+    "days": "நாட்கள்",
+    "ratePerDay": "கட்டணம் / நாள்",
+    "distance": "தூரம்",
+    "noOfPeople": "நபர்களின் எண்ணிக்கை",
+    "experience": "அனுபவம்"
+  },
+  "genderOptions": {
+    "male": "ஆண்",
+    "female": "பெண்",
+    "other": "மற்றவை"
+  },
+  "experienceOptions": {
+    "fresher": "புதியவர்",
+    "intermediate": "இடைநிலை",
+    "expert": "நிபுணர்"
+  },
+  "languageModal": {
+    "title": "மொழியைத் தேர்ந்தெடு",
+    "subtitle": "தொடர ஒரு மொழியைத் தேர்ந்தெடுக்கவும்",
+    "apply": "பயன்படுத்து"
+  },
+  "langModal": {
+    "title": "மொழிகளைத் தேர்ந்தெடு",
+    "searchPlaceholder": "மொழிகளைத் தேடுங்கள்...",
+    "done": "முடிந்தது",
+    "doneCount": "முடிந்தது ({{count}})"
+  },
+  "languageOptions": {
+    "english": "ஆங்கிலம்",
+    "hindi": "இந்தி",
+    "telugu": "தெலுங்கு",
+    "tamil": "தமிழ்",
+    "kannada": "கன்னடம்",
+    "malayalam": "மலையாளம்",
+    "bengali": "வங்காளம்",
+    "marathi": "மராத்தி",
+    "gujarati": "குஜராத்தி",
+    "punjabi": "பஞ்சாபி",
+    "odia": "ஒடியா",
+    "urdu": "உருது",
+    "assamese": "அசாமி",
+    "maithili": "மைதிலி",
+    "konkani": "கொங்கணி",
+    "kashmiri": "காஷ்மீரி",
+    "sindhi": "சிந்தி",
+    "nepali": "நேபாளி",
+    "manipuri": "மணிப்பூரி",
+    "dogri": "டோக்ரி",
+    "bodo": "போடோ",
+    "santali": "சந்தாலி",
+    "sanskrit": "சமஸ்கிருதம்"
+  },
+  "credits": "கிரெடிட்கள்",
+  "defaultUserName": "பயனர்",
+  "slider": {
+    "worker": "பணியாளர்",
+    "job": "வேலை",
+    "swipeLeft": "இடதுபுறம் ஸ்வைப் செய்",
+    "swipeRight": "வலதுபுறம் ஸ்வைப் செய்",
+    "search": "தேடு"
+  },
+  "location": {
+    "permissionDenied": "அருகிலுள்ளவற்றைத் தேட இருப்பிட அனுமதி தேவை.",
+    "unavailable": "உங்கள் இருப்பிடத்தைப் பெற முடியவில்லை. மீண்டும் முயற்சிக்கவும்."
+  },
+  "ad": {
+    "placeholder": "விளம்பரம்",
+    "localAdvertisement": "🚩 உள்ளூர் விளம்பரம்"
+  }
+}

@@ -20,10 +20,16 @@
   "defaultCategory": "Workers",
   "activeSearch": "Active Search",
   "live": "Live",
-  "scanning": "Scanning nearby workers...",
   "radius": "📍 Radius",
-  "connecting": "Connecting matched workers to your post...",
   "averageWait": "Average wait time: 2–5 minutes",
   "searchStarted": "⏱ Search started",
-  "stopSearch": "Stop Search"
+  "stopSearch": "Stop Search",
+  "scanning": {
+    "workers": "Scanning nearby workers...",
+    "jobs": "Scanning nearby jobs..."
+  },
+  "connecting": {
+    "workers": "Connecting matched workers to your post...",
+    "jobs": "Connecting matched jobs to your profile..."
+  }
 }

@@ -35,7 +35,9 @@
     "ageValue": "{{age}} वर्ष",
     "gender": "लिंग",
     "languages": "भाषाएँ",
-    "rate": "दर"
+    "rate": "दर",
+    "experience": "अनुभव",
+    "availableDays": "उपलब्धता"
   },
   "gender": {
     "1": "पुरुष",

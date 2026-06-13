@@ -1,0 +1,44 @@
+{
+  "banner": "உங்களுக்கு ஒரு பொருத்தத்தைக் கண்டறிந்தோம்!",
+  "noMatchData": "பொருத்தத் தரவு எதுவும் இல்லை.",
+  "goBack": "திரும்பிச் செல்",
+  "defaultName": "பயனர்",
+  "snackbar": {
+    "callDataMissing": "அழைப்புத் தரவு இல்லை. மீண்டும் முயற்சிக்கவும்.",
+    "joinFailed": "அழைப்பில் சேர முடியவில்லை. மீண்டும் முயற்சிக்கவும்."
+  },
+  "details": {
+    "title": "பணியாளர் விவரங்கள்",
+    "age": "வயது",
+    "ageValue": "{{age}} ஆண்டுகள்",
+    "gender": "பாலினம்",
+    "days": "நாட்கள்",
+    "daysValue": "{{count}} நாள்",
+    "language": "மொழி",
+    "na": "பொருந்தாது",
+    "price": "விலை",
+    "day": "நாள்",
+    "experience": "அனுபவம்"
+  },
+  "genderOptions": {
+    "male": "ஆண்",
+    "female": "பெண்",
+    "other": "மற்றவை"
+  },
+  "experienceOptions": {
+    "fresher": "புதியவர்",
+    "intermediate": "இடைநிலை",
+    "expert": "நிபுணர்"
+  },
+  "tapToConnect": "இணைக்க அல்லது நிறுத்த தட்டவும்",
+  "accept": "ஏற்று",
+  "stop": "நிறுத்து",
+  "decline": "நிராகரி",
+  "joiningCall": "அழைப்பில் சேர்கிறது...",
+  "worker": "பணியாளர்",
+  "locationUnavailable": "இருப்பிடத் தரவு கிடைக்கவில்லை",
+  "minutes": "{{count}} நிமிடம்",
+  "yourLocation": "உங்கள் இருப்பிடம்",
+  "openInMaps": "வரைபடங்களில் திற",
+  "getDirections": "திசைகளைப் பெறு"
+}

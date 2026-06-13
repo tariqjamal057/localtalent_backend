@@ -1,0 +1,69 @@
+{
+  "title": "சுயவிவரத்தைத் திருத்து",
+  "subtitle": "உங்கள் தனிப்பட்ட விவரங்களைப் புதுப்பிக்கவும்",
+  "tapToChangePhoto": "புகைப்படத்தை மாற்ற தட்டவும்",
+  "personalDetails": "தனிப்பட்ட விவரங்கள்",
+  "fields": {
+    "fullName": "முழுப் பெயர்",
+    "age": "வயது",
+    "experienceLevel": "அனுபவ நிலை",
+    "ratePerDay": "ஒரு நாளுக்கான கட்டணம் (₹)",
+    "language": "மொழி",
+    "gender": "பாலினம்"
+  },
+  "placeholders": {
+    "fullName": "உங்கள் முழுப் பெயரை உள்ளிடவும்",
+    "age": "உங்கள் வயதை உள்ளிடவும்",
+    "experienceLevel": "அனுபவ நிலையைத் தேர்ந்தெடுக்கவும்",
+    "ratePerDay": "உங்கள் தினசரி கட்டணத்தை உள்ளிடவும்",
+    "languages": "மொழிகளைத் தேர்ந்தெடுக்கவும்"
+  },
+  "genderOptions": {
+    "male": "ஆண்",
+    "female": "பெண்",
+    "other": "மற்றவை"
+  },
+  "experienceOptions": {
+    "beginner": "தொடக்கநிலை",
+    "intermediate": "இடைநிலை",
+    "expert": "நிபுணர்"
+  },
+  "languageOptions": {
+    "english": "ஆங்கிலம்",
+    "hindi": "இந்தி",
+    "telugu": "தெலுங்கு",
+    "tamil": "தமிழ்",
+    "kannada": "கன்னடம்",
+    "malayalam": "மலையாளம்",
+    "bengali": "வங்காளம்",
+    "marathi": "மராத்தி",
+    "gujarati": "குஜராத்தி",
+    "punjabi": "பஞ்சாபி",
+    "odia": "ஒடியா",
+    "urdu": "உருது",
+    "assamese": "அசாமி",
+    "maithili": "மைதிலி",
+    "konkani": "கொங்கணி",
+    "kashmiri": "காஷ்மீரி",
+    "sindhi": "சிந்தி",
+    "nepali": "நேபாளி",
+    "manipuri": "மணிப்பூரி",
+    "dogri": "டோக்ரி",
+    "bodo": "போடோ",
+    "santali": "சந்தாலி",
+    "sanskrit": "சமஸ்கிருதம்"
+  },
+  "langModal": {
+    "title": "மொழிகளைத் தேர்ந்தெடு",
+    "searchPlaceholder": "மொழிகளைத் தேடுங்கள்...",
+    "done": "முடிந்தது",
+    "doneCount": "முடிந்தது ({{count}})"
+  },
+  "saveChanges": "மாற்றங்களைச் சேமி",
+  "alert": {
+    "uploadFailedTitle": "பதிவேற்றம் தோல்வியடைந்தது",
+    "uploadFailedMessage": "புகைப்படத்தைப் பதிவேற்ற முடியவில்லை. மீண்டும் முயற்சிக்கவும்.",
+    "errorTitle": "பிழை",
+    "saveFailed": "சுயவிவரத்தைச் சேமிக்க முடியவில்லை. மீண்டும் முயற்சிக்கவும்."
+  }
+}

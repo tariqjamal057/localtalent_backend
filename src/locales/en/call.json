@@ -35,7 +35,9 @@
     "ageValue": "{{age}} Years",
     "gender": "GENDER",
     "languages": "LANGUAGES",
-    "rate": "RATE"
+    "rate": "RATE",
+    "experience": "EXPERIENCE",
+    "availableDays": "AVAILABLE"
   },
   "gender": {
     "1": "Male",
