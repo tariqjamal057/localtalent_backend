@@ -137,7 +137,7 @@ export class CallService {
         if (hasAlreadyAccepted) {
             throw new Error(MESSAGES.CALL.ALREADY_ACCEPTED_PROPOSAL);
         }
-        const isRecruiter = match.recruiterUserId === userId;
+        const isRecruiter = match.recruiterUserId == userId;
         const isAccepted = await this.redisCallService.acceptProposal(matchId, userId);
         if (!isAccepted) {
             throw new Error(MESSAGES.CALL.FAILED_TO_ACCEPT_PROPOSAL);
@@ -172,7 +172,7 @@ export class CallService {
         if (!match || (match.recruiterUserId !== userId && match.candidateUserId !== userId)) {
             throw new Error(MESSAGES.MATCH.NOT_A_MEMBER_OF_MATCH);
         }
-        const otherUserId = match.recruiterUserId === userId ? match.candidateUserId : match.recruiterUserId;
+        const otherUserId = match.recruiterUserId == userId ? match.candidateUserId : match.recruiterUserId;
         const isVideoRequestAvailable = await this.userWalletService.isBalanceForVideoCallAvailable(userId);
         if (!isVideoRequestAvailable) {
             throw new Error(MESSAGES.CALL.INSUFFICIENT_BALANCE_FOR_VIDEO_CALL);
@@ -187,12 +187,6 @@ export class CallService {
         await this.userBlockRepository.block(userId, otherUserId);
     }
 
-    async handleUnblocking(userId: bigint, matchId: bigint): Promise<void> {
-        const match = await this.matchRepository.getById(matchId);
-        const otherUserId = getOtherUserIdInMatch(match!, userId);
-        await this.userBlockRepository.unblock(userId, otherUserId);
-    }
-
     async handleCallEnd({ matchId, callEndBy, userId }: { matchId: bigint, callEndBy?: CALL_ENDED_BY, userId?: bigint }): Promise<void> {
         if (!callEndBy && !userId) {
             throw new Error(MESSAGES.CALL.INVALID_CALL_END_PARAMETERS);
@@ -203,7 +197,7 @@ export class CallService {
         }
         let endBy = callEndBy;
         if (userId) {
-            const isRecruiter = match?.recruiterUserId === userId;
+            const isRecruiter = match?.recruiterUserId == userId;
             endBy = isRecruiter ? CALL_ENDED_BY.RECRUITER : CALL_ENDED_BY.CANDIDATE;
         }
         await this.matchRepository.update(matchId, {

@@ -16,12 +16,12 @@ export class StreamUtil {
     }
 
     private static getChatChannelId(userIds: bigint[]): string {
-        const sortedIds = userIds.map(id => id.toString()).sort();
+        const sortedIds = userIds.sort();
         return `channel_${sortedIds.join('_')}`;
     }
 
     private static getCallId(userIds: bigint[]): string {
-        const sortedIds = userIds.map(id => id.toString()).sort();
+        const sortedIds = userIds.sort();
         return `call_${sortedIds.join('_')}_${Date.now()}`;
     }
 

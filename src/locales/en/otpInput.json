@@ -1,13 +1,14 @@
 {
-    "title": "Enter OTP",
-    "subtitle": "We sent a 4-digit code to",
-    "errors": {
-        "otpIncomplete": "Please enter the complete OTP",
-        "otpInvalid": "Invalid OTP. Please try again."
-    },
-    "resend": {
-        "waitText": "Resend code in",
-        "action": "Resend OTP"
-    },
-    "verifyButton": "Verify"
+  "title": "Enter OTP",
+  "subtitle": "We sent a 4-digit code to",
+  "verifyButton": "Verify",
+  "resend": {
+    "waitText": "Resend code in",
+    "action": "Resend OTP"
+  },
+  "errors": {
+    "resendFailed": "Failed to resend OTP. Please try again.",
+    "otpIncomplete": "Please enter the complete OTP",
+    "otpInvalid": "Invalid OTP. Please try again."
+  }
 }

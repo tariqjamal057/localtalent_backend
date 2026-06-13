@@ -1,0 +1,35 @@
+{
+  "title": "विज्ञापन",
+  "subtitle": "अपने विज्ञापन बनाएं और प्रबंधित करें",
+  "createSection": "विज्ञापन बनाएं",
+  "myAds": "मेरे विज्ञापन",
+  "uploadingImage": "छवि अपलोड हो रही है…",
+  "uploadTitle": "विज्ञापन छवि अपलोड करें",
+  "uploadSubtitle": "अपनी गैलरी से छवि चुनने के लिए टैप करें",
+  "change": "बदलें",
+  "optional": "(वैकल्पिक)",
+  "fields": {
+    "title": "शीर्षक",
+    "description": "विवरण"
+  },
+  "placeholders": {
+    "title": "जैसे समर सेल 2024",
+    "description": "अपने विज्ञापन के लिए संक्षिप्त विवरण"
+  },
+  "chooseAdPlan": "विज्ञापन प्लान चुनें",
+  "defaultAdTitle": "विज्ञापन {{num}}",
+  "views": "{{count}} व्यूज़",
+  "daysLeft": "{{count}} दिन शेष",
+  "payNow": "अभी भुगतान करें",
+  "empty": "अभी तक कोई विज्ञापन नहीं। ऊपर अपना पहला विज्ञापन बनाएं।",
+  "status": {
+    "live": "लाइव",
+    "paymentPending": "भुगतान लंबित",
+    "expired": "समाप्त",
+    "unknown": "अज्ञात"
+  },
+  "alert": {
+    "uploadFailedTitle": "अपलोड विफल",
+    "uploadFailedMessage": "छवि अपलोड नहीं हो सकी। कृपया पुनः प्रयास करें।"
+  }
+}

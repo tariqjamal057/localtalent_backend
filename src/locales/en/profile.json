@@ -1,0 +1,37 @@
+{
+  "menu": {
+    "editProfile": {
+      "title": "Edit Profile",
+      "subtitle": "Update your info, photo & details"
+    },
+    "aadhaar": {
+      "title": "Aadhaar Verification",
+      "subtitle": "Verify identity proof",
+      "verified": "✓ Verified",
+      "notLive": "Aadhar verification is not live yet"
+    },
+    "adManagement": {
+      "title": "Ad management",
+      "subtitle": "Post or manage your ads"
+    },
+    "myPayments": {
+      "title": "My Payments",
+      "subtitle": "Transaction history & invoices"
+    },
+    "blockedUsers": {
+      "title": "Blocked Users",
+      "subtitle": "Manage your blocked list"
+    },
+    "about": {
+      "title": "About",
+      "subtitle": "About our Company"
+    }
+  },
+  "section": {
+    "accountSettings": "ACCOUNT SETTINGS",
+    "communityLegal": "COMMUNITY & LEGAL"
+  },
+  "termsConditions": "Terms &\nConditions",
+  "privacyPolicy": "Privacy & Policy",
+  "logout": "Log Out"
+}

@@ -38,7 +38,7 @@ export class UserProfileRepository {
             dto.latitude ?? null,
             dto.longitude ?? null,
             dto.spokenLanguages ? JSON.stringify(dto.spokenLanguages) : null,
-            dto.profileImageUrl ?? null,
+            dto.profileImageUrl ?? `https://ui-avatars.com/api/?background=5B21B6&color=FFF&size=200&bold=true&name=${dto.fullName}`,
         ];
         const result: QueryResult<UserProfileRow> = await this.db.query(query, values);
         return userProfileRowToDto(result.rows[0]);

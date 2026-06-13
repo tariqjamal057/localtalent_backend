@@ -437,6 +437,24 @@ export class MatchService {
             logger.info(`[MatchService] error while sending request-video-response`)
         }
     }
+
+    async handleCallDecline(userId: bigint, matchId: bigint): Promise<void> {
+        const match = await this.matchRepository.getById(matchId);
+        if (match?.recruiterUserId != userId && match?.candidateUserId != userId) {
+            throw new Error(MESSAGES.MATCH.NOT_A_MEMBER_OF_MATCH);
+        }
+        const otherUserId = getOtherUserIdInMatch(match, userId);
+        socketGateway.sendCallDeclinedEvent(otherUserId, { matchId });
+    }
+
+    async handleProposalRejection(userId: bigint, matchId: bigint): Promise<void> {
+        const match = await this.matchRepository.getById(matchId);
+        if (match?.recruiterUserId != userId && match?.candidateUserId != userId) {
+            throw new Error(MESSAGES.MATCH.NOT_A_MEMBER_OF_MATCH);
+        }
+        const otherUserId = getOtherUserIdInMatch(match, userId);
+        socketGateway.sendProposalRejectedEvent(otherUserId, { matchId });
+    }
 }
 
 export const matchService = new MatchService(matchRepository, redisUserService, userBlockRepository, categoryRepository, matchTrackingRepository, userWalletService, callService, userRepository);

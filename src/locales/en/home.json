@@ -1,31 +1,107 @@
 {
-    "header": {
-        "matchPoints": "Points",
-        "language": "Language"
-    },
-    "languageModal": {
-        "title": "Choose Language",
-        "subtitle": "Select a language to continue",
-        "apply": "Apply"
-    },
-    "form": {
-        "category": "Category",
-        "selectCategory": "Select category",
-        "subCategory": "Sub Category",
-        "selectSubCategory": "Select sub-category",
-        "jobRole": "Job Role",
-        "selectJobRole": "Select job role",
-        "gender": "Gender",
-        "age": "Age",
-        "language": "Language",
-        "timing": "Timing",
-        "distance": "Distance",
-        "noOfPeople": "No. People",
-        "ratePerDay": "Rate/day",
-        "experience": "Experience"
-    },
-    "needSlider": {
-        "worker": "Worker",
-        "job": "Job"
-    }
+  "pageTitle": "Find Workers & Jobs",
+  "promoteAd": {
+    "title": "Promote Your Services",
+    "subtitle": "Create your own ad and reach more customers"
+  },
+  "validation": {
+    "category": "Please select a Category",
+    "subCategory": "Please select a Sub Category",
+    "jobRole": "Please select a Job Role",
+    "gender": "Please select Gender",
+    "age": "Please enter Age",
+    "language": "Please select at least one Language",
+    "timing": "Please enter Timing (days)",
+    "ratePerDay": "Please enter Rate per Day",
+    "distance": "Please enter Distance",
+    "numberOfPeople": "Please enter No. of People",
+    "experienceLevel": "Please select Experience level"
+  },
+  "form": {
+    "jobInformation": "JOB INFORMATION",
+    "personalInformation": "PERSONAL INFORMATION",
+    "workRequirements": "WORK REQUIREMENTS",
+    "select": "Select",
+    "selectedCount": "{{count}} selected",
+    "agePlaceholder": "e.g. 25",
+    "daysPlaceholder": "days",
+    "kmPlaceholder": "km",
+    "category": "Category",
+    "selectCategory": "Select category",
+    "subCategory": "Sub Category",
+    "selectSubCategory": "Select sub-category",
+    "jobRole": "Job Role",
+    "selectJobRole": "Select job role",
+    "gender": "Gender",
+    "age": "Age",
+    "language": "Language",
+    "days": "DAYS",
+    "ratePerDay": "Rate",
+    "distance": "Distance",
+    "noOfPeople": "No. of People",
+    "experience": "Experience"
+  },
+  "genderOptions": {
+    "male": "Male",
+    "female": "Female",
+    "other": "Other"
+  },
+  "experienceOptions": {
+    "fresher": "Fresher",
+    "intermediate": "Intermediate",
+    "expert": "Expert"
+  },
+  "languageModal": {
+    "title": "Choose Language",
+    "subtitle": "Select a language to continue",
+    "apply": "Apply"
+  },
+  "langModal": {
+    "title": "Select Languages",
+    "searchPlaceholder": "Search languages...",
+    "done": "Done",
+    "doneCount": "Done ({{count}})"
+  },
+  "languageOptions": {
+    "english": "English",
+    "hindi": "Hindi",
+    "telugu": "Telugu",
+    "tamil": "Tamil",
+    "kannada": "Kannada",
+    "malayalam": "Malayalam",
+    "bengali": "Bengali",
+    "marathi": "Marathi",
+    "gujarati": "Gujarati",
+    "punjabi": "Punjabi",
+    "odia": "Odia",
+    "urdu": "Urdu",
+    "assamese": "Assamese",
+    "maithili": "Maithili",
+    "konkani": "Konkani",
+    "kashmiri": "Kashmiri",
+    "sindhi": "Sindhi",
+    "nepali": "Nepali",
+    "manipuri": "Manipuri",
+    "dogri": "Dogri",
+    "bodo": "Bodo",
+    "santali": "Santali",
+    "sanskrit": "Sanskrit"
+  },
+  "credits": "CREDITS",
+  "defaultUserName": "User",
+  "slider": {
+    "worker": "Worker",
+    "job": "Job",
+    "swipeLeft": "Swipe left",
+    "swipeRight": "Swipe right",
+    "search": "SEARCH"
+  },
+  "location": {
+    "permissionDenied": "Location permission is required to search nearby.",
+    "unavailable": "Could not get your location. Please try again."
+  },
+  "ad": {
+    "placeholder": "AD",
+    "localAdvertisement": "🚩 LOCAL ADVERTISEMENT"
+  }
 }

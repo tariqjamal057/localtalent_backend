@@ -1,20 +1,22 @@
 {
-  "title": "अपनी प्रोफ़ाइल बनाएं",
-  "subtitle": "शुरू करने के लिए हमें अपने बारे में थोड़ा बताएं",
+  "title": "प्रोफ़ाइल संपादित करें",
+  "subtitle": "अपने व्यक्तिगत विवरण अपडेट करें",
+  "tapToChangePhoto": "फ़ोटो बदलने के लिए टैप करें",
+  "personalDetails": "व्यक्तिगत विवरण",
   "fields": {
     "fullName": "पूरा नाम",
-    "gender": "लिंग",
     "age": "आयु",
     "experienceLevel": "अनुभव स्तर",
-    "pricePerDay": "प्रति दिन मूल्य",
-    "spokenLanguages": "बोली जाने वाली भाषाएँ"
+    "ratePerDay": "प्रति दिन दर (₹)",
+    "language": "भाषा",
+    "gender": "लिंग"
   },
   "placeholders": {
     "fullName": "अपना पूरा नाम दर्ज करें",
     "age": "अपनी आयु दर्ज करें",
-    "pricePerDay": "अपनी दैनिक दर दर्ज करें",
-    "spokenLanguages": "भाषाएँ चुनें",
-    "searchLanguage": "भाषाएँ खोजें..."
+    "experienceLevel": "अनुभव स्तर चुनें",
+    "ratePerDay": "अपनी दैनिक दर दर्ज करें",
+    "languages": "भाषाएँ चुनें"
   },
   "genderOptions": {
     "male": "पुरुष",
@@ -51,12 +53,17 @@
     "santali": "संताली",
     "sanskrit": "संस्कृत"
   },
-  "doneButton": "पूर्ण",
-  "submitButton": "प्रोफ़ाइल सहेजें",
-  "errors": {
-    "fullNameTooLong": "नाम अधिकतम 120 अक्षरों का होना चाहिए",
-    "ageInvalid": "कृपया एक मान्य आयु दर्ज करें",
-    "priceInvalid": "कृपया एक मान्य मूल्य दर्ज करें",
-    "submitFailed": "प्रोफ़ाइल सहेजने में विफल। कृपया पुनः प्रयास करें।"
+  "langModal": {
+    "title": "भाषाएँ चुनें",
+    "searchPlaceholder": "भाषाएँ खोजें...",
+    "done": "पूर्ण",
+    "doneCount": "पूर्ण ({{count}})"
+  },
+  "saveChanges": "परिवर्तन सहेजें",
+  "alert": {
+    "uploadFailedTitle": "अपलोड विफल",
+    "uploadFailedMessage": "फ़ोटो अपलोड नहीं हो सकी। कृपया पुनः प्रयास करें।",
+    "errorTitle": "त्रुटि",
+    "saveFailed": "प्रोफ़ाइल सहेजने में विफल। कृपया पुनः प्रयास करें।"
   }
 }

@@ -28,8 +28,8 @@ export class AdController {
     };
 
     incrementImpressionCount = async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
-        const id = BigInt(req.params.id);
-        await this.adService.incrementImpressionCount(id);
+        const adIds = req.body?.adIds || [];
+        this.adService.incrementImpressionCount(adIds);
         sendResponse(res, StatusCodes.OK, MESSAGES.AD.IMPRESSION_INCREMENTED);
     };
 }

@@ -47,7 +47,7 @@ export class AuthController {
     };
 
     verifyOtp = async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
-        const { countryCode, phoneNumber, otp, appLanguageCode } = req.body;
+        const { countryCode, phoneNumber, otp, appLanguageCode, fullName } = req.body;
         const existingOtp = await redisOtpService.getOtp(countryCode, phoneNumber);
         if (existingOtp !== otp) {
             sendError(res, MESSAGES.AUTH.INVALID_OTP, StatusCodes.BAD_REQUEST);
@@ -61,6 +61,9 @@ export class AuthController {
             appLanguageCode
         });
         if (isNewUser) {
+            if (fullName) {
+                await userProfileRepository.create(user.id, { fullName })
+            }
             userWalletRepository.insert(user.id);
         }
         const refreshToken = signRefreshToken({ userId: user.id.toString() });

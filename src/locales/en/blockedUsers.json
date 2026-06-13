@@ -1,0 +1,25 @@
+{
+  "title": "Blocked Users",
+  "subtitle": "Manage users you have blocked from chat and calls",
+  "countBlocked": "{{count}} Blocked",
+  "unknownUser": "Unknown User",
+  "badge": {
+    "blocked": "Blocked"
+  },
+  "info": {
+    "title": "Blocked accounts",
+    "subtitle": "These users cannot chat, call, or see your activity",
+    "safeMode": "Safe mode"
+  },
+  "listTitle": "BLOCKED LIST",
+  "empty": "No blocked users",
+  "footerHint": "Tap the restore icon to unblock a user",
+  "modal": {
+    "title": "Unblock user?",
+    "subtitle": "Do you want to unblock this user?",
+    "blockedUser": "Blocked user",
+    "no": "No",
+    "yesUnblock": "Yes, Unblock",
+    "footer": "This user will be able to contact you again."
+  }
+}

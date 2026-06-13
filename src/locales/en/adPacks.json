@@ -1,0 +1,33 @@
+{
+  "title": "Ad Plans",
+  "subtitle": "Pick a plan · Your ad goes live instantly",
+  "popular": "★ POPULAR",
+  "views": "{{count}} views",
+  "days": "{{count}} days",
+  "packLabels": {
+    "1": "Basic",
+    "2": "Starter",
+    "3": "Popular",
+    "4": "Growth",
+    "5": "Best Value",
+    "6": "Enterprise"
+  },
+  "planSection": "ADVERTISEMENT PLAN",
+  "planSubtitle": "More spend = more views on your ad",
+  "summary": {
+    "title": "ORDER SUMMARY",
+    "planSelected": "Plan selected",
+    "planValue": "₹ {{price}} · {{count}} views",
+    "rechargeAmount": "Recharge amount",
+    "gst": "GST (18%)",
+    "totalPayable": "Total payable",
+    "boostNote": "Your ad will be boosted with approximately {{count}} views."
+  },
+  "continuePayment": "Continue Payment",
+  "alert": {
+    "errorTitle": "Error",
+    "loadFailed": "Could not load ad plans. Please try again.",
+    "paymentFailedTitle": "Payment failed",
+    "paymentFailedMessage": "Something went wrong. Please try again."
+  }
+}

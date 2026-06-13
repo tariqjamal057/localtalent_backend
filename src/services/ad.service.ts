@@ -17,8 +17,8 @@ export class AdService {
         return this.adRepository.getAdsByUserId(userId, page, limit);
     }
 
-    async incrementImpressionCount(id: bigint): Promise<void> {
-        return this.adRepository.incrementImpressionCount(id);
+    async incrementImpressionCount(adIds: bigint[]): Promise<void> {
+        return this.adRepository.incrementImpressionCount(adIds);
     }
 
     async createAd(userId: bigint, dto: CreateAdDto): Promise<{

@@ -19,6 +19,7 @@ const verifyOtpSchema = z.object({
     countryCode: z.string().min(2, 'Country code is required'),
     otp: z.string().min(4, 'OTP is required').max(10, 'OTP is too long'),
     appLanguageCode: z.string().length(2, 'App language code must be 2 characters'),
+    fullName: z.string().optional()
 });
 
 router.post(

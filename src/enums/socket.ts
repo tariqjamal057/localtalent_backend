@@ -9,7 +9,9 @@ export enum SOCKET_INCOMING_EVENT {
     REQUEST_PHONE_NUMBER = 'request_phone_number',
     REQUEST_PHONE_NUMBER_RESPONSE = 'request_phone_number_response',
     REQUEST_VIDEO = 'request_video',
-    REQUEST_VIDEO_RESPONSE = 'request_video_response'
+    REQUEST_VIDEO_RESPONSE = 'request_video_response',
+    DECLINE_CALL = 'decline_Call',
+    REJECT_PROPOSAL = 'reject_proposal'
 }
 
 export enum SOCKET_OUTGOING_EVENT {
@@ -24,4 +26,6 @@ export enum SOCKET_OUTGOING_EVENT {
     ALL_ACCEPTED_PROPOSAL = 'all_accepted_proposal',
     REQUEST_PHONE_NUMBER_RESPONSE = 'request_phone_number_response',
     REQUEST_PHONE_NUMBER = 'request_phone_number',
+    CALL_DECLINED = 'call_decliend',
+    PROPOSAL_REJECTED = 'proposal_rejected'
 }

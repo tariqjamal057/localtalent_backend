@@ -1,0 +1,29 @@
+{
+  "noOptionsAvailable": "No options available",
+  "aadhaar": {
+    "label": "AADHAAR",
+    "verified": "✓ Verified",
+    "notVerified": "✕ Not Verified"
+  },
+  "askPhone": {
+    "waiting": "Waiting for response…",
+    "requestDeclined": "Request Declined",
+    "ask": "Ask Phone Number",
+    "modalTitle": "Phone Number Request",
+    "modalMessage": "The other user wants to exchange phone numbers. Do you want to share yours?",
+    "decline": "Decline",
+    "share": "Share"
+  },
+  "rateWorker": {
+    "title": "Rate your recent call",
+    "subtitle": "Share your experience about the call you had recently",
+    "defaultWorker": "Worker",
+    "ratingLabel": "Your rating",
+    "ratingHint": "Tap a star to rate the worker",
+    "ratingValue": "{{rating}} / 5",
+    "commentLabel": "Comment",
+    "commentHint": "Write a short note about the call",
+    "commentPlaceholder": "Write your review",
+    "submit": "Submit Review"
+  }
+}

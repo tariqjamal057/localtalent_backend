@@ -1,0 +1,27 @@
+{
+  "title": "लेन-देन",
+  "subtitle": "आपका संपूर्ण भुगतान और खरीद इतिहास",
+  "empty": "अभी तक कोई लेन-देन नहीं",
+  "purpose": {
+    "1": "मैच क्रेडिट खरीद",
+    "2": "विज्ञापन पैक"
+  },
+  "status": {
+    "1": "लंबित",
+    "2": "सफल",
+    "3": "विफल"
+  },
+  "chip": {
+    "matches": "{{count}} मैच",
+    "bonus": "+{{count}} बोनस",
+    "days": "{{count}} दिन",
+    "impressions": "{{count}} इंप्रेशन",
+    "bonusDays": "+{{count}} दिन",
+    "bonusImpressions": "+{{count}} इंप्रेशन"
+  },
+  "time": {
+    "hoursAgo": "{{count}} घंटे पहले",
+    "daysAgo": "{{count}} दिन पहले",
+    "weeksAgo": "{{count}} सप्ताह पहले"
+  }
+}

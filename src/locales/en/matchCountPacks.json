@@ -1,0 +1,31 @@
+{
+  "title": "Subscription Plans",
+  "subtitle": "Choose a plan · Credits never expire",
+  "currentBalance": "CURRENT BALANCE",
+  "creditsRemaining": "{{count}} Credits Remaining",
+  "promoCode": "Promo Code",
+  "apply": "Apply",
+  "topUpPlan": "TOP UP PLAN",
+  "topUpSubtitle": "Select a plan to add credits to your account",
+  "popular": "★ POPULAR",
+  "creditsCount": "{{count}} Credits",
+  "packFallback": "Pack",
+  "packLabels": {
+    "1": "Basic",
+    "2": "Starter",
+    "3": "Best Value ✓",
+    "4": "Pro",
+    "5": "Business",
+    "6": "Enterprise"
+  },
+  "summary": {
+    "title": "Order Summary",
+    "planSelected": "Plan Selected",
+    "planValue": "{{label}} — {{count}} Credits",
+    "rechargeAmount": "Recharge Amount",
+    "promoDiscount": "Promo Discount",
+    "gst": "GST (18%)",
+    "totalPayable": "Total Payable"
+  },
+  "continuePayment": "Continue Payment"
+}

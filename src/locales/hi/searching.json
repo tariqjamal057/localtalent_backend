@@ -1,0 +1,29 @@
+{
+  "filtersTitle": "आपके खोज फ़िल्टर",
+  "chip": {
+    "category": "श्रेणी",
+    "subCat": "उप-श्रेणी",
+    "jobRole": "नौकरी भूमिका"
+  },
+  "tag": {
+    "age": "{{age}} वर्ष"
+  },
+  "gender": {
+    "male": "पुरुष",
+    "female": "महिला",
+    "other": "अन्य"
+  },
+  "searchType": {
+    "worker": "श्रमिक खोज",
+    "job": "नौकरी खोज"
+  },
+  "defaultCategory": "श्रमिक",
+  "activeSearch": "सक्रिय खोज",
+  "live": "लाइव",
+  "scanning": "आस-पास के श्रमिकों को स्कैन किया जा रहा है...",
+  "radius": "📍 दायरा",
+  "connecting": "मेल खाने वाले श्रमिकों को आपकी पोस्ट से जोड़ा जा रहा है...",
+  "averageWait": "औसत प्रतीक्षा समय: 2–5 मिनट",
+  "searchStarted": "⏱ खोज शुरू हुई",
+  "stopSearch": "खोज रोकें"
+}

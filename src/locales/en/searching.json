@@ -1,0 +1,29 @@
+{
+  "filtersTitle": "YOUR SEARCH FILTERS",
+  "chip": {
+    "category": "Category",
+    "subCat": "Sub Cat",
+    "jobRole": "Job Role"
+  },
+  "tag": {
+    "age": "{{age}}yr"
+  },
+  "gender": {
+    "male": "Male",
+    "female": "Female",
+    "other": "Other"
+  },
+  "searchType": {
+    "worker": "Worker Search",
+    "job": "Job Search"
+  },
+  "defaultCategory": "Workers",
+  "activeSearch": "Active Search",
+  "live": "Live",
+  "scanning": "Scanning nearby workers...",
+  "radius": "📍 Radius",
+  "connecting": "Connecting matched workers to your post...",
+  "averageWait": "Average wait time: 2–5 minutes",
+  "searchStarted": "⏱ Search started",
+  "stopSearch": "Stop Search"
+}

@@ -1,0 +1,44 @@
+{
+  "banner": "We Found a Match for You!",
+  "noMatchData": "No match data available.",
+  "goBack": "Go Back",
+  "defaultName": "User",
+  "snackbar": {
+    "callDataMissing": "Call data is missing. Please try again.",
+    "joinFailed": "Failed to join the call. Please try again."
+  },
+  "details": {
+    "title": "WORKER DETAILS",
+    "age": "AGE",
+    "ageValue": "{{age}} Years",
+    "gender": "GENDER",
+    "days": "DAYS",
+    "daysValue": "{{count}} Day",
+    "language": "LANGUAGE",
+    "na": "N/A",
+    "price": "PRICE",
+    "day": "Day",
+    "experience": "EXPERIENCE"
+  },
+  "genderOptions": {
+    "male": "Male",
+    "female": "Female",
+    "other": "Other"
+  },
+  "experienceOptions": {
+    "fresher": "Fresher",
+    "intermediate": "Intermediate",
+    "expert": "Expert"
+  },
+  "tapToConnect": "TAP TO CONNECT OR STOP",
+  "accept": "Accept",
+  "stop": "Stop",
+  "decline": "Decline",
+  "joiningCall": "Joining call...",
+  "worker": "Worker",
+  "locationUnavailable": "Location data unavailable",
+  "minutes": "{{count}} min",
+  "yourLocation": "Your location",
+  "openInMaps": "Open in Maps",
+  "getDirections": "Get Directions"
+}

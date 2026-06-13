@@ -207,7 +207,7 @@ export class MatchRepository {
                 const otherLng = row.other_user_longitude != null ? parseFloat(row.other_user_longitude) : null;
                 return {
                     matchId: row.id,
-                    otherUserId: row.recruiter_user_id === userId ? row.candidate_user_id : row.recruiter_user_id,
+                    otherUserId: row.recruiter_user_id == userId ? row.candidate_user_id : row.recruiter_user_id,
                     otherUserFullName: row.other_user_full_name,
                     otherUserProfileImageUrl: row.other_user_profile_image_url,
                     finalState: row.final_state,

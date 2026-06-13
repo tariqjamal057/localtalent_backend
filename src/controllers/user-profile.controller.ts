@@ -3,6 +3,7 @@ import { StatusCodes } from 'http-status-codes';
 import { userProfileService, UserProfileService } from '../services/user-profile.service';
 import { sendResponse } from '../utils/response';
 import { MESSAGES } from '../constants/messages';
+import logger from '../utils/logger';
 
 export class UserProfileController {
     constructor(private readonly userProfileService: UserProfileService) { }
@@ -20,6 +21,7 @@ export class UserProfileController {
     };
 
     update = async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
+        logger.info('UPdating....')
         const userId = BigInt(req.user!.id);
         const profile = await this.userProfileService.update(userId, req.body);
         sendResponse(res, StatusCodes.OK, MESSAGES.USER_PROFILE.UPDATED_SUCCESSFULLY, profile);

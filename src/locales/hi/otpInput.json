@@ -1,13 +1,14 @@
 {
-    "title": "OTP दर्ज करें",
-    "subtitle": "हमने 4 अंकों का कोड भेजा है",
-    "errors": {
-        "otpIncomplete": "कृपया पूरा OTP दर्ज करें",
-        "otpInvalid": "अमान्य OTP। कृपया पुनः प्रयास करें।"
-    },
-    "resend": {
-        "waitText": "कोड पुनः भेजें",
-        "action": "OTP पुनः भेजें"
-    },
-    "verifyButton": "सत्यापित करें"
+  "title": "OTP दर्ज करें",
+  "subtitle": "हमने 4 अंकों का कोड भेजा है",
+  "verifyButton": "सत्यापित करें",
+  "resend": {
+    "waitText": "कोड फिर से भेजें",
+    "action": "OTP फिर से भेजें"
+  },
+  "errors": {
+    "resendFailed": "OTP फिर से भेजने में विफल। कृपया पुनः प्रयास करें।",
+    "otpIncomplete": "कृपया पूरा OTP दर्ज करें",
+    "otpInvalid": "अमान्य OTP। कृपया पुनः प्रयास करें।"
+  }
 }

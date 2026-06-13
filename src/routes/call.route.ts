@@ -11,31 +11,10 @@ const matchIdParamsSchema = z.object({
 });
 
 router.post(
-    '/:matchId/video-request',
-    authenticate,
-    validate(matchIdParamsSchema, VALIDATION_SOURCE.PARAMS),
-    callController.handleVideoRequest
-);
-
-router.post(
-    '/:matchId/end',
-    authenticate,
-    validate(matchIdParamsSchema, VALIDATION_SOURCE.PARAMS),
-    callController.handleCallEnd
-);
-
-router.post(
     '/:matchId/block',
     authenticate,
     validate(matchIdParamsSchema, VALIDATION_SOURCE.PARAMS),
     callController.handleBlocking
-);
-
-router.delete(
-    '/:matchId/remove-block',
-    authenticate,
-    validate(matchIdParamsSchema, VALIDATION_SOURCE.PARAMS),
-    callController.handleUnblocking
 );
 
 router.post(

@@ -1,0 +1,81 @@
+{
+  "noActiveCall": "No active call",
+  "snackbar": {
+    "rechargeForVideo": "Please recharge to request video",
+    "videoDeclined": "Video request declined",
+    "purchasePlanForVideo": "Please purchase a plan to send video request",
+    "userBlocked": "User blocked successfully",
+    "somethingWrong": "Something went wrong",
+    "proposalAccepted": "Proposal accepted successfully"
+  },
+  "experience": {
+    "fresher": "Student / Fresher",
+    "years": "{{count}} Yrs"
+  },
+  "common": {
+    "na": "N/A",
+    "unknown": "Unknown"
+  },
+  "stats": {
+    "hoursPerDay": "{{hours}}h / Day"
+  },
+  "rateType": {
+    "1": "Day",
+    "2": "Hour",
+    "3": "Month"
+  },
+  "status": {
+    "connected": "CALL CONNECTED",
+    "ended": "CALL ENDED",
+    "waitingToJoin": "WAITING TO JOIN"
+  },
+  "details": {
+    "title": "WORKER DETAILS",
+    "age": "AGE",
+    "ageValue": "{{age}} Years",
+    "gender": "GENDER",
+    "languages": "LANGUAGES",
+    "rate": "RATE"
+  },
+  "gender": {
+    "1": "Male",
+    "2": "Female",
+    "3": "Other"
+  },
+  "actions": {
+    "blocking": "Blocking…",
+    "blockWorker": "Block This Worker",
+    "waiting": "Waiting…",
+    "videoCall": "Video Call",
+    "accepting": "Accepting…",
+    "accepted": "Accepted",
+    "accept": "Accept",
+    "reject": "Reject"
+  },
+  "hint": {
+    "afterCall": "Accept or Reject after the call ends",
+    "callEnded": "Call ended — take your action below"
+  },
+  "videoModal": {
+    "title": "Video Call Request",
+    "message": "The other user wants to start a video call. Do you want to accept?",
+    "decline": "Decline",
+    "accept": "Accept"
+  },
+  "callDeclined": {
+    "title": "Call Declined",
+    "message": "{{name}} has declined the call.",
+    "goBack": "Go Back",
+    "restartSearch": "Restart Search"
+  },
+  "proposalDeclined": {
+    "title": "Proposal Rejected",
+    "message": "{{name}} has rejected your proposal.",
+    "goBack": "Go Back",
+    "restartSearch": "Restart Search"
+  },
+  "globalModal": {
+    "noActiveSearch": "No search request is active now",
+    "defaultUser": "User"
+  }
+}

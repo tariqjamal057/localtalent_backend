@@ -67,14 +67,14 @@ export class AdRepository {
         };
     }
 
-    async incrementImpressionCount(id: bigint): Promise<void> {
+    async incrementImpressionCount(ids: bigint[]): Promise<void> {
         const query = `
             UPDATE user_ads
             SET impression_count = impression_count + 1,
                 last_shown_at = NOW()
-            WHERE id = $1
+            WHERE id = ANY($1::bigint[])
         `;
-        await this.db.query(query, [id]);
+        await this.db.query(query, [ids]);
     }
 
     async activateAd(id: bigint, maxDays: number, maxImpressions: number, expiresOn: Date): Promise<UserAd | null> {

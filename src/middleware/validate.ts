@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { ZodError } from 'zod';
 import { StatusCodes } from 'http-status-codes';
+import logger from '../utils/logger';
 
 export enum VALIDATION_SOURCE {
     BODY = 'body',
@@ -18,7 +19,7 @@ const validate =
                     field: e.path.join('.'),
                     message: e.message,
                 }));
-
+                logger.info(`Messages ${JSON.stringify(messages)}`)
                 res.status(StatusCodes.BAD_REQUEST).json({
                     success: false,
                     message: 'Validation error',

@@ -1,0 +1,44 @@
+{
+  "banner": "हमें आपके लिए एक मैच मिला!",
+  "noMatchData": "कोई मैच डेटा उपलब्ध नहीं है।",
+  "goBack": "वापस जाएँ",
+  "defaultName": "उपयोगकर्ता",
+  "snackbar": {
+    "callDataMissing": "कॉल डेटा गायब है। कृपया पुनः प्रयास करें।",
+    "joinFailed": "कॉल में शामिल होने में विफल। कृपया पुनः प्रयास करें।"
+  },
+  "details": {
+    "title": "श्रमिक विवरण",
+    "age": "आयु",
+    "ageValue": "{{age}} वर्ष",
+    "gender": "लिंग",
+    "days": "दिन",
+    "daysValue": "{{count}} दिन",
+    "language": "भाषा",
+    "na": "लागू नहीं",
+    "price": "मूल्य",
+    "day": "दिन",
+    "experience": "अनुभव"
+  },
+  "genderOptions": {
+    "male": "पुरुष",
+    "female": "महिला",
+    "other": "अन्य"
+  },
+  "experienceOptions": {
+    "fresher": "नौसिखिया",
+    "intermediate": "मध्यम",
+    "expert": "विशेषज्ञ"
+  },
+  "tapToConnect": "जुड़ने या रोकने के लिए टैप करें",
+  "accept": "स्वीकार करें",
+  "stop": "रोकें",
+  "decline": "अस्वीकार करें",
+  "joiningCall": "कॉल में शामिल हो रहे हैं...",
+  "worker": "श्रमिक",
+  "locationUnavailable": "स्थान डेटा अनुपलब्ध है",
+  "minutes": "{{count}} मिनट",
+  "yourLocation": "आपका स्थान",
+  "openInMaps": "मानचित्र में खोलें",
+  "getDirections": "दिशा-निर्देश प्राप्त करें"
+}

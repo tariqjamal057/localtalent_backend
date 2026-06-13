@@ -1,25 +1,29 @@
 {
-    "title": "अपना फ़ोन नंबर दर्ज करें",
-    "subtitle": "हम आपको एक बार उपयोग होने वाला सत्यापन कोड भेजेंगे",
-    "countryCode": {
-        "label": "देश कोड",
-        "placeholder": "देश कोड चुनें"
-    },
-    "phoneNumber": {
-        "label": "फ़ोन नंबर",
-        "placeholder": "अपना फ़ोन नंबर दर्ज करें"
-    },
-    "continueButton": "जारी रखें",
-    "termsAndConditions": {
-        "prefix": "जारी रखने पर, आप हमारी",
-        "termsOfService": "सेवा की शर्तें",
-        "and": "और",
-        "privacyPolicy": "गोपनीयता नीति"
-    },
-    "errors": {
-        "phoneNumberRequired": "फ़ोन नंबर आवश्यक है",
-        "phoneNumberInvalid": "कृपया एक वैध फ़ोन नंबर दर्ज करें",
-        "countryCodeRequired": "देश कोड आवश्यक है",
-        "generic": "कुछ गलत हो गया। कृपया पुनः प्रयास करें।"
-    }
+  "title": "अपना फ़ोन नंबर दर्ज करें",
+  "subtitle": "हम आपको एक बार का सत्यापन कोड भेजेंगे",
+  "fullName": {
+    "label": "पूरा नाम",
+    "placeholder": "अपना पूरा नाम दर्ज करें"
+  },
+  "phoneNumber": {
+    "label": "फ़ोन नंबर",
+    "placeholder": "फ़ोन नंबर दर्ज करें"
+  },
+  "termsAndConditions": {
+    "prefix": "जारी रखकर, आप हमारी",
+    "termsOfService": "सेवा की शर्तें",
+    "and": "और",
+    "privacyPolicy": "गोपनीयता नीति"
+  },
+  "continueButton": "जारी रखें",
+  "countryPicker": {
+    "title": "देश चुनें",
+    "searchPlaceholder": "नाम या कोड से खोजें"
+  },
+  "errors": {
+    "fullNameRequired": "कृपया अपना पूरा नाम दर्ज करें",
+    "phoneNumberRequired": "कृपया अपना फ़ोन नंबर दर्ज करें",
+    "phoneNumberInvalid": "कृपया एक मान्य फ़ोन नंबर दर्ज करें",
+    "generic": "कुछ गलत हो गया। कृपया पुनः प्रयास करें।"
+  }
 }

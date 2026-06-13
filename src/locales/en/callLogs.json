@@ -1,0 +1,12 @@
+{
+  "title": "Call List",
+  "subtitle": "All calls, chat access, and location tracking in one place",
+  "unknown": "Unknown",
+  "openingChat": "Opening chat...",
+  "empty": "No call logs yet",
+  "time": {
+    "hours": "{{count}}h",
+    "days": "{{count}} day",
+    "weeks": "{{count}} week"
+  }
+}

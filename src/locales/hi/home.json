@@ -1,31 +1,107 @@
 {
-    "header": {
-        "matchPoints": "पॉइंट्स",
-        "language": "भाषा"
-    },
-    "languageModal": {
-        "title": "भाषा चुनें",
-        "subtitle": "जारी रखने के लिए भाषा चुनें",
-        "apply": "लागू करें"
-    },
-    "form": {
-        "category": "श्रेणी",
-        "selectCategory": "श्रेणी चुनें",
-        "subCategory": "उप-श्रेणी",
-        "selectSubCategory": "उप-श्रेणी चुनें",
-        "jobRole": "काम का प्रकार",
-        "selectJobRole": "काम का प्रकार चुनें",
-        "gender": "लिंग",
-        "age": "उम्र",
-        "language": "भाषा",
-        "timing": "समय",
-        "distance": "दूरी",
-        "noOfPeople": "लोगों की संख्या",
-        "ratePerDay": "दर/दिन",
-        "experience": "अनुभव"
-    },
-    "needSlider": {
-        "worker": "मज़दूर",
-        "job": "काम"
-    }
+  "pageTitle": "श्रमिक और नौकरियाँ खोजें",
+  "promoteAd": {
+    "title": "अपनी सेवाओं का प्रचार करें",
+    "subtitle": "अपना खुद का विज्ञापन बनाएं और अधिक ग्राहकों तक पहुंचें"
+  },
+  "validation": {
+    "category": "कृपया एक श्रेणी चुनें",
+    "subCategory": "कृपया एक उप-श्रेणी चुनें",
+    "jobRole": "कृपया एक नौकरी भूमिका चुनें",
+    "gender": "कृपया लिंग चुनें",
+    "age": "कृपया आयु दर्ज करें",
+    "language": "कृपया कम से कम एक भाषा चुनें",
+    "timing": "कृपया अवधि (दिन) दर्ज करें",
+    "ratePerDay": "कृपया प्रति दिन दर दर्ज करें",
+    "distance": "कृपया दूरी दर्ज करें",
+    "numberOfPeople": "कृपया लोगों की संख्या दर्ज करें",
+    "experienceLevel": "कृपया अनुभव स्तर चुनें"
+  },
+  "form": {
+    "jobInformation": "नौकरी की जानकारी",
+    "personalInformation": "व्यक्तिगत जानकारी",
+    "workRequirements": "कार्य आवश्यकताएँ",
+    "select": "चुनें",
+    "selectedCount": "{{count}} चयनित",
+    "agePlaceholder": "जैसे 25",
+    "daysPlaceholder": "दिन",
+    "kmPlaceholder": "किमी",
+    "category": "श्रेणी",
+    "selectCategory": "श्रेणी चुनें",
+    "subCategory": "उप-श्रेणी",
+    "selectSubCategory": "उप-श्रेणी चुनें",
+    "jobRole": "नौकरी भूमिका",
+    "selectJobRole": "नौकरी भूमिका चुनें",
+    "gender": "लिंग",
+    "age": "आयु",
+    "language": "भाषा",
+    "days": "दिन",
+    "ratePerDay": "दर",
+    "distance": "दूरी",
+    "noOfPeople": "लोगों की संख्या",
+    "experience": "अनुभव"
+  },
+  "genderOptions": {
+    "male": "पुरुष",
+    "female": "महिला",
+    "other": "अन्य"
+  },
+  "experienceOptions": {
+    "fresher": "नौसिखिया",
+    "intermediate": "मध्यम",
+    "expert": "विशेषज्ञ"
+  },
+  "languageModal": {
+    "title": "भाषा चुनें",
+    "subtitle": "जारी रखने के लिए एक भाषा चुनें",
+    "apply": "लागू करें"
+  },
+  "langModal": {
+    "title": "भाषाएँ चुनें",
+    "searchPlaceholder": "भाषाएँ खोजें...",
+    "done": "पूर्ण",
+    "doneCount": "पूर्ण ({{count}})"
+  },
+  "languageOptions": {
+    "english": "अंग्रेज़ी",
+    "hindi": "हिन्दी",
+    "telugu": "तेलुगु",
+    "tamil": "तमिल",
+    "kannada": "कन्नड़",
+    "malayalam": "मलयालम",
+    "bengali": "बंगाली",
+    "marathi": "मराठी",
+    "gujarati": "गुजराती",
+    "punjabi": "पंजाबी",
+    "odia": "ओड़िया",
+    "urdu": "उर्दू",
+    "assamese": "असमिया",
+    "maithili": "मैथिली",
+    "konkani": "कोंकणी",
+    "kashmiri": "कश्मीरी",
+    "sindhi": "सिंधी",
+    "nepali": "नेपाली",
+    "manipuri": "मणिपुरी",
+    "dogri": "डोगरी",
+    "bodo": "बोडो",
+    "santali": "संताली",
+    "sanskrit": "संस्कृत"
+  },
+  "credits": "क्रेडिट",
+  "defaultUserName": "उपयोगकर्ता",
+  "slider": {
+    "worker": "श्रमिक",
+    "job": "नौकरी",
+    "swipeLeft": "बाएँ स्वाइप करें",
+    "swipeRight": "दाएँ स्वाइप करें",
+    "search": "खोजें"
+  },
+  "location": {
+    "permissionDenied": "आस-पास खोजने के लिए स्थान की अनुमति आवश्यक है।",
+    "unavailable": "आपका स्थान प्राप्त नहीं हो सका। कृपया पुनः प्रयास करें।"
+  },
+  "ad": {
+    "placeholder": "विज्ञापन",
+    "localAdvertisement": "🚩 स्थानीय विज्ञापन"
+  }
 }

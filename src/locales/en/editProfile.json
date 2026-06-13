@@ -1,20 +1,22 @@
 {
-  "title": "Create Your Profile",
-  "subtitle": "Tell us a bit about yourself to get started",
+  "title": "Edit Profile",
+  "subtitle": "Update your personal details",
+  "tapToChangePhoto": "Tap to change photo",
+  "personalDetails": "PERSONAL DETAILS",
   "fields": {
     "fullName": "Full Name",
-    "gender": "Gender",
     "age": "Age",
     "experienceLevel": "Experience Level",
-    "pricePerDay": "Price Per Day",
-    "spokenLanguages": "Spoken Languages"
+    "ratePerDay": "Rate per Day (₹)",
+    "language": "Language",
+    "gender": "Gender"
   },
   "placeholders": {
     "fullName": "Enter your full name",
     "age": "Enter your age",
-    "pricePerDay": "Enter your daily rate",
-    "spokenLanguages": "Select languages",
-    "searchLanguage": "Search languages..."
+    "experienceLevel": "Select experience level",
+    "ratePerDay": "Enter your daily rate",
+    "languages": "Select languages"
   },
   "genderOptions": {
     "male": "Male",
@@ -51,12 +53,17 @@
     "santali": "Santali",
     "sanskrit": "Sanskrit"
   },
-  "doneButton": "Done",
-  "submitButton": "Save Profile",
-  "errors": {
-    "fullNameTooLong": "Name must be at most 120 characters",
-    "ageInvalid": "Please enter a valid age",
-    "priceInvalid": "Please enter a valid price",
-    "submitFailed": "Failed to save profile. Please try again."
+  "langModal": {
+    "title": "Select Languages",
+    "searchPlaceholder": "Search languages...",
+    "done": "Done",
+    "doneCount": "Done ({{count}})"
+  },
+  "saveChanges": "Save Changes",
+  "alert": {
+    "uploadFailedTitle": "Upload failed",
+    "uploadFailedMessage": "Could not upload photo. Please try again.",
+    "errorTitle": "Error",
+    "saveFailed": "Failed to save profile. Please try again."
   }
 }

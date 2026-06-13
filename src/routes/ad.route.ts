@@ -54,7 +54,7 @@ router.post(
 );
 
 router.patch(
-    '/:id/impression',
+    '/impression',
     authenticate,
     adController.incrementImpressionCount
 );

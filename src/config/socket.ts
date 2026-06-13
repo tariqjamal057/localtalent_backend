@@ -163,6 +163,20 @@ export class SocketService {
                     logger.info('Error while handling request-video-response')
                 }
             })
+            socket.on(SOCKET_INCOMING_EVENT.DECLINE_CALL, async (matchId: bigint) => {
+                try {
+                    matchService.handleCallDecline(user.id, matchId)
+                } catch (error) {
+
+                }
+            })
+            socket.on(SOCKET_INCOMING_EVENT.REJECT_PROPOSAL, async (matchId: bigint) => {
+                try {
+                    matchService.handleProposalRejection(user.id, matchId)
+                } catch (error) {
+
+                }
+            })
         });
     }
 }

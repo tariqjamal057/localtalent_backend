@@ -1,0 +1,35 @@
+{
+  "title": "Advertisement",
+  "subtitle": "Create and manage your ads",
+  "createSection": "CREATE ADVERTISEMENT",
+  "myAds": "MY ADS",
+  "uploadingImage": "Uploading image…",
+  "uploadTitle": "Upload Ad Image",
+  "uploadSubtitle": "Tap to pick an image from your gallery",
+  "change": "Change",
+  "optional": "(optional)",
+  "fields": {
+    "title": "Title",
+    "description": "Description"
+  },
+  "placeholders": {
+    "title": "e.g. Summer Sale 2024",
+    "description": "Short description for your ad"
+  },
+  "chooseAdPlan": "Choose Ad Plan",
+  "defaultAdTitle": "Advertisement {{num}}",
+  "views": "{{count}} views",
+  "daysLeft": "{{count}} days left",
+  "payNow": "Pay Now",
+  "empty": "No ads yet. Create your first one above.",
+  "status": {
+    "live": "Live",
+    "paymentPending": "Payment Pending",
+    "expired": "Expired",
+    "unknown": "Unknown"
+  },
+  "alert": {
+    "uploadFailedTitle": "Upload failed",
+    "uploadFailedMessage": "Could not upload image. Please try again."
+  }
+}

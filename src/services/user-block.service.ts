@@ -2,6 +2,7 @@ import { userBlockRepository, UserBlockRepository, UserBlock, UserBlockWithProfi
 import { ApiError } from '../utils/response';
 import { StatusCodes } from 'http-status-codes';
 import { MESSAGES } from '../constants/messages';
+import logger from '../utils/logger';
 
 export class UserBlockService {
     constructor(private readonly userBlockRepository: UserBlockRepository) { }
@@ -18,6 +19,7 @@ export class UserBlockService {
     }
 
     async unblock(userId: bigint, blockedUserId: bigint): Promise<void> {
+        logger.info(`Trying to unblock ${userId} ${blockedUserId}`)
         const deleted = await this.userBlockRepository.unblock(userId, blockedUserId);
         if (!deleted) {
             throw new ApiError(MESSAGES.USER_BLOCK.NOT_FOUND, StatusCodes.NOT_FOUND);

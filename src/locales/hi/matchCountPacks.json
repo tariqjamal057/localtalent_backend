@@ -1,0 +1,31 @@
+{
+  "title": "सब्सक्रिप्शन प्लान",
+  "subtitle": "एक प्लान चुनें · क्रेडिट कभी समाप्त नहीं होते",
+  "currentBalance": "वर्तमान शेष",
+  "creditsRemaining": "{{count}} क्रेडिट शेष",
+  "promoCode": "प्रोमो कोड",
+  "apply": "लागू करें",
+  "topUpPlan": "टॉप अप प्लान",
+  "topUpSubtitle": "अपने खाते में क्रेडिट जोड़ने के लिए एक प्लान चुनें",
+  "popular": "★ लोकप्रिय",
+  "creditsCount": "{{count}} क्रेडिट",
+  "packFallback": "पैक",
+  "packLabels": {
+    "1": "बेसिक",
+    "2": "स्टार्टर",
+    "3": "बेस्ट वैल्यू ✓",
+    "4": "प्रो",
+    "5": "बिज़नेस",
+    "6": "एंटरप्राइज़"
+  },
+  "summary": {
+    "title": "ऑर्डर सारांश",
+    "planSelected": "चयनित प्लान",
+    "planValue": "{{label}} — {{count}} क्रेडिट",
+    "rechargeAmount": "रिचार्ज राशि",
+    "promoDiscount": "प्रोमो छूट",
+    "gst": "GST (18%)",
+    "totalPayable": "कुल देय"
+  },
+  "continuePayment": "भुगतान जारी रखें"
+}

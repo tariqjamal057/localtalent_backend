@@ -147,5 +147,21 @@ class SocketGateway {
             logger.error('Failed to send video request response')
         }
     }
+
+    public sendCallDeclinedEvent(userId: bigint, data: { matchId: bigint }) {
+        try {
+            this.socketService.emitToUser(userId, SOCKET_OUTGOING_EVENT.CALL_DECLINED, data)
+        } catch (error) {
+
+        }
+    }
+
+    public sendProposalRejectedEvent(userId: bigint, data: { matchId: bigint }) {
+        try {
+            this.socketService.emitToUser(userId, SOCKET_OUTGOING_EVENT.PROPOSAL_REJECTED, data)
+        } catch (error) {
+
+        }
+    }
 }
 export const socketGateway = new SocketGateway(SocketService.getInstance());
