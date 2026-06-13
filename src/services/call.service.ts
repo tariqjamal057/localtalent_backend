@@ -120,7 +120,7 @@ export class CallService {
         }
         logger.info("ALL accepted proposal")
         chatData.forEach(c => {
-            const isRecruiter = c.userId === recruiterUserId;
+            const isRecruiter = c.userId == recruiterUserId;
             socketGateway.sendAllAcceptedProposalEvent(c.userId, {
                 matchId: matchId.id,
                 userData: isRecruiter ? candidateData : recruiterData,
