@@ -10,6 +10,10 @@ export class UserReviewService {
     async getAverageRatingOfUser(userId: bigint): Promise<number | null> {
         return this.userReviewRepository.getAverageRating(userId);
     }
+
+    async getTotalReviewsOfUser(userId: bigint): Promise<number> {
+        return this.userReviewRepository.getTotalReviews(userId);
+    }
 }
 
 export const userReviewService = new UserReviewService(userReviewRepository);

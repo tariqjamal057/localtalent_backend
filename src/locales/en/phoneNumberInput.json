@@ -1,21 +1,26 @@
 {
-  "title": "Enter Your Phone Number",
-  "subtitle": "We'll send you a one-time verification code",
+  "welcomeBack": "Welcome back",
+  "signInSubtitle": "Sign in to find work or hire talent near you",
   "fullName": {
-    "label": "Full Name",
+    "label": "FULL NAME",
     "placeholder": "Enter your full name"
   },
   "phoneNumber": {
-    "label": "Phone Number",
-    "placeholder": "Enter phone number"
+    "label": "MOBILE NUMBER",
+    "placeholder": "Enter mobile number"
   },
   "termsAndConditions": {
-    "prefix": "By continuing, you agree to our",
-    "termsOfService": "Terms of Service",
+    "prefix": "By proceeding, you agree to our",
+    "termsOfService": "Terms and Conditions",
     "and": "and",
     "privacyPolicy": "Privacy Policy"
   },
-  "continueButton": "Continue",
+  "requestOtp": "Request OTP",
+  "businessLogin": {
+    "title": "Business Login",
+    "subtitle": "Post jobs and manage your workforce"
+  },
+  "newUserHint": "New to SAYYTI? Your account is created on first login.",
   "countryPicker": {
     "title": "Select Country",
     "searchPlaceholder": "Search by name or code"

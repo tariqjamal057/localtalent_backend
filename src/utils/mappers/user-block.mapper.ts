@@ -21,6 +21,7 @@ export function userBlockWithProfileRowToDto(row: UserBlockWithProfileRow): User
             experienceLevel: row.experience_level,
             pricePerDay: row.price_per_day !== null ? Number(row.price_per_day) : null,
             averageRating: row.average_rating !== null ? Number(row.average_rating) : 0,
+            totalReviews: 0,
             isDocumentVerified: row.is_document_verified ?? false,
             locationName: row.location_name,
             latitude: row.latitude !== null ? Number(row.latitude) : null,

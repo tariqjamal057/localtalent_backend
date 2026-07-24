@@ -1,8 +1,10 @@
 {
   "pageTitle": "Find Workers & Jobs",
+  "findWorkerSubtitle": "Trusted People. Right Jobs. Near You.",
   "promoteAd": {
     "title": "Promote Your Services",
-    "subtitle": "Create your own ad and reach more customers"
+    "subtitle": "Create your own ad and reach more customers",
+    "cta": "Create"
   },
   "validation": {
     "category": "Please select a Category",

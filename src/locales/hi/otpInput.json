@@ -1,10 +1,13 @@
 {
-  "title": "OTP दर्ज करें",
-  "subtitle": "हमने 4 अंकों का कोड भेजा है",
-  "verifyButton": "सत्यापित करें",
+  "stepLabel": "चरण 2 का 2",
+  "verifyPhone": "फ़ोन सत्यापित करें",
+  "subtitle": "हमने सत्यापन कोड भेज दिया है",
+  "verifyButton": "सत्यापित करें और जारी रखें",
+  "changePhone": "फ़ोन नंबर बदलें",
   "resend": {
     "waitText": "कोड फिर से भेजें",
-    "action": "OTP फिर से भेजें"
+    "action": "OTP फिर से भेजें",
+    "didNotReceive": "कोड प्राप्त नहीं हुआ?"
   },
   "errors": {
     "resendFailed": "OTP फिर से भेजने में विफल। कृपया पुनः प्रयास करें।",

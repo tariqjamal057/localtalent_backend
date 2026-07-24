@@ -34,6 +34,16 @@ export class UserReviewRepository {
         const val = result.rows[0]?.average_rating;
         return val !== null && val !== undefined ? parseFloat(val) : null;
     }
+
+    async getTotalReviews(userId: bigint): Promise<number> {
+        const query = `
+            SELECT COUNT(*)::int AS total
+            FROM user_reviews
+            WHERE reviewed_user_id = $1
+        `;
+        const result = await this.db.query<{ total: number }>(query, [userId]);
+        return result.rows[0]?.total ?? 0;
+    }
 }
 
 export const userReviewRepository = new UserReviewRepository(DatabaseService.getInstance());

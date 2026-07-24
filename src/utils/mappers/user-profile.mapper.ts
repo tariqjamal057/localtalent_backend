@@ -10,6 +10,7 @@ export function userProfileRowToDto(row: UserProfileRow): UserProfile {
         experienceLevel: row.experience_level,
         pricePerDay: row.price_per_day !== null ? Number(row.price_per_day) : null,
         averageRating: Number(row.average_rating),
+        totalReviews: Number(row.total_reviews),
         isDocumentVerified: row.is_document_verified,
         locationName: row.location_name,
         latitude: row.latitude !== null ? Number(row.latitude) : null,

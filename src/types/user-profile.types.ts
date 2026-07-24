@@ -7,6 +7,7 @@ export interface UserProfile {
     experienceLevel: number | null;
     pricePerDay: number | null;
     averageRating: number;
+    totalReviews: number;
     isDocumentVerified: boolean;
     locationName: string | null;
     latitude: number | null;
@@ -41,7 +42,7 @@ export interface UpdateUserProfileDto {
     longitude?: number | null;
     spokenLanguages?: string[] | null;
     profileImageUrl?: string | null;
-    averageRating?: number | null
+    averageRating?: number | null;
 }
 
 export interface UserProfileRow {
@@ -53,6 +54,7 @@ export interface UserProfileRow {
     experience_level: number | null;
     price_per_day: string | null;
     average_rating: string;
+    total_reviews: string;
     is_document_verified: boolean;
     location_name: string | null;
     latitude: string | null;

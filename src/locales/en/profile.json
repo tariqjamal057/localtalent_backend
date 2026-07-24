@@ -25,13 +25,27 @@
     "about": {
       "title": "About",
       "subtitle": "About our Company"
+    },
+    "subscription": {
+      "title": "Subscription",
+      "subtitle": "Manage plans & top up credits",
+      "credits": "credits"
+    },
+    "reviewRating": {
+      "title": "Review and Rating",
+      "subtitle": "See feedback from clients & workers"
     }
   },
   "section": {
     "accountSettings": "ACCOUNT SETTINGS",
     "communityLegal": "COMMUNITY & LEGAL"
   },
-  "termsConditions": "Terms &\nConditions",
+  "reviews": "reviews",
+  "termsConditions": "Terms & Conditions",
   "privacyPolicy": "Privacy & Policy",
+  "creditsRemaining": "Credits remaining",
+  "jobsDoneThisMonth": "Job done this month",
+  "verified": "Verified",
+  "notVerified": "Not Verified",
   "logout": "Log Out"
 }

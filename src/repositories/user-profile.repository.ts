@@ -10,9 +10,10 @@ export class UserProfileRepository {
 
     async getByUserId(userId: bigint): Promise<UserProfile | null> {
         const query = `
-            SELECT *
-            FROM user_profiles
-            WHERE user_id = $1
+            SELECT up.*,
+                   COALESCE((SELECT COUNT(*)::text FROM user_reviews WHERE reviewed_user_id = up.user_id), '0') AS total_reviews
+            FROM user_profiles up
+            WHERE up.user_id = $1
         `;
         const result: QueryResult<UserProfileRow> = await this.db.query(query, [userId]);
         if (result.rows.length === 0) return null;
@@ -40,8 +41,8 @@ export class UserProfileRepository {
             dto.spokenLanguages ? JSON.stringify(dto.spokenLanguages) : null,
             dto.profileImageUrl ?? `https://ui-avatars.com/api/?background=5B21B6&color=FFF&size=200&bold=true&name=${dto.fullName}`,
         ];
-        const result: QueryResult<UserProfileRow> = await this.db.query(query, values);
-        return userProfileRowToDto(result.rows[0]);
+        await this.db.query(query, values);
+        return this.getByUserId(userId) as Promise<UserProfile>;
     }
 
     async update(userId: bigint, dto: UpdateUserProfileDto): Promise<UserProfile | null> {
@@ -74,7 +75,7 @@ export class UserProfileRepository {
         `;
         const result: QueryResult<UserProfileRow> = await this.db.query(query, values);
         if (result.rows.length === 0) return null;
-        return userProfileRowToDto(result.rows[0]);
+        return this.getByUserId(userId);
     }
 }
 

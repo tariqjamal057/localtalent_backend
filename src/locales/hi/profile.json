@@ -25,13 +25,27 @@
     "about": {
       "title": "परिचय",
       "subtitle": "हमारी कंपनी के बारे में"
+    },
+    "subscription": {
+      "title": "सदस्यता",
+      "subtitle": "योजनाएं प्रबंधित करें और क्रेडिट टॉप अप करें",
+      "credits": "क्रेडिट"
+    },
+    "reviewRating": {
+      "title": "समीक्षा और रेटिंग",
+      "subtitle": "ग्राहकों और कर्मचारियों से प्रतिक्रिया देखें"
     }
   },
   "section": {
     "accountSettings": "खाता सेटिंग्स",
     "communityLegal": "समुदाय और कानूनी"
   },
-  "termsConditions": "नियम और\nशर्तें",
+  "reviews": "समीक्षाएं",
+  "termsConditions": "नियम और शर्तें",
   "privacyPolicy": "गोपनीयता और नीति",
+  "creditsRemaining": "शेष क्रेडिट",
+  "jobsDoneThisMonth": "इस महीने का काम",
+  "verified": "सत्यापित",
+  "notVerified": "सत्यापित नहीं",
   "logout": "लॉग आउट"
 }

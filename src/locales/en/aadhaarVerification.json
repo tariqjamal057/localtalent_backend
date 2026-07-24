@@ -1,0 +1,43 @@
+{
+  "title": "Aadhaar Verification",
+  "subtitle": "Verify your identity securely with OTP",
+  "identityCheck": "IDENTITY CHECK",
+  "fields": {
+    "aadhaarName": "Aadhaar Name",
+    "aadhaarNumber": "Aadhaar Number"
+  },
+  "placeholders": {
+    "aadhaarName": "Enter name as on Aadhaar",
+    "aadhaarNumber": "XXXX XXXX XXXX"
+  },
+  "verifyWithOtp": "Verify with OTP",
+  "info": {
+    "title": "Secure OTP verification",
+    "line1": "6-digit OTP will be sent to your linked mobile number",
+    "line2": "Enter OTP to mark Aadhaar as verified."
+  },
+  "howItWorks": "How it works",
+  "steps": {
+    "1": {
+      "title": "Enter Aadhaar number",
+      "sub": "Type the 12-digit Aadhaar number carefully."
+    },
+    "2": {
+      "title": "Verify with OTP",
+      "sub": "Tap verify to open the OTP popup."
+    },
+    "3": {
+      "title": "Get verified badge",
+      "sub": "If OTP matches, Aadhaar verified badge appears."
+    }
+  },
+  "otpModal": {
+    "title": "Enter OTP",
+    "help": "We sent a 6-digit code to your mobile number",
+    "verifyNow": "Verify Now"
+  },
+  "success": {
+    "title": "Aadhaar Verified",
+    "sub": "Your profile will show the verified badge."
+  }
+}

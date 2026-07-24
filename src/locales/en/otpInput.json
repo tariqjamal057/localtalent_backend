@@ -1,10 +1,13 @@
 {
-  "title": "Enter OTP",
-  "subtitle": "We sent a 4-digit code to",
-  "verifyButton": "Verify",
+  "stepLabel": "Step 2 of 2",
+  "verifyPhone": "Verify Phone",
+  "subtitle": "We've sent a verification code to",
+  "verifyButton": "Verify & Continue",
+  "changePhone": "Change Phone Number",
   "resend": {
     "waitText": "Resend code in",
-    "action": "Resend OTP"
+    "action": "Resend OTP",
+    "didNotReceive": "Didn't receive the code?"
   },
   "errors": {
     "resendFailed": "Failed to resend OTP. Please try again.",

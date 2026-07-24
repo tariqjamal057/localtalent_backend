@@ -22,8 +22,10 @@
   "live": "लाइव",
   "radius": "📍 दायरा",
   "averageWait": "औसत प्रतीक्षा समय: 2–5 मिनट",
-  "searchStarted": "⏱ खोज शुरू हुई",
+  "searchStarted": "खोज शुरू हुई",
   "stopSearch": "खोज रोकें",
+  "searchingWorkers": "श्रमिक खोज रहा है...",
+  "searchingJobs": "नौकरी खोज रहा है...",
   "scanning": {
     "workers": "आस-पास के कामगारों को खोजा जा रहा है...",
     "jobs": "आस-पास की नौकरियों को खोजा जा रहा है..."

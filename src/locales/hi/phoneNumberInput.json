@@ -1,21 +1,26 @@
 {
-  "title": "अपना फ़ोन नंबर दर्ज करें",
-  "subtitle": "हम आपको एक बार का सत्यापन कोड भेजेंगे",
+  "welcomeBack": "वापसी पर स्वागत है",
+  "signInSubtitle": "अपने आस-पास काम या प्रतिभा खोजने के लिए साइन इन करें",
   "fullName": {
     "label": "पूरा नाम",
     "placeholder": "अपना पूरा नाम दर्ज करें"
   },
   "phoneNumber": {
-    "label": "फ़ोन नंबर",
-    "placeholder": "फ़ोन नंबर दर्ज करें"
+    "label": "मोबाइल नंबर",
+    "placeholder": "मोबाइल नंबर दर्ज करें"
   },
   "termsAndConditions": {
-    "prefix": "जारी रखकर, आप हमारी",
-    "termsOfService": "सेवा की शर्तें",
+    "prefix": "आगे बढ़कर, आप हमारी",
+    "termsOfService": "शर्तों",
     "and": "और",
     "privacyPolicy": "गोपनीयता नीति"
   },
-  "continueButton": "जारी रखें",
+  "requestOtp": "OTP का अनुरोध करें",
+  "businessLogin": {
+    "title": "व्यवसाय लॉगिन",
+    "subtitle": "नौकरियां पोस्ट करें और अपने कार्यबल का प्रबंधन करें"
+  },
+  "newUserHint": "SAYYTI में नए हैं? पहले लॉगिन पर आपका खाता बन जाता है।",
   "countryPicker": {
     "title": "देश चुनें",
     "searchPlaceholder": "नाम या कोड से खोजें"
@@ -24,6 +29,6 @@
     "fullNameRequired": "कृपया अपना पूरा नाम दर्ज करें",
     "phoneNumberRequired": "कृपया अपना फ़ोन नंबर दर्ज करें",
     "phoneNumberInvalid": "कृपया एक मान्य फ़ोन नंबर दर्ज करें",
-    "generic": "कुछ गलत हो गया। कृपया पुनः प्रयास करें।"
+    "generic": "कुछ गलत हुआ। कृपया पुनः प्रयास करें।"
   }
 }
