@@ -45,6 +45,10 @@ export interface MatchResponse {
     categoryLevelTwo: string;
     categoryLevelThree: string;
 
+    latitude: number;
+    longitude: number;
+    locationName: string | null;
+
     callData: UserDataToJoinCall;
 }
 

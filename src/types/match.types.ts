@@ -130,4 +130,8 @@ export interface TopMatch {
 
     categoryLevelTwo: string;
     categoryLevelThree: string;
+
+    latitude: number;
+    longitude: number;
+    locationName: string | null;
 }

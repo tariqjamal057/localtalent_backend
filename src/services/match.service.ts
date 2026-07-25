@@ -151,7 +151,10 @@ export class MatchService {
                     rateType: matchedUserSearchData.rateType,
                     availableTiming: matchedUserSearchData.availableTiming,
                     availabilityType: matchedUserSearchData.availabilityType,
-                    gender: matchedUserSearchData.gender
+                    gender: matchedUserSearchData.gender,
+                    latitude: matchedUserSearchData.latitude,
+                    longitude: matchedUserSearchData.longitude,
+                    locationName: (matchedUserSearchData as any).locationName ?? null
                 };
             }
         }
@@ -185,7 +188,10 @@ export class MatchService {
                 rateType: (ownSearchData)?.rateType!,
                 availableTiming: (ownSearchData)?.availableTiming!,
                 availabilityType: (ownSearchData)?.availabilityType!,
-                gender: (ownSearchData)?.gender!
+                gender: (ownSearchData)?.gender!,
+                latitude: (ownSearchData)?.latitude!,
+                longitude: (ownSearchData)?.longitude!,
+                locationName: (ownSearchData as any)?.locationName ?? null
             }
             callData.forEach(c => {
                 const data = c.userId === userId ? { ...topMatch, callData: c } : { ...userOwnData, callData: c };
