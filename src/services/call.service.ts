@@ -13,6 +13,7 @@ import { getCallEndedMessage } from "../utils/call";
 import logger from "../utils/logger";
 import { getOtherUserIdInMatch } from "../utils/match";
 import { StreamUtil } from "../utils/stream";
+import { customChatService } from "./custom-chat.service";
 import CallQueue from "./queue/call.queue";
 import { redisCallService, RedisCallService } from "./redis/redis-call.service";
 import { redisUserService, RedisUserService } from "./redis/redis-user.service";
@@ -104,10 +105,7 @@ export class CallService {
             logger.error('Missing search data for users in match', { matchId: matchId.id, recruiterUserId, candidateUserId });
             return;
         }
-        const chatData = await StreamUtil.setupChatForUsers([
-            { id: recruiterUserId, name: recruiterProfile?.fullName! },
-            { id: candidateUserId, name: candidateProfile?.fullName! }
-        ]);
+        const chatRoom = await customChatService.createRoom(matchId.id, recruiterUserId, candidateUserId);
         const recruiterData = {
             latitude: recruiterSearchData.latitude,
             longitude: recruiterSearchData.longitude,
@@ -119,13 +117,18 @@ export class CallService {
             name: candidateProfile?.fullName
         }
         logger.info("ALL accepted proposal")
-        chatData.forEach(c => {
-            const isRecruiter = c.userId == recruiterUserId;
-            socketGateway.sendAllAcceptedProposalEvent(c.userId, {
-                matchId: matchId.id,
-                userData: isRecruiter ? candidateData : recruiterData,
-                chatData: c
-            });
+        const chatData = {
+            chatRoomId: chatRoom.id.toString(),
+        };
+        socketGateway.sendAllAcceptedProposalEvent(recruiterUserId, {
+            matchId: matchId.id,
+            userData: candidateData,
+            chatData
+        });
+        socketGateway.sendAllAcceptedProposalEvent(candidateUserId, {
+            matchId: matchId.id,
+            userData: recruiterData,
+            chatData
         });
     }
     async handleProposalAcceptance(userId: bigint, matchId: bigint): Promise<void> {

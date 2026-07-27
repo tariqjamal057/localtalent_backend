@@ -6,7 +6,8 @@ import { redisUserService } from "../services/redis/redis-user.service";
 import { CallEndResult, MatchResponse } from "../types/socket-data.type";
 import { UserDataToJoinCall } from "../types/call.type";
 import { CALL_ENDED_BY } from "../enums/call";
-import { UserDataToJoinChat } from "../types/chat.type";
+import { MessageDto } from "../types/custom-chat.type";
+import { Socket } from "socket.io";
 
 class SocketGateway {
 
@@ -96,7 +97,7 @@ class SocketGateway {
     public async sendAllAcceptedProposalEvent(userId: bigint, data: {
         matchId: bigint, userData: {
             latitude: number, longitude: number, name: string | undefined | null
-        }, chatData: UserDataToJoinChat
+        }, chatData: { chatRoomId: string }
     }): Promise<void> {
         try {
             this.socketService.emitToUser(userId, SOCKET_OUTGOING_EVENT.ALL_ACCEPTED_PROPOSAL, {
@@ -161,6 +162,22 @@ class SocketGateway {
             this.socketService.emitToUser(userId, SOCKET_OUTGOING_EVENT.PROPOSAL_REJECTED, data)
         } catch (error) {
 
+        }
+    }
+
+    public sendToRoom(roomId: string, event: SOCKET_OUTGOING_EVENT, data: MessageDto | { chatRoomId: string; userId: string }): void {
+        try {
+            this.socketService.emitToRoom(roomId, event, data);
+        } catch (error) {
+            logger.error(`Failed to emit to room ${roomId}: ${error instanceof Error ? error.message : String(error)}`);
+        }
+    }
+
+    public sendToSocket(socket: Socket, event: SOCKET_OUTGOING_EVENT, data: { [key: string]: any }): void {
+        try {
+            socket.emit(event, data);
+        } catch (error) {
+            logger.error(`Failed to emit to socket: ${error instanceof Error ? error.message : String(error)}`);
         }
     }
 }
