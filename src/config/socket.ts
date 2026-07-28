@@ -190,51 +190,59 @@ export class SocketService {
 
             socket.on(SOCKET_INCOMING_EVENT.JOIN_CHAT_ROOM, async (chatRoomId: string) => {
                 try {
+                    logger.debug(`[Socket] JOIN_CHAT_ROOM event from userId=${user.id} chatRoomId=${chatRoomId}`);
                     const roomId = BigInt(chatRoomId);
                     const room = await customChatService.getRoomById(roomId);
                     if (!room) {
+                        logger.warn(`[Socket] JOIN_CHAT_ROOM failed: room ${chatRoomId} not found for userId=${user.id}`);
                         socketGateway.sendErrorToUser(user.id, 'Chat room not found');
                         return;
                     }
                     const isMember = room.user1Id === user.id || room.user2Id === user.id;
                     if (!isMember) {
+                        logger.warn(`[Socket] JOIN_CHAT_ROOM failed: userId=${user.id} is not member of roomId=${chatRoomId}`);
                         socketGateway.sendErrorToUser(user.id, 'Not a member of this chat room');
                         return;
                     }
                     const chatRoomSocketRoom = `chat_room:${roomId}`;
                     socket.join(chatRoomSocketRoom);
-                    logger.info(`Socket ${socket.id} joined chat room ${chatRoomSocketRoom}`);
+                    logger.info(`[Socket] Socket ${socket.id} joined chat room ${chatRoomSocketRoom}`);
                     socketGateway.sendToSocket(socket, SOCKET_OUTGOING_EVENT.CHAT_JOINED, { chatRoomId: chatRoomId });
                 } catch (error) {
-                    logger.error(`Error joining chat room: ${error instanceof Error ? error.message : String(error)}`);
+                    logger.error(`[Socket] Error joining chat room: ${error instanceof Error ? error.message : String(error)}`);
                     socketGateway.sendErrorToUser(user.id, 'Failed to join chat room');
                 }
             })
 
             socket.on(SOCKET_INCOMING_EVENT.SEND_MESSAGE, async (data: { chatRoomId: string; content: string }) => {
                 try {
+                    logger.debug(`[Socket] SEND_MESSAGE from userId=${user.id} to roomId=${data.chatRoomId}, content length=${data.content.length}`);
                     const roomId = BigInt(data.chatRoomId);
                     const room = await customChatService.getRoomById(roomId);
                     if (!room) {
+                        logger.warn(`[Socket] SEND_MESSAGE failed: room ${data.chatRoomId} not found for userId=${user.id}`);
                         socketGateway.sendErrorToUser(user.id, 'Chat room not found');
                         return;
                     }
                     const isMember = room.user1Id === user.id || room.user2Id === user.id;
                     if (!isMember) {
+                        logger.warn(`[Socket] SEND_MESSAGE failed: userId=${user.id} is not member of roomId=${data.chatRoomId}`);
                         socketGateway.sendErrorToUser(user.id, 'Not a member of this chat room');
                         return;
                     }
                     const message = await customChatService.sendMessage(roomId, user.id, data.content);
                     const chatRoomSocketRoom = `chat_room:${roomId}`;
                     socketGateway.sendToRoom(chatRoomSocketRoom, SOCKET_OUTGOING_EVENT.NEW_MESSAGE, message);
+                    logger.info(`[Socket] Message ${message.id} sent to room ${chatRoomSocketRoom}`);
                 } catch (error) {
-                    logger.error(`Error sending message: ${error instanceof Error ? error.message : String(error)}`);
+                    logger.error(`[Socket] Error sending message: ${error instanceof Error ? error.message : String(error)}`);
                     socketGateway.sendErrorToUser(user.id, 'Failed to send message');
                 }
             })
 
             socket.on(SOCKET_INCOMING_EVENT.MESSAGES_READ, async (chatRoomId: string) => {
                 try {
+                    logger.debug(`[Socket] MESSAGES_READ from userId=${user.id} for roomId=${chatRoomId}`);
                     const roomId = BigInt(chatRoomId);
                     await customChatService.markAsRead(roomId, user.id);
                     const chatRoomSocketRoom = `chat_room:${roomId}`;
@@ -242,8 +250,9 @@ export class SocketService {
                         chatRoomId,
                         userId: user.id.toString(),
                     });
+                    logger.debug(`[Socket] MESSAGES_READ broadcast to room ${chatRoomSocketRoom}`);
                 } catch (error) {
-                    logger.error(`Error marking messages read: ${error instanceof Error ? error.message : String(error)}`);
+                    logger.error(`[Socket] Error marking messages read: ${error instanceof Error ? error.message : String(error)}`);
                 }
             })
         });

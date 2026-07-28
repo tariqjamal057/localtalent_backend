@@ -23,4 +23,3 @@ CREATE TABLE messages (
 
 CREATE INDEX idx_messages_room ON messages(chat_room_id, created_at DESC);
 CREATE INDEX idx_chat_rooms_users ON chat_rooms(user1_id, user2_id);
-CREATE TRIGGER trg_chat_rooms_updated_at BEFORE UPDATE ON chat_rooms FOR EACH ROW EXECUTE FUNCTION set_updated_at();

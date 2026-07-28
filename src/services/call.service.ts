@@ -90,6 +90,8 @@ export class CallService {
     async processAllAcceptedProposalState(matchId: Match): Promise<void> {
         const recruiterUserId = matchId.recruiterUserId;
         const candidateUserId = matchId.candidateUserId;
+        logger.info(`[ChatFlow] Both users accepted proposal for match ${matchId.id}. Recruiter=${recruiterUserId}, Candidate=${candidateUserId}`);
+        logger.debug(`[ChatFlow] Fetching search data and profiles for match ${matchId.id}...`);
         const [
             recruiterSearchData,
             candidateSearchData,
@@ -102,10 +104,12 @@ export class CallService {
             this.userProfileRepository.getByUserId(candidateUserId)
         ]);
         if (!recruiterSearchData || !candidateSearchData) {
-            logger.error('Missing search data for users in match', { matchId: matchId.id, recruiterUserId, candidateUserId });
+            logger.error(`[ChatFlow] Missing search data for users in match ${matchId.id}. Recruiter search data: ${!!recruiterSearchData}, Candidate search data: ${!!candidateSearchData}`);
             return;
         }
+        logger.debug(`[ChatFlow] Search data loaded for match ${matchId.id}. Creating chat room...`);
         const chatRoom = await customChatService.createRoom(matchId.id, recruiterUserId, candidateUserId);
+        logger.info(`[ChatFlow] Chat room created/fetched for match ${matchId.id}: roomId=${chatRoom.id}`);
         const recruiterData = {
             latitude: recruiterSearchData.latitude,
             longitude: recruiterSearchData.longitude,
@@ -116,20 +120,22 @@ export class CallService {
             longitude: candidateSearchData.longitude,
             name: candidateProfile?.fullName
         }
-        logger.info("ALL accepted proposal")
         const chatData = {
             chatRoomId: chatRoom.id.toString(),
         };
+        logger.debug(`[ChatFlow] Sending ALL_ACCEPTED_PROPOSAL event to recruiter=${recruiterUserId} with chatRoomId=${chatData.chatRoomId}`);
         socketGateway.sendAllAcceptedProposalEvent(recruiterUserId, {
             matchId: matchId.id,
             userData: candidateData,
             chatData
         });
+        logger.debug(`[ChatFlow] Sending ALL_ACCEPTED_PROPOSAL event to candidate=${candidateUserId} with chatRoomId=${chatData.chatRoomId}`);
         socketGateway.sendAllAcceptedProposalEvent(candidateUserId, {
             matchId: matchId.id,
             userData: recruiterData,
             chatData
         });
+        logger.info(`[ChatFlow] Completed all_accepted_proposal flow for match ${matchId.id}. Chat room ${chatRoom.id} is ready.`);
     }
     async handleProposalAcceptance(userId: bigint, matchId: bigint): Promise<void> {
         const match = await this.matchRepository.getById(matchId);
@@ -162,7 +168,7 @@ export class CallService {
                     this.userWalletService.deductMatchCount(match.candidateUserId),
                     this.redisCallService.deleteProposalAcceptedSet(matchId)
                 ]);
-                this.processAllAcceptedProposalState(match);
+                await this.processAllAcceptedProposalState(match);
             } catch (error) {
                 logger.error('Error deducting match count after proposal acceptance', { error, matchId });
                 await this.redisCallService.deleteProposalAcceptedSet(matchId);

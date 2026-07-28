@@ -2,6 +2,7 @@ import { QueryResult } from 'pg';
 import { DatabaseService } from '../config/database';
 import { MessageRow, MessageDto } from '../types/custom-chat.type';
 import { MESSAGE_TYPE } from '../enums/chat';
+import logger from '../utils/logger';
 
 function rowToDto(row: MessageRow): MessageDto {
     return {
@@ -19,16 +20,19 @@ export class MessageRepository {
     constructor(private readonly db: DatabaseService) {}
 
     async create(chatRoomId: bigint, senderId: bigint, content: string, messageType: MESSAGE_TYPE = MESSAGE_TYPE.TEXT): Promise<MessageDto> {
+        logger.debug(`[MessageRepo] Inserting message in roomId=${chatRoomId} from sender=${senderId}`);
         const query = `
             INSERT INTO messages (chat_room_id, sender_id, content, message_type)
             VALUES ($1, $2, $3, $4)
             RETURNING *
         `;
         const result: QueryResult<MessageRow> = await this.db.query(query, [chatRoomId, senderId, content, messageType]);
+        logger.info(`[MessageRepo] Message inserted: id=${result.rows[0].id} in roomId=${chatRoomId}`);
         return rowToDto(result.rows[0]);
     }
 
     async getByRoom(chatRoomId: bigint, limit: number = 50, before?: string): Promise<MessageDto[]> {
+        logger.debug(`[MessageRepo] Fetching messages for roomId=${chatRoomId}, limit=${limit}, before=${before || 'none'}`);
         let query: string;
         let params: unknown[];
 
@@ -51,16 +55,19 @@ export class MessageRepository {
         }
 
         const result: QueryResult<MessageRow> = await this.db.query(query, params);
+        logger.debug(`[MessageRepo] Fetched ${result.rows.length} messages for roomId=${chatRoomId}`);
         return result.rows.map(rowToDto);
     }
 
     async markAsRead(chatRoomId: bigint, userId: bigint): Promise<void> {
+        logger.debug(`[MessageRepo] Marking messages as read in roomId=${chatRoomId} for user=${userId}`);
         const query = `
             UPDATE messages
             SET is_read = TRUE
             WHERE chat_room_id = $1 AND sender_id != $2 AND is_read = FALSE
         `;
-        await this.db.query(query, [chatRoomId, userId]);
+        const result = await this.db.query(query, [chatRoomId, userId]);
+        logger.debug(`[MessageRepo] Marked ${(result as any).rowCount || 0} messages as read in roomId=${chatRoomId}`);
     }
 
     async getUnreadCount(chatRoomId: bigint, userId: bigint): Promise<number> {
@@ -70,7 +77,9 @@ export class MessageRepository {
             WHERE chat_room_id = $1 AND sender_id != $2 AND is_read = FALSE
         `;
         const result = await this.db.query(query, [chatRoomId, userId]);
-        return result.rows[0]?.count ?? 0;
+        const count = result.rows[0]?.count ?? 0;
+        logger.debug(`[MessageRepo] Unread count for roomId=${chatRoomId}, user=${userId}: ${count}`);
+        return count;
     }
 }
 
