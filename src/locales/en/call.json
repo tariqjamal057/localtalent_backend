@@ -46,7 +46,7 @@
   },
   "actions": {
     "blocking": "Blocking…",
-    "blockWorker": "Block This Worker",
+    "blockWorker": "Block",
     "waiting": "Waiting…",
     "videoCall": "Video Call",
     "accepting": "Accepting…",

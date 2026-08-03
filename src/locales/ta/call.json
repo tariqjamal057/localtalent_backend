@@ -46,7 +46,7 @@
   },
   "actions": {
     "blocking": "தடுக்கிறது…",
-    "blockWorker": "இந்தப் பணியாளரைத் தடு",
+    "blockWorker": "தடு",
     "waiting": "காத்திருக்கிறது…",
     "videoCall": "வீடியோ அழைப்பு",
     "accepting": "ஏற்கிறது…",
