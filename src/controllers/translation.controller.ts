@@ -40,20 +40,21 @@ const isSupportedLocale = (locale: string): boolean =>
 
 const loadTranslation = (locale: string, namespace: string): TranslationEntry | null => {
     const cacheKey = `${locale}:${namespace}`;
-
-    if (translationCache.has(cacheKey)) {
-        return translationCache.get(cacheKey)!;
-    }
-
     const filePath = path.join(LOCALES_DIR, locale, `${namespace}.json`);
 
     if (!fs.existsSync(filePath)) {
         return null;
     }
 
+    const stat = fs.statSync(filePath);
+
+    const cached = translationCache.get(cacheKey);
+    if (cached && cached.lastModified.getTime() === stat.mtimeMs) {
+        return cached;
+    }
+
     try {
         const raw = fs.readFileSync(filePath, 'utf-8');
-        const stat = fs.statSync(filePath);
         const etag = `"${crypto.createHash('sha256').update(raw).digest('hex').slice(0, 16)}"`;
         const entry: TranslationEntry = {
             data: JSON.parse(raw) as Record<string, unknown>,
