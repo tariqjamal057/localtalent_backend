@@ -1,0 +1,27 @@
+{
+  "headerTitle": "Help & Support",
+  "headerSubtitle": "We're here to help you with any questions, issues, or feedback you may have",
+  "greetingLine1": "Hello!",
+  "greetingLine2": "How Can We Help You Today?",
+  "greetingLine3": "Choose the best option below to get the support",
+  "faq": "FAQ",
+  "chat": "Chat",
+  "complaint": "Complaint",
+  "suggestion": "Suggestion",
+  "contactUs": "Contact Us",
+  "otherWays": "Other ways to reach us",
+  "whatsapp": "WhatsApp",
+  "call": "Call",
+  "email": "Email",
+  "website": "Website",
+  "faqs": {
+    "q1": "How do I find workers near me?",
+    "a1": "Use the search feature on the Home page. Set your filters and swipe to search.",
+    "q2": "How does the matching work?",
+    "a2": "Our system connects you with nearby workers or jobs based on your search criteria and location.",
+    "q3": "Can I cancel a search?",
+    "a3": "Yes, drag the stop slider on the searching screen to cancel anytime.",
+    "q4": "How do I contact support?",
+    "a4": "You can reach us through the Contact Us option in this Help section."
+  }
+}

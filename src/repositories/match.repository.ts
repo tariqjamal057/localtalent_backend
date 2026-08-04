@@ -170,6 +170,7 @@ export class MatchRepository {
                 m.updated_at,
                 up.full_name          AS other_user_full_name,
                 up.profile_image_url  AS other_user_profile_image_url,
+                u.country_code || u.mobile_number AS other_user_phone_number,
                 COUNT(*) OVER()       AS total_count,
                 CASE WHEN m.recruiter_user_id = $1
                     THEN (m.recruiter_form_data->>'latitude')
@@ -192,6 +193,10 @@ export class MatchRepository {
                 WHEN m.recruiter_user_id = $1 THEN m.candidate_user_id
                 ELSE m.recruiter_user_id
             END
+            JOIN users u ON u.id = CASE
+                WHEN m.recruiter_user_id = $1 THEN m.candidate_user_id
+                ELSE m.recruiter_user_id
+            END
             WHERE (m.recruiter_user_id = $1 OR m.candidate_user_id = $1)
               AND m.total_users = m.proposal_accepted_count
             ORDER BY m.created_at DESC
@@ -210,6 +215,7 @@ export class MatchRepository {
                     otherUserId: row.recruiter_user_id == userId ? row.candidate_user_id : row.recruiter_user_id,
                     otherUserFullName: row.other_user_full_name,
                     otherUserProfileImageUrl: row.other_user_profile_image_url,
+                    otherUserPhoneNumber: row.other_user_phone_number,
                     finalState: row.final_state,
                     createdAt: row.created_at,
                     updatedAt: row.updated_at,

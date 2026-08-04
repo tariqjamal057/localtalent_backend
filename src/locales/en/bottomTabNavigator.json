@@ -3,6 +3,7 @@
     "home": "Home",
     "profile": "Profile",
     "transactions": "Transactions",
-    "callLogs": "Call Logs"
+    "callLogs": "Call Logs",
+    "help": "Help"
   }
 }

@@ -83,6 +83,7 @@ export interface AcceptedMatchItem {
     otherUserId: bigint;
     otherUserFullName: string | null;
     otherUserProfileImageUrl: string | null;
+    otherUserPhoneNumber: string | null;
     finalState: number;
     createdAt: Date;
     updatedAt: Date;
@@ -99,6 +100,7 @@ export interface AcceptedMatchRow {
     updated_at: Date;
     other_user_full_name: string | null;
     other_user_profile_image_url: string | null;
+    other_user_phone_number: string | null;
     total_count: string;
     user_latitude: string | null;
     user_longitude: string | null;

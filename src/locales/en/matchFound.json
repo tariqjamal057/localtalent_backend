@@ -8,7 +8,7 @@
     "joinFailed": "Failed to join the call. Please try again."
   },
   "details": {
-    "title": "WORKER DETAILS",
+    "title": "PERSON DETAILS",
     "age": "AGE",
     "ageValue": "{{age}} Years",
     "gender": "GENDER",
