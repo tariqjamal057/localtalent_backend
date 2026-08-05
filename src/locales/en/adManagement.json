@@ -6,6 +6,11 @@
   "uploadingImage": "Uploading image…",
   "uploadTitle": "Upload Ad Image",
   "uploadSubtitle": "Tap to pick an image from your gallery",
+  "bannerHelper": "This banner will be shown across the app",
+  "singleBannerHint": "Only one image required — used on all screens",
+  "preview": "Preview Banner",
+  "allScreens": "All Screens",
+  "placementAllScreens": "Across all screens",
   "change": "Change",
   "optional": "(optional)",
   "fields": {

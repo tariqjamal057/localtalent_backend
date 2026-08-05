@@ -6,6 +6,11 @@
   "uploadingImage": "छवि अपलोड हो रही है…",
   "uploadTitle": "विज्ञापन छवि अपलोड करें",
   "uploadSubtitle": "अपनी गैलरी से छवि चुनने के लिए टैप करें",
+  "bannerHelper": "यह बैनर ऐप में हर जगह दिखाया जाएगा",
+  "singleBannerHint": "केवल एक छवि चाहिए — सभी स्क्रीन पर उपयोग होगी",
+  "preview": "बैनर पूर्वावलोकन",
+  "allScreens": "सभी स्क्रीन",
+  "placementAllScreens": "सभी स्क्रीन पर",
   "change": "बदलें",
   "optional": "(वैकल्पिक)",
   "fields": {
