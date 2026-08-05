@@ -15,7 +15,8 @@ export class PaymentController {
         const userId = BigInt(req.user!.id);
         const page = Number(req.query.page);
         const limit = Number(req.query.limit);
-        const result = await paymentOrderRepository.getByUserIdPaginated(userId, page, limit);
+        const purpose = req.query.purpose ? Number(req.query.purpose) : undefined;
+        const result = await paymentOrderRepository.getByUserIdPaginated(userId, page, limit, purpose);
         sendResponse(res, StatusCodes.OK, MESSAGES.PAYMENT.FETCHED_SUCCESSFULLY, result);
     };
 

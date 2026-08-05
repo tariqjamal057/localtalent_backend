@@ -2,6 +2,10 @@
   "title": "Transactions",
   "subtitle": "Your complete payment and purchase history",
   "empty": "No transactions yet",
+  "tabs": {
+    "subscription": "Subscription",
+    "advertisement": "Advertisement"
+  },
   "purpose": {
     "1": "Match Credits purchase",
     "2": "Ad Pack"
