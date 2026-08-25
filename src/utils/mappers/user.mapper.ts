@@ -8,6 +8,7 @@ export function userRowToDto(row: UserRow): User {
         userType: row.user_type,
         appLanguageCode: row.app_language_code,
         isActive: row.is_active,
+        refreshToken: row.refresh_token,
         createdAt: row.created_at,
         updatedAt: row.updated_at,
     };

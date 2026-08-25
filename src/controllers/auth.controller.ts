@@ -19,12 +19,11 @@ export class AuthController {
         try {
             const decoded = verifyRefreshToken(refreshToken);
             logger.info(`Refresh token verified for userId: ${decoded.userId}`);
-            const accessToken = signAccessToken({ userId: decoded.userId });
-            const [user, userProfile] = await Promise.all([
-                userRepository.getById(BigInt(decoded.userId)),
-                userProfileRepository.getByUserId(BigInt(decoded.userId))
-            ]);
+            const user = await userRepository.getById(BigInt(decoded.userId));
             if (!user || !user?.isActive) throw new ApiError(MESSAGES.AUTH.INVALID_REFRESH_TOKEN, StatusCodes.UNAUTHORIZED);
+            if (user.refreshToken !== refreshToken) throw new ApiError(MESSAGES.AUTH.SESSION_EXPIRED, StatusCodes.UNAUTHORIZED);
+            const accessToken = signAccessToken({ userId: decoded.userId });
+            const userProfile = await userProfileRepository.getByUserId(BigInt(decoded.userId));
             sendResponse(res, StatusCodes.OK, MESSAGES.AUTH.TOKEN_REFRESHED, { accessToken, userProfile, appLanguageCode: user.appLanguageCode });
         } catch (error) {
             logger.error('Error refreshing token', { error });
@@ -60,6 +59,15 @@ export class AuthController {
             userType: USER_TYPE.INDIVIDUAL,
             appLanguageCode
         });
+        if (user.refreshToken) {
+            try {
+                verifyRefreshToken(user.refreshToken);
+                sendError(res, MESSAGES.AUTH.ALREADY_LOGGED_IN, StatusCodes.FORBIDDEN);
+                return;
+            } catch {
+                await userRepository.clearRefreshToken(user.id);
+            }
+        }
         if (isNewUser) {
             if (fullName) {
                 await userProfileRepository.create(user.id, { fullName })
@@ -68,8 +76,16 @@ export class AuthController {
         }
         const refreshToken = signRefreshToken({ userId: user.id.toString() });
         const accessToken = signAccessToken({ userId: user.id.toString() });
+        await userRepository.updateRefreshToken(user.id, refreshToken);
         const userProfile = await userProfileRepository.getByUserId(user.id);
         sendResponse(res, StatusCodes.OK, MESSAGES.AUTH.OTP_VERIFIED, { accessToken, refreshToken, userProfile, appLanguageCode: user.appLanguageCode, isNewUser });
+    };
+
+    logout = async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
+        const userId = req.user?.id;
+        if (!userId) throw new ApiError(MESSAGES.AUTH.ACCESS_TOKEN_REQUIRED, StatusCodes.UNAUTHORIZED);
+        await userRepository.clearRefreshToken(userId);
+        sendResponse(res, StatusCodes.OK, MESSAGES.AUTH.LOGGED_OUT);
     };
 }
 

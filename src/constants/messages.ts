@@ -8,6 +8,9 @@ export const MESSAGES = {
         OTP_ALREADY_SENT: 'An OTP has already been sent to this phone number. Please try again later.',
         INVALID_OTP: 'Invalid OTP',
         OTP_VERIFIED: 'OTP verified successfully',
+        ALREADY_LOGGED_IN: 'This account is already logged in on another device.',
+        LOGGED_OUT: 'Logged out successfully',
+        SESSION_EXPIRED: 'Session expired. Please login again.',
     },
     CATEGORY: {
         FETCHED_SUCCESSFULLY: 'Categories fetched successfully',

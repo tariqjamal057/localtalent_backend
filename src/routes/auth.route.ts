@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { authController } from '../controllers/auth.controller';
 import validate, { VALIDATION_SOURCE } from '../middleware/validate';
+import authenticate from '../middleware/authenticate';
 
 const router = Router();
 
@@ -38,6 +39,12 @@ router.post(
     '/verify-otp',
     validate(verifyOtpSchema, VALIDATION_SOURCE.BODY),
     authController.verifyOtp
+);
+
+router.post(
+    '/logout',
+    authenticate,
+    authController.logout
 );
 
 export default router;

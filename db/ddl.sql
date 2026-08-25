@@ -5,6 +5,7 @@ CREATE TABLE users (
     user_type SMALLINT NOT NULL,
     app_language_code VARCHAR(10) NOT NULL DEFAULT 'en',
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    refresh_token VARCHAR(512),
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );

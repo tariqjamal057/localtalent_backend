@@ -5,6 +5,7 @@ export interface User {
     userType: number;
     appLanguageCode: string;
     isActive: boolean;
+    refreshToken: string | null;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -16,6 +17,7 @@ export interface UserRow {
     user_type: number;
     app_language_code: string;
     is_active: boolean;
+    refresh_token: string | null;
     created_at: Date;
     updated_at: Date;
 }

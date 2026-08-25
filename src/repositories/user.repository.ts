@@ -64,6 +64,26 @@ export class UserRepository {
         `;
         await this.db.query(query, [dto.appLanguageCode, id]);
     }
+
+    async updateRefreshToken(id: bigint, refreshToken: string): Promise<void> {
+        const query = `
+            UPDATE users
+            SET refresh_token = $1,
+                updated_at = NOW()
+            WHERE id = $2
+        `;
+        await this.db.query(query, [refreshToken, id]);
+    }
+
+    async clearRefreshToken(id: bigint): Promise<void> {
+        const query = `
+            UPDATE users
+            SET refresh_token = NULL,
+                updated_at = NOW()
+            WHERE id = $1
+        `;
+        await this.db.query(query, [id]);
+    }
 }
 
 export const userRepository = new UserRepository(DatabaseService.getInstance());
