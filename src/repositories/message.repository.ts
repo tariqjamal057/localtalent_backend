@@ -11,6 +11,7 @@ function rowToDto(row: MessageRow): MessageDto {
         senderId: row.sender_id,
         content: row.content,
         messageType: row.message_type,
+        isDeleted: row.is_deleted,
         isRead: row.is_read,
         createdAt: row.created_at as unknown as string,
     };
@@ -74,12 +75,29 @@ export class MessageRepository {
         const query = `
             SELECT COUNT(*)::int AS count
             FROM messages
-            WHERE chat_room_id = $1 AND sender_id != $2 AND is_read = FALSE
+            WHERE chat_room_id = $1 AND sender_id != $2 AND is_read = FALSE AND is_deleted = FALSE
         `;
         const result = await this.db.query(query, [chatRoomId, userId]);
         const count = result.rows[0]?.count ?? 0;
         logger.debug(`[MessageRepo] Unread count for roomId=${chatRoomId}, user=${userId}: ${count}`);
         return count;
+    }
+
+    async deleteMessage(messageId: string, senderId: bigint): Promise<MessageDto | null> {
+        logger.debug(`[MessageRepo] Deleting message id=${messageId} by sender=${senderId}`);
+        const query = `
+            UPDATE messages
+            SET is_deleted = TRUE
+            WHERE id = $1 AND sender_id = $2
+            RETURNING *
+        `;
+        const result: QueryResult<MessageRow> = await this.db.query(query, [messageId, senderId]);
+        if (result.rows.length === 0) {
+            logger.warn(`[MessageRepo] Delete failed: message id=${messageId} not found or not owned by sender=${senderId}`);
+            return null;
+        }
+        logger.info(`[MessageRepo] Message deleted: id=${messageId}`);
+        return rowToDto(result.rows[0]);
     }
 }
 

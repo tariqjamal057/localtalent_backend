@@ -1,6 +1,7 @@
 import { chatRoomRepository } from '../repositories/chat-room.repository';
 import { messageRepository } from '../repositories/message.repository';
 import { MessageDto } from '../types/custom-chat.type';
+import { MESSAGE_TYPE } from '../enums/chat';
 import logger from '../utils/logger';
 
 class CustomChatService {
@@ -25,12 +26,21 @@ class CustomChatService {
         return room;
     }
 
-    async sendMessage(chatRoomId: bigint, senderId: bigint, content: string): Promise<MessageDto> {
-        logger.debug(`[CustomChatService] Sending message in roomId=${chatRoomId} from sender=${senderId}, content length=${content.length}`);
-        const message = await messageRepository.create(chatRoomId, senderId, content);
+    async sendMessage(chatRoomId: bigint, senderId: bigint, content: string, messageType: MESSAGE_TYPE = MESSAGE_TYPE.TEXT): Promise<MessageDto> {
+        logger.debug(`[CustomChatService] Sending message in roomId=${chatRoomId} from sender=${senderId}, type=${messageType}, content length=${content.length}`);
+        const message = await messageRepository.create(chatRoomId, senderId, content, messageType);
         await chatRoomRepository.updateLastMessage(chatRoomId, content);
         logger.info(`[CustomChatService] Message sent: messageId=${message.id} in roomId=${chatRoomId}`);
         return message;
+    }
+
+    async deleteMessage(messageId: string, senderId: bigint): Promise<MessageDto | null> {
+        logger.debug(`[CustomChatService] Deleting message id=${messageId} by sender=${senderId}`);
+        const result = await messageRepository.deleteMessage(messageId, senderId);
+        if (result) {
+            logger.info(`[CustomChatService] Message deleted: id=${messageId}`);
+        }
+        return result;
     }
 
     async getMessages(chatRoomId: bigint, limit?: number, before?: string): Promise<MessageDto[]> {

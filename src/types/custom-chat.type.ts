@@ -26,6 +26,7 @@ export interface Message {
     senderId: bigint;
     content: string;
     messageType: MESSAGE_TYPE;
+    isDeleted: boolean;
     isRead: boolean;
     createdAt: Date;
 }
@@ -36,6 +37,7 @@ export interface MessageRow {
     sender_id: string;
     content: string;
     message_type: number;
+    is_deleted: boolean;
     is_read: boolean;
     created_at: Date;
 }
@@ -46,6 +48,7 @@ export interface MessageDto {
     senderId: string;
     content: string;
     messageType: number;
+    isDeleted: boolean;
     isRead: boolean;
     createdAt: string;
 }

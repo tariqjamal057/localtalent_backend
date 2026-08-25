@@ -20,7 +20,7 @@ const ALLOWED_CONTENT_TYPES = [
     'audio/ogg',
 ];
 
-const ALLOWED_FOLDERS = ['profile', 'ad'] as const;
+const ALLOWED_FOLDERS = ['profile', 'ad', 'chat'] as const;
 
 const presignedUrlSchema = z.object({
     fileName: z.string().min(1).max(200),

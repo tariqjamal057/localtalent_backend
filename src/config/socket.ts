@@ -9,6 +9,7 @@ import { SOCKET_INCOMING_EVENT, SOCKET_OUTGOING_EVENT } from '../enums/socket';
 import { MatchRequest } from '../types/socket-data.type';
 import { matchService } from '../services/match.service';
 import { customChatService } from '../services/custom-chat.service';
+import { MESSAGE_TYPE } from '../enums/chat';
 
 export class SocketService {
     private static instance: SocketService;
@@ -221,7 +222,7 @@ export class SocketService {
                 }
             })
 
-            socket.on(SOCKET_INCOMING_EVENT.SEND_MESSAGE, async (data: { chatRoomId: string; content: string }) => {
+            socket.on(SOCKET_INCOMING_EVENT.SEND_MESSAGE, async (data: { chatRoomId: string; content: string; messageType?: number }) => {
                 try {
                     logger.debug(`[Socket] SEND_MESSAGE from userId=${user.id} to roomId=${data.chatRoomId}, content length=${data.content.length}`);
                     const roomId = BigInt(data.chatRoomId);
@@ -237,7 +238,8 @@ export class SocketService {
                         socketGateway.sendErrorToUser(user.id, 'Not a member of this chat room');
                         return;
                     }
-                    const message = await customChatService.sendMessage(roomId, user.id, data.content);
+                    const messageType = (data.messageType as MESSAGE_TYPE) || MESSAGE_TYPE.TEXT;
+                    const message = await customChatService.sendMessage(roomId, user.id, data.content, messageType);
                     const chatRoomSocketRoom = `chat_room:${roomId}`;
                     socketGateway.sendToRoom(chatRoomSocketRoom, SOCKET_OUTGOING_EVENT.NEW_MESSAGE, message);
                     logger.info(`[Socket] Message ${message.id} sent to room ${chatRoomSocketRoom}`);
@@ -260,6 +262,37 @@ export class SocketService {
                     logger.debug(`[Socket] MESSAGES_READ broadcast to room ${chatRoomSocketRoom}`);
                 } catch (error) {
                     logger.error(`[Socket] Error marking messages read: ${error instanceof Error ? error.message : String(error)}`);
+                }
+            })
+
+            socket.on(SOCKET_INCOMING_EVENT.DELETE_MESSAGE, async (data: { messageId: string; chatRoomId: string }) => {
+                try {
+                    logger.debug(`[Socket] DELETE_MESSAGE from userId=${user.id} messageId=${data.messageId}`);
+                    const roomId = BigInt(data.chatRoomId);
+                    const room = await customChatService.getRoomById(roomId);
+                    if (!room) {
+                        socketGateway.sendErrorToUser(user.id, 'Chat room not found');
+                        return;
+                    }
+                    const isMember = room.user1Id === user.id || room.user2Id === user.id;
+                    if (!isMember) {
+                        socketGateway.sendErrorToUser(user.id, 'Not a member of this chat room');
+                        return;
+                    }
+                    const deleted = await customChatService.deleteMessage(data.messageId, user.id);
+                    if (!deleted) {
+                        socketGateway.sendErrorToUser(user.id, 'Message not found or not yours');
+                        return;
+                    }
+                    const chatRoomSocketRoom = `chat_room:${roomId}`;
+                    socketGateway.sendToRoom(chatRoomSocketRoom, SOCKET_OUTGOING_EVENT.MESSAGE_DELETED, {
+                        messageId: data.messageId,
+                        chatRoomId: data.chatRoomId,
+                    });
+                    logger.info(`[Socket] Message ${data.messageId} deleted in room ${chatRoomSocketRoom}`);
+                } catch (error) {
+                    logger.error(`[Socket] Error deleting message: ${error instanceof Error ? error.message : String(error)}`);
+                    socketGateway.sendErrorToUser(user.id, 'Failed to delete message');
                 }
             })
         });

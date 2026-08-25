@@ -14,6 +14,7 @@ export enum SOCKET_INCOMING_EVENT {
     DECLINE_CALL = 'decline_Call',
     REJECT_PROPOSAL = 'reject_proposal',
     SEND_MESSAGE = 'send_message',
+    DELETE_MESSAGE = 'delete_message',
     JOIN_CHAT_ROOM = 'join_chat_room',
     MESSAGES_READ = 'messages_read',
 }
@@ -34,6 +35,7 @@ export enum SOCKET_OUTGOING_EVENT {
     CALL_DECLINED = 'call_decliend',
     PROPOSAL_REJECTED = 'proposal_rejected',
     NEW_MESSAGE = 'new_message',
+    MESSAGE_DELETED = 'message_deleted',
     MESSAGES_READ = 'messages_read',
     CHAT_JOINED = 'chat_joined',
 }

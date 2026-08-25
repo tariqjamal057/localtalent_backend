@@ -17,6 +17,7 @@ CREATE TABLE messages (
     sender_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     content TEXT NOT NULL,
     message_type SMALLINT NOT NULL DEFAULT 1,
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
     is_read BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
