@@ -173,6 +173,13 @@ export class SocketService {
                     logger.info('Error while handling request-video-response')
                 }
             })
+            socket.on(SOCKET_INCOMING_EVENT.DISABLE_VIDEO, async (matchId: bigint) => {
+                try {
+                    await matchService.handleDisableVideo(user.id, matchId)
+                } catch (error) {
+                    logger.info('Error while handling disable-video')
+                }
+            })
             socket.on(SOCKET_INCOMING_EVENT.DECLINE_CALL, async (matchId: bigint) => {
                 try {
                     matchService.handleCallDecline(user.id, matchId)

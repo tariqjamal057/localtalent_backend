@@ -149,6 +149,14 @@ class SocketGateway {
         }
     }
 
+    public sendVideoDisabledEvent(userId: bigint, data: { matchId: bigint }) {
+        try {
+            this.socketService.emitToUser(userId, SOCKET_OUTGOING_EVENT.VIDEO_DISABLED, data);
+        } catch (_) {
+            logger.error('Failed to send video disabled event')
+        }
+    }
+
     public sendCallDeclinedEvent(userId: bigint, data: { matchId: bigint }) {
         try {
             this.socketService.emitToUser(userId, SOCKET_OUTGOING_EVENT.CALL_DECLINED, data)

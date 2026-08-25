@@ -444,6 +444,15 @@ export class MatchService {
         }
     }
 
+    async handleDisableVideo(userId: bigint, matchId: bigint): Promise<void> {
+        const match = await this.matchRepository.getById(matchId);
+        if (match?.recruiterUserId != userId && match?.candidateUserId != userId) {
+            throw new Error(MESSAGES.MATCH.NOT_A_MEMBER_OF_MATCH);
+        }
+        const otherUserId = getOtherUserIdInMatch(match, userId);
+        socketGateway.sendVideoDisabledEvent(otherUserId, { matchId });
+    }
+
     async handleCallDecline(userId: bigint, matchId: bigint): Promise<void> {
         const match = await this.matchRepository.getById(matchId);
         if (match?.recruiterUserId != userId && match?.candidateUserId != userId) {
