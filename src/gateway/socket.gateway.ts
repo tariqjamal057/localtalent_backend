@@ -172,7 +172,7 @@ class SocketGateway {
         }
     }
 
-    public sendToRoom(roomId: string, event: SOCKET_OUTGOING_EVENT, data: Record<string, unknown>): void {
+    public sendToRoom(roomId: string, event: SOCKET_OUTGOING_EVENT, data: object): void {
         try {
             this.socketService.emitToRoom(roomId, event, data);
         } catch (error) {
