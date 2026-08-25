@@ -22,6 +22,7 @@ function matchRowToDto(row: MatchRow): Match {
         callType: row.call_type,
         recruiterReviewId: row.recruiter_review_id,
         candidateReviewId: row.candidate_review_id,
+        phoneNumberShared: row.phone_number_shared ?? false,
     };
 }
 
@@ -94,6 +95,15 @@ export class MatchRepository {
         return matchRowToDto(result.rows[0]);
     }
 
+    async setPhoneNumberShared(matchId: bigint): Promise<void> {
+        const query = `
+            UPDATE matches
+            SET phone_number_shared = TRUE
+            WHERE id = $1
+        `;
+        await this.db.query(query, [matchId]);
+    }
+
     async update(matchId: bigint, dto: UpdateMatchDto): Promise<Match | null> {
         const fields: string[] = [];
         const values: unknown[] = [];
@@ -146,6 +156,19 @@ export class MatchRepository {
         return matchRowToDto(result.rows[0]);
     }
 
+    async getJobsDoneCountThisMonth(userId: bigint): Promise<number> {
+        const query = `
+            SELECT COUNT(*)::int AS count
+            FROM matches
+            WHERE (recruiter_user_id = $1 OR candidate_user_id = $1)
+              AND proposal_accepted_count = total_users
+              AND created_at >= date_trunc('month', NOW())
+              AND created_at < date_trunc('month', NOW()) + INTERVAL '1 month'
+        `;
+        const result = await this.db.query(query, [userId]);
+        return result.rows[0]?.count ?? 0;
+    }
+
     async getAcceptedProposalsOfUser(userId: bigint): Promise<Match[]> {
         const query = `
             SELECT *
@@ -168,6 +191,12 @@ export class MatchRepository {
                 m.final_state,
                 m.created_at,
                 m.updated_at,
+                CASE
+                    WHEN m.final_state = 7 THEN 'rejected'
+                    WHEN m.total_users = m.proposal_accepted_count THEN 'accepted'
+                    ELSE 'pending'
+                END AS status,
+                m.phone_number_shared,
                 up.full_name          AS other_user_full_name,
                 up.profile_image_url  AS other_user_profile_image_url,
                 u.country_code || u.mobile_number AS other_user_phone_number,
@@ -198,7 +227,6 @@ export class MatchRepository {
                 ELSE m.recruiter_user_id
             END
             WHERE (m.recruiter_user_id = $1 OR m.candidate_user_id = $1)
-              AND m.total_users = m.proposal_accepted_count
             ORDER BY m.created_at DESC
             LIMIT $2 OFFSET $3
         `;
@@ -217,6 +245,8 @@ export class MatchRepository {
                     otherUserProfileImageUrl: row.other_user_profile_image_url,
                     otherUserPhoneNumber: row.other_user_phone_number,
                     finalState: row.final_state,
+                    status: row.status,
+                    phoneNumberShared: row.phone_number_shared,
                     createdAt: row.created_at,
                     updatedAt: row.updated_at,
                     userLocation: userLat != null && userLng != null ? { latitude: userLat, longitude: userLng } : null,

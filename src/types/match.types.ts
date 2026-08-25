@@ -16,6 +16,7 @@ export interface Match {
     callType?: number;
     recruiterReviewId?: bigint | null;
     candidateReviewId?: bigint | null;
+    phoneNumberShared: boolean;
 }
 
 export interface CreateMatchDto {
@@ -54,6 +55,7 @@ export interface MatchRow {
     call_type?: number;
     recruiter_review_id?: bigint | null;
     candidate_review_id?: bigint | null;
+    phone_number_shared: boolean;
 }
 
 export interface PendingReviewMatchRow {
@@ -85,6 +87,8 @@ export interface AcceptedMatchItem {
     otherUserProfileImageUrl: string | null;
     otherUserPhoneNumber: string | null;
     finalState: number;
+    status: string;
+    phoneNumberShared: boolean;
     createdAt: Date;
     updatedAt: Date;
     userLocation: UserLocation | null;
@@ -102,6 +106,8 @@ export interface AcceptedMatchRow {
     other_user_profile_image_url: string | null;
     other_user_phone_number: string | null;
     total_count: string;
+    status: string;
+    phone_number_shared: boolean;
     user_latitude: string | null;
     user_longitude: string | null;
     other_user_latitude: string | null;

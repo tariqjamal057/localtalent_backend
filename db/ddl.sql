@@ -303,3 +303,5 @@ ALTER TABLE matches ADD COLUMN candidate_review_id BIGINT;
 ALTER TABLE user_ads ALTER COLUMN max_impressions DROP NOT NULL;
 
 ALTER TABLE user_ads ALTER COLUMN max_days DROP NOT NULL;
+
+ALTER TABLE matches ADD COLUMN IF NOT EXISTS phone_number_shared BOOLEAN NOT NULL DEFAULT FALSE;

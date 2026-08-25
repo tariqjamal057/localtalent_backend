@@ -37,6 +37,10 @@ export class MatchService {
         return this.matchRepository.getAcceptedMatchesPaginated(userId, page, limit);
     }
 
+    async getJobsDoneCountThisMonth(userId: bigint): Promise<number> {
+        return this.matchRepository.getJobsDoneCountThisMonth(userId);
+    }
+
     async getMatchedUserPriorityScore(userSearchData: MatchRequest, matchedUserSearchData: MatchRequest): Promise<number> {
         logger.debug(`[MatchService] Calculating priority score between user search data: ${JSON.stringify(userSearchData)} and matched user search data: ${JSON.stringify(matchedUserSearchData)}`);
 
@@ -387,6 +391,7 @@ export class MatchService {
                 });
                 return;
             }
+            await this.matchRepository.setPhoneNumberShared(matchId);
             const user = await this.userRepository.getById(userId);
             const phoneNumber = user?.mobileNumber;
             socketGateway.sendRequestPhoneNumberResponse(otherUserId, {
@@ -458,6 +463,7 @@ export class MatchService {
         if (match?.recruiterUserId != userId && match?.candidateUserId != userId) {
             throw new Error(MESSAGES.MATCH.NOT_A_MEMBER_OF_MATCH);
         }
+        await this.matchRepository.updateFinalState(matchId, MATCH_STATE.PROPOSAL_REJECTED);
         const otherUserId = getOtherUserIdInMatch(match, userId);
         socketGateway.sendCallDeclinedEvent(otherUserId, { matchId });
     }
@@ -467,6 +473,7 @@ export class MatchService {
         if (match?.recruiterUserId != userId && match?.candidateUserId != userId) {
             throw new Error(MESSAGES.MATCH.NOT_A_MEMBER_OF_MATCH);
         }
+        await this.matchRepository.updateFinalState(matchId, MATCH_STATE.PROPOSAL_REJECTED);
         const otherUserId = getOtherUserIdInMatch(match, userId);
         socketGateway.sendProposalRejectedEvent(otherUserId, { matchId });
     }

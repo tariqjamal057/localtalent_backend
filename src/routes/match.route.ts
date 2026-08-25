@@ -24,4 +24,10 @@ router.get(
     matchController.getAcceptedMatchesPaginated
 );
 
+router.get(
+    '/jobs-done-this-month',
+    authenticate,
+    matchController.getJobsDoneCountThisMonth
+);
+
 export default router;

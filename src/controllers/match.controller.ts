@@ -20,6 +20,12 @@ export class MatchController {
         const result = await this.matchService.getAcceptedMatchesPaginated(userId, page, limit);
         sendResponse(res, StatusCodes.OK, MESSAGES.MATCH.FETCHED_SUCCESSFULLY, result);
     };
+
+    getJobsDoneCountThisMonth = async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
+        const userId = BigInt(req.user!.id);
+        const jobsDoneCount = await this.matchService.getJobsDoneCountThisMonth(userId);
+        sendResponse(res, StatusCodes.OK, MESSAGES.MATCH.FETCHED_SUCCESSFULLY, { jobsDoneCount });
+    };
 }
 
 export const matchController = new MatchController(matchService);
