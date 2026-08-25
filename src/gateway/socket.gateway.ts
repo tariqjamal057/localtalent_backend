@@ -6,7 +6,6 @@ import { redisUserService } from "../services/redis/redis-user.service";
 import { CallEndResult, MatchResponse } from "../types/socket-data.type";
 import { UserDataToJoinCall } from "../types/call.type";
 import { CALL_ENDED_BY } from "../enums/call";
-import { MessageDto } from "../types/custom-chat.type";
 import { Socket } from "socket.io";
 
 class SocketGateway {
@@ -173,7 +172,7 @@ class SocketGateway {
         }
     }
 
-    public sendToRoom(roomId: string, event: SOCKET_OUTGOING_EVENT, data: MessageDto | { chatRoomId: string; userId: string }): void {
+    public sendToRoom(roomId: string, event: SOCKET_OUTGOING_EVENT, data: Record<string, unknown>): void {
         try {
             this.socketService.emitToRoom(roomId, event, data);
         } catch (error) {
