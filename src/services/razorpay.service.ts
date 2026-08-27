@@ -28,6 +28,18 @@ export class RazorpayService {
             .digest('hex');
         return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(signature));
     }
+
+    async fetchOrderPayments(orderId: string): Promise<{ captured: boolean; paymentId: string }[]> {
+        const order = await this.client.orders.fetch(orderId);
+        if (!order || !order.amount_paid || order.amount_paid === 0) {
+            return [];
+        }
+        const payments = await this.client.orders.fetchPayments(orderId);
+        return payments.items.map((p) => ({
+            captured: p.status === 'captured',
+            paymentId: p.id,
+        }));
+    }
 }
 
 export const razorpayService = new RazorpayService();

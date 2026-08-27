@@ -9,6 +9,46 @@ import { sendResponse, sendError } from '../utils/response';
 import { MESSAGES } from '../constants/messages';
 import logger from '../utils/logger';
 
+async function processSuccessfulOrder(orderId: string): Promise<boolean> {
+    const order = await paymentOrderRepository.getByOrderId(orderId);
+    if (!order) {
+        logger.warn(`[PaymentProcess] Order not found in DB for order_id: ${orderId}`);
+        return false;
+    }
+
+    if (order.status === PAYMENT_ORDER_STATUS.PAYMENT_SUCCESSFUL) {
+        logger.info(`[PaymentProcess] Order ${order.id} already processed, skipping`);
+        return true;
+    }
+
+    logger.info(`[PaymentProcess] Updating order ${order.id} status to PAYMENT_SUCCESSFUL`);
+    await paymentOrderRepository.updateStatus(order.id, { status: PAYMENT_ORDER_STATUS.PAYMENT_SUCCESSFUL });
+
+    if (order.purpose === PAYMENT_PURPOSE.MATCH_COUNT_PACK) {
+        const matchCredit = (order.purchasedMatchCount ?? 0) + (order.bonusMatchCount ?? 0);
+        const videoCredit = order.purchasedMatchCount ?? 0;
+        logger.info(`[PaymentProcess] Crediting wallet for userId=${order.userId}: matchCount+=${matchCredit}, videoRequestCount+=${videoCredit}`);
+        await userWalletRepository.incrementMatchPackCredits(order.userId, matchCredit, videoCredit);
+        logger.info(`[PaymentProcess] Wallet credited successfully for userId=${order.userId}`);
+    } else if (order.purpose === PAYMENT_PURPOSE.AD_PACK) {
+        const maxAdDays = (order.purchasedAdDays ?? 0) + (order.bonusAdDays ?? 0);
+        const maxAdImpressions = (order.purchasedAdImpressions ?? 0) + (order.bonusAdImpressions ?? 0);
+        if (order.productId) {
+            const expiresOn = new Date();
+            expiresOn.setDate(expiresOn.getDate() + maxAdDays);
+            logger.info(`[PaymentProcess] Activating ad id=${order.productId} for userId=${order.userId}: maxDays=${maxAdDays}, maxImpressions=${maxAdImpressions}, expiresOn=${expiresOn.toISOString()}`);
+            await adRepository.activateAd(order.productId, maxAdDays, maxAdImpressions, expiresOn);
+            logger.info(`[PaymentProcess] Ad ${order.productId} activated successfully`);
+        } else {
+            logger.warn(`[PaymentProcess] AD_PACK order ${order.id} has no productId — cannot activate ad`);
+        }
+    } else {
+        logger.info(`[PaymentProcess] Purpose ${order.purpose} — no wallet action taken`);
+    }
+
+    return true;
+}
+
 export class PaymentController {
 
     getOrdersByUserId = async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
@@ -73,33 +113,52 @@ export class PaymentController {
             return;
         }
 
-        logger.info(`[PaymentWebhook] Updating order ${order.id} status to PAYMENT_SUCCESSFUL`);
-        await paymentOrderRepository.updateStatus(order.id, { status: PAYMENT_ORDER_STATUS.PAYMENT_SUCCESSFUL });
-
-        if (order.purpose === PAYMENT_PURPOSE.MATCH_COUNT_PACK) {
-            const matchCredit = (order.purchasedMatchCount ?? 0) + (order.bonusMatchCount ?? 0);
-            const videoCredit = order.purchasedMatchCount ?? 0;
-            logger.info(`[PaymentWebhook] Crediting wallet for userId=${order.userId}: matchCount+=${matchCredit}, videoRequestCount+=${videoCredit}`);
-            await userWalletRepository.incrementMatchPackCredits(order.userId, matchCredit, videoCredit);
-            logger.info(`[PaymentWebhook] Wallet credited successfully for userId=${order.userId}`);
-        } else if (order.purpose === PAYMENT_PURPOSE.AD_PACK) {
-            const maxAdDays = (order.purchasedAdDays ?? 0) + (order.bonusAdDays ?? 0);
-            const maxAdImpressions = (order.purchasedAdImpressions ?? 0) + (order.bonusAdImpressions ?? 0);
-            if (order.productId) {
-                const expiresOn = new Date();
-                expiresOn.setDate(expiresOn.getDate() + maxAdDays);
-                logger.info(`[PaymentWebhook] Activating ad id=${order.productId} for userId=${order.userId}: maxDays=${maxAdDays}, maxImpressions=${maxAdImpressions}, expiresOn=${expiresOn.toISOString()}`);
-                await adRepository.activateAd(order.productId, maxAdDays, maxAdImpressions, expiresOn);
-                logger.info(`[PaymentWebhook] Ad ${order.productId} activated successfully`);
-            } else {
-                logger.warn(`[PaymentWebhook] AD_PACK order ${order.id} has no productId — cannot activate ad`);
-            }
-        } else {
-            logger.info(`[PaymentWebhook] Purpose ${order.purpose} — no wallet action taken`);
-        }
+        await processSuccessfulOrder(razorpayOrderId);
 
         logger.info(`[PaymentWebhook] Webhook processing complete for order_id: ${razorpayOrderId}`);
         sendResponse(res, StatusCodes.OK, MESSAGES.PAYMENT.WEBHOOK_PROCESSED);
+    };
+
+    verifyPayment = async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
+        const { orderId } = req.body;
+        if (!orderId) {
+            sendError(res, 'orderId is required', StatusCodes.BAD_REQUEST);
+            return;
+        }
+
+        logger.info(`[PaymentVerify] Verifying payment for orderId: ${orderId}`);
+
+        const order = await paymentOrderRepository.getByOrderId(orderId);
+        if (!order) {
+            sendError(res, MESSAGES.PAYMENT.ORDER_NOT_FOUND, StatusCodes.NOT_FOUND);
+            return;
+        }
+
+        if (order.userId !== BigInt(req.user!.id)) {
+            sendError(res, 'Unauthorized', StatusCodes.FORBIDDEN);
+            return;
+        }
+
+        if (order.status === PAYMENT_ORDER_STATUS.PAYMENT_SUCCESSFUL) {
+            sendResponse(res, StatusCodes.OK, MESSAGES.PAYMENT.WEBHOOK_PROCESSED);
+            return;
+        }
+
+        try {
+            const payments = await razorpayService.fetchOrderPayments(orderId);
+            const capturedPayment = payments.find((p) => p.captured);
+
+            if (!capturedPayment) {
+                sendError(res, 'Payment not completed', StatusCodes.BAD_REQUEST);
+                return;
+            }
+
+            await processSuccessfulOrder(orderId);
+            sendResponse(res, StatusCodes.OK, MESSAGES.PAYMENT.WEBHOOK_PROCESSED);
+        } catch (error) {
+            logger.error(`[PaymentVerify] Error verifying payment for orderId: ${orderId}`, error);
+            sendError(res, 'Failed to verify payment', StatusCodes.INTERNAL_SERVER_ERROR);
+        }
     };
 }
 

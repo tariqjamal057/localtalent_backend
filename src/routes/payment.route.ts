@@ -12,6 +12,10 @@ const paginationQuerySchema = z.object({
     purpose: z.coerce.number().int().min(1).optional(),
 });
 
+const verifyPaymentSchema = z.object({
+    orderId: z.string().min(1),
+});
+
 router.get(
     '/orders',
     authenticate,
@@ -20,5 +24,12 @@ router.get(
 );
 
 router.post('/webhook/razorpay', paymentController.handleRazorpayWebhook);
+
+router.post(
+    '/verify',
+    authenticate,
+    validate(verifyPaymentSchema, VALIDATION_SOURCE.BODY),
+    paymentController.verifyPayment
+);
 
 export default router;
