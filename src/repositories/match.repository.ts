@@ -216,7 +216,8 @@ export class MatchRepository {
                 CASE WHEN m.recruiter_user_id = $1
                     THEN (m.candidate_form_data->>'longitude')
                     ELSE (m.recruiter_form_data->>'longitude')
-                END AS other_user_longitude
+                END AS other_user_longitude,
+                cr.id AS chat_room_id
             FROM matches m
             JOIN user_profiles up ON up.user_id = CASE
                 WHEN m.recruiter_user_id = $1 THEN m.candidate_user_id
@@ -226,6 +227,7 @@ export class MatchRepository {
                 WHEN m.recruiter_user_id = $1 THEN m.candidate_user_id
                 ELSE m.recruiter_user_id
             END
+            LEFT JOIN chat_rooms cr ON cr.match_id = m.id
             WHERE (m.recruiter_user_id = $1 OR m.candidate_user_id = $1)
             ORDER BY m.created_at DESC
             LIMIT $2 OFFSET $3
@@ -251,6 +253,7 @@ export class MatchRepository {
                     updatedAt: row.updated_at,
                     userLocation: userLat != null && userLng != null ? { latitude: userLat, longitude: userLng } : null,
                     otherUserLocation: otherLat != null && otherLng != null ? { latitude: otherLat, longitude: otherLng } : null,
+                    chatRoomId: row.chat_room_id ?? null,
                 };
             }),
             total,

@@ -112,6 +112,7 @@ export interface AcceptedMatchRow {
     user_longitude: string | null;
     other_user_latitude: string | null;
     other_user_longitude: string | null;
+    chat_room_id: string | null;
 }
 
 export interface PaginatedAcceptedMatches {
