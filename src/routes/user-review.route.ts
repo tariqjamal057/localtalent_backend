@@ -17,10 +17,21 @@ const dismissReviewSchema = z.object({
     matchId: z.number().int().positive(),
 });
 
+const userIdParamSchema = z.object({
+    userId: z.string().regex(/^\d+$/, 'userId must be a numeric string'),
+});
+
 router.get(
     '/pending-review',
     authenticate,
     userReviewController.getPendingReviewMatch
+);
+
+router.get(
+    '/by-user/:userId',
+    authenticate,
+    validate(userIdParamSchema, VALIDATION_SOURCE.PARAMS),
+    userReviewController.getReviewsByUserId
 );
 
 router.patch(

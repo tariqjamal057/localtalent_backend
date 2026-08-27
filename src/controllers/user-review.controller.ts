@@ -31,6 +31,14 @@ export class UserReviewController {
         sendResponse(res, StatusCodes.OK, MESSAGES.USER_REVIEW.PENDING_MATCH_FETCHED, match);
     };
 
+    getReviewsByUserId = async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
+        const userId = BigInt(req.params.userId);
+        const page = parseInt(req.query.page as string, 10) || 1;
+        const limit = parseInt(req.query.limit as string, 10) || 20;
+        const reviews = await this.userReviewService.getReviewsByUserId(userId, page, limit);
+        sendResponse(res, StatusCodes.OK, 'Reviews fetched successfully', reviews);
+    };
+
     create = async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
         const reviewerUserId = BigInt(req.user!.id);
         const dto = {

@@ -7,6 +7,18 @@ export interface UserReview {
     createdAt: Date;
 }
 
+export interface UserReviewWithReviewer extends UserReview {
+    reviewerName: string | null;
+    reviewerProfileImage: string | null;
+}
+
+export interface PaginatedUserReviews {
+    data: UserReviewWithReviewer[];
+    total: number;
+    page: number;
+    limit: number;
+}
+
 export interface CreateUserReviewDto {
     reviewedUserId: bigint;
     rating: number;
@@ -20,4 +32,9 @@ export interface UserReviewRow {
     rating: number;
     review_text: string | null;
     created_at: Date;
+}
+
+export interface UserReviewWithReviewerRow extends UserReviewRow {
+    reviewer_name: string | null;
+    reviewer_profile_image: string | null;
 }

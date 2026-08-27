@@ -1,4 +1,4 @@
-import { UserReview, UserReviewRow } from '../../types/user-review.types';
+import { UserReview, UserReviewRow, UserReviewWithReviewer, UserReviewWithReviewerRow } from '../../types/user-review.types';
 
 export function userReviewRowToDto(row: UserReviewRow): UserReview {
     return {
@@ -8,5 +8,13 @@ export function userReviewRowToDto(row: UserReviewRow): UserReview {
         rating: row.rating,
         reviewText: row.review_text,
         createdAt: row.created_at,
+    };
+}
+
+export function userReviewWithReviewerRowToDto(row: UserReviewWithReviewerRow): UserReviewWithReviewer {
+    return {
+        ...userReviewRowToDto(row),
+        reviewerName: row.reviewer_name,
+        reviewerProfileImage: row.reviewer_profile_image,
     };
 }
