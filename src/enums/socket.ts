@@ -38,4 +38,5 @@ export enum SOCKET_OUTGOING_EVENT {
     MESSAGE_DELETED = 'message_deleted',
     MESSAGES_READ = 'messages_read',
     CHAT_JOINED = 'chat_joined',
+    SEARCHER_COUNT = 'searcher_count',
 }

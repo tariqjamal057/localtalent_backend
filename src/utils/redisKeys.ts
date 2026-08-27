@@ -8,6 +8,10 @@ const RedisKeys = {
     getGeoIndexKey: () => `users:geo`,
     getProposalAcceptedSetKey: (matchId: bigint) => `match:${matchId}:proposal:accepted`,
     ongoingCallKey: (matchId: bigint) => `match:${matchId}:ongoing_call`,
+    getActiveSearchersKey: () => `searchers:active`,
+    getSearcherTypeKey: (searchType: number) => `searchers:type:${searchType}`,
+    getSearcherCategoryKey: (categoryId: number) => `searchers:cat:${categoryId}`,
+    getSearcherParamsKey: (userId: bigint) => `searchers:params:${userId}`,
 };
 
 export enum ONGOING_CALL_KEYS {

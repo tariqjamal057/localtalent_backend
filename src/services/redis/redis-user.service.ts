@@ -229,7 +229,65 @@ export class RedisUserService {
             this.clearUserSearchData(userId),
             this.deleteUserStatus(userId),
             this.clearUserGeo(userId),
+            this.removeActiveSearcher(userId),
         ]);
+    }
+
+    //active searcher tracking
+
+    public async addActiveSearcher(userId: bigint, searchType: number, categoryLevelOneId: number): Promise<void> {
+        const pipeline = this.client.pipeline();
+        pipeline.sadd(RedisKeys.getActiveSearchersKey(), userId.toString());
+        pipeline.sadd(RedisKeys.getSearcherTypeKey(searchType), userId.toString());
+        if (categoryLevelOneId) {
+            pipeline.sadd(RedisKeys.getSearcherCategoryKey(categoryLevelOneId), userId.toString());
+        }
+        pipeline.hset(RedisKeys.getSearcherParamsKey(userId), {
+            searchType: searchType.toString(),
+            categoryLevelOneId: categoryLevelOneId.toString(),
+        });
+        await pipeline.exec();
+    }
+
+    public async removeActiveSearcher(userId: bigint): Promise<void> {
+        const params = await this.client.hgetall(RedisKeys.getSearcherParamsKey(userId));
+        const pipeline = this.client.pipeline();
+        pipeline.srem(RedisKeys.getActiveSearchersKey(), userId.toString());
+        if (params.searchType) {
+            pipeline.srem(RedisKeys.getSearcherTypeKey(Number(params.searchType)), userId.toString());
+        }
+        if (params.categoryLevelOneId) {
+            pipeline.srem(RedisKeys.getSearcherCategoryKey(Number(params.categoryLevelOneId)), userId.toString());
+        }
+        pipeline.del(RedisKeys.getSearcherParamsKey(userId));
+        await pipeline.exec();
+    }
+
+    public async getActiveSearcherCounts(): Promise<{ total: number; byType: Record<number, number>; byCategory: Record<number, number> }> {
+        const total = await this.client.scard(RedisKeys.getActiveSearchersKey());
+        const type1 = await this.client.scard(RedisKeys.getSearcherTypeKey(1));
+        const type2 = await this.client.scard(RedisKeys.getSearcherTypeKey(2));
+
+        const categoryIds = await this.client.smembers(RedisKeys.getActiveSearchersKey());
+        const byCategory: Record<number, number> = {};
+        const paramsPipeline = this.client.pipeline();
+        const activeIds = categoryIds || [];
+        for (const id of activeIds) {
+            paramsPipeline.hget(RedisKeys.getSearcherParamsKey(BigInt(id)), 'categoryLevelOneId');
+        }
+        const paramResults = activeIds.length > 0 ? await paramsPipeline.exec() : [];
+        for (const result of paramResults || []) {
+            const catId = Number(result[1]);
+            if (catId) {
+                byCategory[catId] = (byCategory[catId] || 0) + 1;
+            }
+        }
+
+        return {
+            total: total || 0,
+            byType: { 1: type1 || 0, 2: type2 || 0 },
+            byCategory,
+        };
     }
 }
 

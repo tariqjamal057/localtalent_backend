@@ -10,6 +10,7 @@ import { MatchRequest } from '../types/socket-data.type';
 import { matchService } from '../services/match.service';
 import { customChatService } from '../services/custom-chat.service';
 import { MESSAGE_TYPE } from '../enums/chat';
+import { redisUserService } from '../services/redis/redis-user.service';
 
 export class SocketService {
     private static instance: SocketService;
@@ -79,6 +80,14 @@ export class SocketService {
         logger.debug(`Emitted event=${event} to room=${roomId}`);
     }
 
+    public broadcastToAll(event: SOCKET_OUTGOING_EVENT, data: any): void {
+        if (!this.io) {
+            logger.warn(`broadcastToAll called before Socket.IO initialised`);
+            return;
+        }
+        this.io.emit(event, data);
+    }
+
     public async disconnect(): Promise<void> {
         if (this.io) {
             await new Promise<void>((resolve) => this.io!.close(() => resolve()));
@@ -119,6 +128,15 @@ export class SocketService {
             logger.info(`Socket ${socket.id} joined room ${roomId}`);
             socketGateway.markUserOnline(user.id);
 
+            (async () => {
+                try {
+                    const counts = await redisUserService.getActiveSearcherCounts();
+                    this.emitToUser(user.id, SOCKET_OUTGOING_EVENT.SEARCHER_COUNT, counts);
+                } catch (e) {
+                    logger.error(`Failed to send initial searcher count to user ${user.id}`);
+                }
+            })();
+
             socket.on(SOCKET_INCOMING_EVENT.ERROR, (err: Error) => {
                 logger.error(`Socket error: id=${socket.id} error=${err.message}`);
             });
@@ -128,11 +146,27 @@ export class SocketService {
                 socketGateway.markUserOffline(user.id);
                 socket.leave(roomId);
                 logger.debug(`Socket ${socket.id} left room ${roomId}`);
+                (async () => {
+                    try {
+                        await redisUserService.removeActiveSearcher(user.id);
+                        await socketGateway.broadcastSearcherCount();
+                    } catch (e) {
+                        logger.error(`Failed to update searcher count on disconnect for user ${user.id}`);
+                    }
+                })();
             });
 
             socket.on(SOCKET_INCOMING_EVENT.GET_MATCH, async (formData: MatchRequest) => {
                 try {
                     await matchService.handleMatchRequest(user.id, formData);
+                    (async () => {
+                        try {
+                            await redisUserService.addActiveSearcher(user.id, formData.searchType, formData.categoryLevelOneId);
+                            await socketGateway.broadcastSearcherCount();
+                        } catch (e) {
+                            logger.error(`Failed to update searcher count on get_match for user ${user.id}`);
+                        }
+                    })();
                 } catch (error) {
                     logger.info(`Error handling get_match event for user ${user.id}: ${error instanceof Error ? error.message : String(error)}`);
                     socketGateway.sendErrorToUser(user.id, error instanceof Error ? error.message : String(error));
@@ -141,6 +175,14 @@ export class SocketService {
             socket.on(SOCKET_INCOMING_EVENT.STOP_MATCH, async () => {
                 try {
                     await matchService.handleStopMatching(user.id);
+                    (async () => {
+                        try {
+                            await redisUserService.removeActiveSearcher(user.id);
+                            await socketGateway.broadcastSearcherCount();
+                        } catch (e) {
+                            logger.error(`Failed to update searcher count on stop_match for user ${user.id}`);
+                        }
+                    })();
                 } catch (error) {
                     logger.info(`Error handling stop_matching event for user ${user.id}: ${error instanceof Error ? error.message : String(error)}`);
                     socketGateway.sendErrorToUser(user.id, error instanceof Error ? error.message : String(error));

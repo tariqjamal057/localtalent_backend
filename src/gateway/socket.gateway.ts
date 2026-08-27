@@ -38,6 +38,15 @@ class SocketGateway {
         }
     }
 
+    public async broadcastSearcherCount(): Promise<void> {
+        try {
+            const counts = await redisUserService.getActiveSearcherCounts();
+            this.socketService.broadcastToAll(SOCKET_OUTGOING_EVENT.SEARCHER_COUNT, counts);
+        } catch (error) {
+            logger.error(`Failed to broadcast searcher count: ${error instanceof Error ? error.message : String(error)}`);
+        }
+    }
+
     //outgoing events to Socket.IO connections
 
     public async sendErrorToUser(userId: bigint, errorMessage: string): Promise<void> {
