@@ -12,6 +12,7 @@ const RedisKeys = {
     getSearcherTypeKey: (searchType: number) => `searchers:type:${searchType}`,
     getSearcherCategoryKey: (categoryId: number) => `searchers:cat:${categoryId}`,
     getSearcherParamsKey: (userId: bigint) => `searchers:params:${userId}`,
+    getTempBlockKey: (userId: bigint) => `user:${userId}:temp_blocks`,
 };
 
 export enum ONGOING_CALL_KEYS {

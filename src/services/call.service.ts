@@ -213,6 +213,7 @@ export class CallService {
             finalState: MATCH_STATE.CALL_ENDED,
             callEndedBy: endBy
         });
+        await this.redisUserService.addTempBlock(match.recruiterUserId, match.candidateUserId);
         CallQueue.cancelScheduledCallEnd(matchId.toString());
         socketGateway.sendCallEndedEvent(match.recruiterUserId, {
             matchId,

@@ -263,6 +263,30 @@ export class RedisUserService {
         await pipeline.exec();
     }
 
+    //temp block operations (24hr expiry for rejected/cut calls)
+
+    public async addTempBlock(userId: bigint, otherUserId: bigint, ttlHours: number = 24): Promise<void> {
+        const expiresAt = Date.now() + ttlHours * 60 * 60 * 1000;
+        const pipeline = this.client.pipeline();
+        pipeline.zadd(RedisKeys.getTempBlockKey(userId), expiresAt, otherUserId.toString());
+        pipeline.zadd(RedisKeys.getTempBlockKey(otherUserId), expiresAt, userId.toString());
+        await pipeline.exec();
+    }
+
+    public async isTempBlocked(userId: bigint, otherUserId: bigint): Promise<boolean> {
+        const score = await this.client.zscore(RedisKeys.getTempBlockKey(userId), otherUserId.toString());
+        if (!score) return false;
+        if (Date.now() > Number(score)) {
+            await this.client.zrem(RedisKeys.getTempBlockKey(userId), otherUserId.toString());
+            return false;
+        }
+        return true;
+    }
+
+    public async cleanExpiredTempBlocks(userId: bigint): Promise<void> {
+        await this.client.zremrangebyscore(RedisKeys.getTempBlockKey(userId), '-inf', Date.now().toString());
+    }
+
     public async getActiveSearcherCounts(): Promise<{ total: number; byType: Record<number, number>; byCategory: Record<number, number> }> {
         const total = await this.client.scard(RedisKeys.getActiveSearchersKey());
         const type1 = await this.client.scard(RedisKeys.getSearcherTypeKey(1));

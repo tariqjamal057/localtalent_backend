@@ -106,6 +106,12 @@ export class MatchService {
                     continue;
                 }
 
+                const isTempBlocked = await this.redisUserService.isTempBlocked(userId, matchedUserId);
+                if (isTempBlocked) {
+                    logger.info(`[MatchService] Candidate ${matchedUserId} temporarily blocked for user ${userId} (24hr cooldown). Skipping.`);
+                    continue;
+                }
+
                 const matchedUserSearchData = await this.redisUserService.getUserSearchData(matchedUserId);
                 if (!matchedUserSearchData) {
                     logger.debug(`[MatchService] No search data found for candidate ${matchedUserId}. Skipping.`);
@@ -465,6 +471,7 @@ export class MatchService {
         }
         await this.matchRepository.updateFinalState(matchId, MATCH_STATE.PROPOSAL_REJECTED);
         const otherUserId = getOtherUserIdInMatch(match, userId);
+        await this.redisUserService.addTempBlock(userId, otherUserId);
         socketGateway.sendCallDeclinedEvent(otherUserId, { matchId });
     }
 
@@ -475,6 +482,7 @@ export class MatchService {
         }
         await this.matchRepository.updateFinalState(matchId, MATCH_STATE.PROPOSAL_REJECTED);
         const otherUserId = getOtherUserIdInMatch(match, userId);
+        await this.redisUserService.addTempBlock(userId, otherUserId);
         socketGateway.sendProposalRejectedEvent(otherUserId, { matchId });
     }
 }
