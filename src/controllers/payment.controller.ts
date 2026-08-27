@@ -134,7 +134,7 @@ export class PaymentController {
             return;
         }
 
-        if (order.userId !== BigInt(req.user!.id)) {
+        if (BigInt(order.userId) !== BigInt(req.user!.id)) {
             sendError(res, 'Unauthorized', StatusCodes.FORBIDDEN);
             return;
         }

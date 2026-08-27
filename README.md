@@ -165,7 +165,7 @@ Logs are written to:
 
 Server Deployment:
 ```sudo -u postgres psql -d localtalent```
-```cd /var/www/backend;git pull;npm run build;pm2 delete 0 1;m2 start dist/index.js --name hyperlocal-api;pm2 start dist/worker.js --name hyperlocal-worker;pm2 save;```
+```cd /var/www/backend;git pull;npm run build;pm2 delete 0 1;pm2 start dist/index.js --name hyperlocal-api;pm2 start dist/worker.js --name hyperlocal-worker;pm2 save;```
 
 ## License
 
