@@ -1,6 +1,6 @@
 import config from "../config";
 import { MESSAGES } from "../constants/messages";
-import { CALL_ENDED_BY } from "../enums/call";
+import { CALL_ENDED_BY, CALL_TYPE } from "../enums/call";
 import { MATCH_STATE } from "../enums/match";
 import { USER_STATUS } from "../enums/user";
 import { socketGateway } from "../gateway/socket.gateway";
@@ -70,6 +70,10 @@ export class CallService {
             // });
             const maximumCallDuration = config.streamCall.maximumCallDurationSeconds;
             CallQueue.scheduleCallEnd(matchId, maximumCallDuration * 1000);
+            await this.matchRepository.update(matchId, {
+                providerCallId: callData[0].callId,
+                callType: callData[0].isVideoCallAllowed ? CALL_TYPE.VIDEO_CALL : CALL_TYPE.AUDIO_CALL
+            });
             await Promise.all([
                 this.redisUserService.setUserStatus(smallerUserId, USER_STATUS.MATCHED),
                 this.redisUserService.setUserStatus(largerUserId, USER_STATUS.MATCHED)

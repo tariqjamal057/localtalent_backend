@@ -156,4 +156,12 @@ export class StreamUtil {
             throw error;
         }
     }
+
+    public static async generateCallUserToken(userId: bigint): Promise<string> {
+        return this.createCallToken(userId);
+    }
+
+    public static getStreamUserName(userId: bigint): string {
+        return this.getStreamUserId(userId);
+    }
 }

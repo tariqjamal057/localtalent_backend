@@ -109,9 +109,9 @@ export class MatchRepository {
         const values: unknown[] = [];
         let idx = 1;
 
-        if (dto.proposalAcceptedCount !== undefined) {
+        if (dto.providerCallId !== undefined) {
             fields.push(`provider_call_id = $${idx++}`);
-            values.push(dto.proposalAcceptedCount);
+            values.push(dto.providerCallId);
         }
         if (dto.totalUsers !== undefined) {
             fields.push(`total_users = $${idx++}`);

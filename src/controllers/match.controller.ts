@@ -26,6 +26,17 @@ export class MatchController {
         const jobsDoneCount = await this.matchService.getJobsDoneCountThisMonth(userId);
         sendResponse(res, StatusCodes.OK, MESSAGES.MATCH.FETCHED_SUCCESSFULLY, { jobsDoneCount });
     };
+
+    getMatchById = async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
+        const userId = BigInt(req.user!.id);
+        const matchId = BigInt(req.params.matchId);
+        const match = await this.matchService.getMatchById(userId, matchId);
+        if (!match) {
+            sendResponse(res, StatusCodes.NOT_FOUND, MESSAGES.MATCH.NOT_FOUND, null);
+            return;
+        }
+        sendResponse(res, StatusCodes.OK, MESSAGES.MATCH.FETCHED_SUCCESSFULLY, match);
+    };
 }
 
 export const matchController = new MatchController(matchService);

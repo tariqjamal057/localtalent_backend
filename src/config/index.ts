@@ -108,6 +108,10 @@ const config = {
         supportedLocales: requireEnv('SUPPORTED_LOCALES').split(',') as string[],
         cacheMaxAgeSeconds: parseInt(process.env.TRANSLATION_CACHE_MAX_AGE_SECONDS || '86400', 10),
     },
+
+    firebase: {
+        serviceAccountPath: process.env.FIREBASE_SERVICE_ACCOUNT_PATH || './sayyti-7ecd2-firebase-adminsdk-fbsvc-29956bd04c.json',
+    },
 };
 
 export default config;

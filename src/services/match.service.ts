@@ -16,6 +16,12 @@ import { MESSAGES } from '../constants/messages';
 import { TopMatch } from '../types/match.types';
 import { callService, CallService } from './call.service';
 import { userRepository, UserRepository } from '../repositories/user.repository';
+import { MatchResponse } from '../types/socket-data.type';
+import { UserDataToJoinCall } from '../types/call.type';
+import { CALL_TYPE } from '../enums/call';
+import { SESSION_TYPE } from '../enums/sessions';
+import { StreamUtil } from '../utils/stream';
+import { fcmService, FcmService } from './fcm.service';
 
 export class MatchService {
     constructor(
@@ -26,7 +32,8 @@ export class MatchService {
         private readonly matchTrackingRepository: MatchTrackingRepository,
         private readonly userWalletService: UserWalletService,
         private readonly callService: CallService,
-        private readonly userRepository: UserRepository
+        private readonly userRepository: UserRepository,
+        private readonly fcmService: FcmService
     ) { }
 
     async getAcceptedMatches(userId: bigint): Promise<Match[]> {
@@ -39,6 +46,67 @@ export class MatchService {
 
     async getJobsDoneCountThisMonth(userId: bigint): Promise<number> {
         return this.matchRepository.getJobsDoneCountThisMonth(userId);
+    }
+
+    async getMatchById(userId: bigint, matchId: bigint): Promise<MatchResponse | null> {
+        const match = await this.matchRepository.getById(matchId);
+        if (!match || (match.recruiterUserId != userId && match.candidateUserId != userId)) {
+            return null;
+        }
+        if (!match.providerCallId) {
+            logger.warn(`[MatchService] No provider call id stored for match ${matchId}. Cannot reconstruct call data.`);
+            return null;
+        }
+        const isRecruiter = match.recruiterUserId == userId;
+        const otherUserId = isRecruiter ? match.candidateUserId : match.recruiterUserId;
+        const otherFormData = isRecruiter ? match.candidateFormData : match.recruiterFormData;
+        if (!otherFormData) {
+            logger.warn(`[MatchService] Missing form data for other user in match ${matchId}.`);
+            return null;
+        }
+
+        const spokenLanguageIds = typeof otherFormData.spokenLanguageIds === 'string'
+            ? (JSON.parse(otherFormData.spokenLanguageIds) as number[])
+            : otherFormData.spokenLanguageIds;
+
+        const [categoryLevelTwo, categoryLevelThree, token, canRequestVideoCall] = await Promise.all([
+            this.categoryRepository.getById(BigInt(otherFormData.categoryLevelTwoId), DEFAULT_LANGUAGE),
+            this.categoryRepository.getById(BigInt(otherFormData.categoryLevelThreeId), DEFAULT_LANGUAGE),
+            StreamUtil.generateCallUserToken(userId),
+            this.userWalletService.isBalanceForVideoCallAvailable(userId),
+        ]);
+
+        const isVideoCallAllowed = match.callType === CALL_TYPE.VIDEO_CALL;
+        const callData: UserDataToJoinCall = {
+            userId,
+            streamUserId: StreamUtil.getStreamUserName(userId),
+            token,
+            callId: match.providerCallId,
+            sessionType: SESSION_TYPE.CALL,
+            isVideoCallAllowed,
+            maxCallDurationSeconds: config.streamCall.maximumCallDurationSeconds + config.streamCall.callEndBufferSeconds,
+            canRequestVideoCall,
+        };
+
+        return {
+            matchId: Number(match.id),
+            userId: Number(otherUserId),
+            name: otherFormData.name,
+            age: Number(otherFormData.age),
+            experience: Number(otherFormData.experience),
+            spokenLanguageIds,
+            categoryLevelTwo: categoryLevelTwo ? categoryLevelTwo.title : '',
+            categoryLevelThree: categoryLevelThree ? categoryLevelThree.title : '',
+            rate: Number(otherFormData.rate),
+            rateType: Number(otherFormData.rateType),
+            availableTiming: Number(otherFormData.availableTiming),
+            availabilityType: Number(otherFormData.availabilityType),
+            gender: Number(otherFormData.gender),
+            latitude: Number(otherFormData.latitude),
+            longitude: Number(otherFormData.longitude),
+            locationName: (otherFormData as any).locationName ?? null,
+            callData,
+        };
     }
 
     async getMatchedUserPriorityScore(userSearchData: MatchRequest, matchedUserSearchData: MatchRequest): Promise<number> {
@@ -206,6 +274,16 @@ export class MatchService {
             callData.forEach(c => {
                 const data = c.userId === userId ? { ...topMatch, callData: c } : { ...userOwnData, callData: c };
                 socketGateway.sendMatchToUser(c.userId, data);
+                const matchedName = c.userId === userId ? data.name : topMatch.name;
+                this.fcmService.sendPushNotification(c.userId, {
+                    title: 'Match Found!',
+                    body: `We found a match for you: ${matchedName}`,
+                    data: {
+                        type: 'MATCH_FOUND',
+                        matchId: String(topMatch.matchId),
+                        matchUserId: String(c.userId),
+                    },
+                });
             });
             logger.info(`[MatchService] Sent top match with ID ${topMatch.matchId} to user ${userId}.`);
         } else {
@@ -487,4 +565,4 @@ export class MatchService {
     }
 }
 
-export const matchService = new MatchService(matchRepository, redisUserService, userBlockRepository, categoryRepository, matchTrackingRepository, userWalletService, callService, userRepository);
+export const matchService = new MatchService(matchRepository, redisUserService, userBlockRepository, categoryRepository, matchTrackingRepository, userWalletService, callService, userRepository, fcmService);

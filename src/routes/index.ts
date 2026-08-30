@@ -15,6 +15,7 @@ import appConstantRouter from './app-constant.route';
 import callRouter from './call.route';
 import paymentRouter from './payment.route';
 import uploadRouter from './upload.route';
+import deviceTokenRouter from './device-token.route';
 
 const router = Router();
 
@@ -34,5 +35,6 @@ router.use('/app-constants', appConstantRouter);
 router.use('/call', callRouter)
 router.use('/payment', paymentRouter)
 router.use('/upload', uploadRouter)
+router.use('/device-token', deviceTokenRouter)
 
 export default router;

@@ -10,6 +10,10 @@ build/
 .env.production
 .env.*.local
 
+# Firebase service account keys
+*firebase-adminsdk*.json
+serviceAccountKey.json
+
 logs/
 *.log
 npm-debug.log*

@@ -11,6 +11,10 @@ const paginationQuerySchema = z.object({
     limit: z.coerce.number().int().min(1).max(100).default(20),
 });
 
+const matchIdParamSchema = z.object({
+    matchId: z.string().regex(/^\d+$/, 'matchId must be a numeric string'),
+});
+
 router.get(
     '/',
     authenticate,
@@ -28,6 +32,13 @@ router.get(
     '/jobs-done-this-month',
     authenticate,
     matchController.getJobsDoneCountThisMonth
+);
+
+router.get(
+    '/:matchId',
+    authenticate,
+    validate(matchIdParamSchema, VALIDATION_SOURCE.PARAMS),
+    matchController.getMatchById
 );
 
 export default router;
